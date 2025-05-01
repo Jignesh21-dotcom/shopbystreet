@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Steve's Music Store",
+    "slug": "steves-music-store",
+    "streetSlug": "queen-street-west",
+    "parking": "Paid Parking Nearby",
+    "event": "🎸 Live Band Demo – Apr 29–30"
+  },
+  {
+    "name": "Drake General Store",
+    "slug": "drake-general-store",
+    "streetSlug": "queen-street-west",
+    "parking": "Street Parking Available",
+    "event": "🛍 Spring Clearance Sale"
+  },
+  {
+    "name": "Black Market Vintage",
+    "slug": "black-market-vintage",
+    "streetSlug": "queen-street-west",
+    "parking": "Paid Parking Nearby"
+  },
+  {
+    "name": "Ardith One",
+    "slug": "ardith-one",
+    "streetSlug": "queen-street-west",
+    "parking": "Free Parking Nearby"
+  },
+  {
+    "name": "Type Books",
+    "slug": "type-books",
+    "streetSlug": "queen-street-west",
+    "parking": "Street Parking Available"
+  },
+  {
+    "name": "Coal Miner's Daughter",
+    "slug": "coal-miners-daughter",
+    "streetSlug": "queen-street-west",
+    "parking": "Paid Parking Nearby"
+  },
+  {
+    "name": "The Paper Place",
+    "slug": "the-paper-place",
+    "streetSlug": "queen-street-west",
+    "parking": "Street Parking Available"
+  },
+  {
+    "name": "Magic Pony",
+    "slug": "magic-pony",
+    "streetSlug": "queen-street-west",
+    "parking": "Free Parking Available"
+  },
+  {
+    "name": "jvvvj",
+    "slug": "jvvvj",
+    "streetSlug": "aberlady-rd",
+    "parking": "Free Parking Nearby"
+  },
+  {
+    "name": "Jignesh Rameshchandra Chouhan",
+    "slug": "jignesh-rameshchandra-chouhan",
+    "streetSlug": "vdadv",
+    "parking": "Paid Parking Nearby",
+    "wantsProducts": true,
+    "paid": false
+  },
+  {
+    "name": "vdsv",
+    "slug": "vdsv",
+    "streetSlug": "vdadv",
+    "parking": "Paid Parking Nearby",
+    "wantsProducts": true,
+    "paid": false
+  }
+]

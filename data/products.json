@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Fender Stratocaster Guitar",
+    "price": "$1,200.00",
+    "shopSlug": "steves-music-store"
+  },
+  {
+    "name": "Funny Birthday Card",
+    "price": "$5.00",
+    "shopSlug": "outer-layer"
+  },
+  {
+    "name": "Vintage Levi's Jeans",
+    "price": "$60.00",
+    "shopSlug": "mama-loves-you-vintage"
+  },
+  {
+    "name": "Men's Beta AR Jacket",
+    "price": "$750.00",
+    "shopSlug": "arcteryx-toronto"
+  },
+  {
+    "name": "Band T-Shirt",
+    "price": "$25.00",
+    "shopSlug": "black-market-vintage"
+  }
+]
