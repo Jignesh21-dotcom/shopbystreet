@@ -4,7 +4,15 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
-export default function ShopPage({ params }: { params: { city: string; street: string; shop: string } }) {
+type Props = {
+  params: {
+    city: string;
+    street: string;
+    shop: string;
+  };
+};
+
+export default function ShopPage({ params }: Props) {
   const { city, street, shop } = params;
 
   const [shopData, setShopData] = useState<any>(null);
