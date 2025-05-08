@@ -1,89 +1,61 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import shops from '@/data/shops.json';
-import streets from '@/data/streets.json';
+import { supabase } from '@/lib/supabaseClient';
+import Link from 'next/link';
 
 export default function ProfilePage() {
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [visited, setVisited] = useState<string[]>([]);
-  const [reviews, setReviews] = useState<number>(0);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const favs = localStorage.getItem('favorites');
-    setFavorites(favs ? JSON.parse(favs) : []);
-
-    const seen = localStorage.getItem('visitedStreets');
-    setVisited(seen ? JSON.parse(seen) : []);
-
-    let totalReviews = 0;
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('reviews-')) {
-        const val = JSON.parse(localStorage.getItem(key)!);
-        totalReviews += Array.isArray(val) ? val.length : 0;
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
       }
-    });
-    setReviews(totalReviews);
+    };
+
+    fetchUser();
   }, []);
 
-  const points = visited.length * 5 + favorites.length * 3 + reviews * 10;
-
-  const badges = [
-    visited.length >= 3 && '🗺️ Street Explorer',
-    favorites.length >= 5 && '💖 Shop Lover',
-    reviews >= 3 && '📝 Reviewer',
-    points >= 100 && '🏅 Super Shopper',
-  ].filter(Boolean);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/login';  // ✅ Redirect to login after logout
+  };
 
   return (
-    <main className="min-h-screen p-8 bg-gradient-to-br from-purple-50 to-indigo-100 flex flex-col items-center">
-      <h1 className="text-4xl font-bold text-indigo-800 mb-6">👤 Your Profile</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-6">
+      <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8 text-center">
+        <h1 className="text-3xl font-bold text-green-700 mb-6">👤 Your Profile</h1>
 
-      <div className="bg-white rounded-xl shadow p-6 w-full max-w-xl mb-8">
-        <h2 className="text-xl font-semibold text-indigo-700 mb-2">🎯 Your Points</h2>
-        <p className="text-3xl font-bold text-indigo-900 mb-4">{points} pts</p>
-
-        {badges.length > 0 && (
+        {user ? (
           <>
-            <h2 className="text-lg font-semibold text-indigo-600">🏆 Badges Earned</h2>
-            <ul className="list-disc ml-6 text-gray-700 mb-4">
-              {badges.map((b, i) => (
-                <li key={i}>{b}</li>
-              ))}
-            </ul>
+            <p className="text-lg text-gray-700 mb-2">
+              <strong>Email:</strong> {user.email}
+            </p>
+            <p className="text-lg text-gray-700 mb-4">
+              <strong>Username:</strong>{' '}
+              {user.user_metadata?.username || 'No username set'}
+            </p>
+
+            <button
+              onClick={handleLogout}
+              className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
           </>
+        ) : (
+          <p className="text-gray-600">Loading user info...</p>
         )}
       </div>
 
-      {/* Favorites */}
-      <div className="bg-white rounded-xl shadow p-6 w-full max-w-xl mb-8">
-        <h2 className="text-lg font-semibold text-pink-700 mb-2">❤️ Favorite Shops</h2>
-        {favorites.length > 0 ? (
-          <ul className="list-disc ml-6 text-gray-800">
-            {favorites.map((slug) => {
-              const shop = shops.find((s) => s.slug === slug);
-              return shop ? <li key={slug}>{shop.name}</li> : null;
-            })}
-          </ul>
-        ) : (
-          <p className="text-gray-500 italic">You haven’t favorited any shops yet.</p>
-        )}
-      </div>
-
-      {/* Visited */}
-      <div className="bg-white rounded-xl shadow p-6 w-full max-w-xl">
-        <h2 className="text-lg font-semibold text-blue-700 mb-2">🚶 Streets Explored</h2>
-        {visited.length > 0 ? (
-          <ul className="list-disc ml-6 text-gray-800">
-            {visited.map((slug) => {
-              const street = streets.find((s) => s.slug === slug);
-              return street ? <li key={slug}>{street.name}</li> : null;
-            })}
-          </ul>
-        ) : (
-          <p className="text-gray-500 italic">Start walking some streets to earn points!</p>
-        )}
-      </div>
-    </main>
+      <Link
+        href="/"
+        className="mt-6 inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+      >
+        ← Back to Home
+      </Link>
+    </div>
   );
 }

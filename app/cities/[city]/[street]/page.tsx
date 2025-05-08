@@ -2,109 +2,144 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getShopsByStreetSlug } from '@/lib/data';
-import type { Metadata } from 'next';
+import { supabase } from '@/lib/supabaseClient';
 
-interface PageProps {
-  params: {
-    city: string;
-    street: string;
-  };
-}
+export default function StreetPage({ params }: { params: { city: string; street: string } }) {
+  const [shopsGrouped, setShopsGrouped] = useState<{
+    [baseAddress: string]: {
+      id: string;
+      name: string;
+      slug: string;
+      description: string;
+      parking?: string;
+      address?: string;
+    }[];
+  }>({});
+  const [sortedBaseAddresses, setSortedBaseAddresses] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export default function StreetPage({ params }: PageProps) {
-  const [shops, setShops] = useState<any[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const { city, street } = params;
 
   useEffect(() => {
-    getShopsByStreetSlug(params.street).then(setShops);
+    const fetchShops = async () => {
+      setLoading(true);
+      setError(null);
 
-    const favs = localStorage.getItem('favorites');
-    setFavorites(favs ? JSON.parse(favs) : []);
+      console.log('➡️ Fetching street ID for slug:', street);
 
-    const visitedKey = 'visitedStreets';
-    const current = params.street;
-    const stored = localStorage.getItem(visitedKey);
-    const visited: string[] = stored ? JSON.parse(stored) : [];
+      // 1️⃣ First get the street's ID
+      const { data: streetData, error: streetError } = await supabase
+        .from('streets')
+        .select('id, name')
+        .eq('slug', street)
+        .single();
 
-    if (!visited.includes(current)) {
-      visited.push(current);
-      localStorage.setItem(visitedKey, JSON.stringify(visited));
-    }
-  }, [params.street]);
+      if (streetError || !streetData) {
+        console.error('❌ Street not found:', streetError);
+        setError('Street not found.');
+        setLoading(false);
+        return;
+      }
 
-  const toggleFavorite = (slug: string) => {
-    const updated = favorites.includes(slug)
-      ? favorites.filter((s) => s !== slug)
-      : [...favorites, slug];
+      console.log('✅ Found street ID:', streetData.id);
 
-    setFavorites(updated);
-    localStorage.setItem('favorites', JSON.stringify(updated));
-  };
+      // 2️⃣ Fetch shops linked to that street_id
+      const { data: shopsData, error: shopsError } = await supabase
+        .from('shops')
+        .select('*')
+        .eq('street_id', streetData.id);
+
+      if (shopsError) {
+        console.error('❌ Error fetching shops:', shopsError);
+        setError('Failed to load shops.');
+        setLoading(false);
+        return;
+      }
+
+      console.log(`✅ Fetched ${shopsData.length} shops:`, shopsData);
+
+      const grouped: { [baseAddress: string]: typeof shopsData } = {};
+
+      shopsData.forEach((shop) => {
+        const match = shop.description?.match(/^(\d+)/);
+        const baseNumber = match ? match[1] : 'Other';
+        const baseAddress = baseNumber
+          ? `${baseNumber} ${getStreetName(shop.description)}`
+          : 'Other';
+
+        if (!grouped[baseAddress]) grouped[baseAddress] = [];
+        grouped[baseAddress].push(shop);
+      });
+
+      const sortedAddresses = Object.keys(grouped).sort((a, b) => {
+        const numA = parseInt(a.match(/^(\d+)/)?.[1] || '0');
+        const numB = parseInt(b.match(/^(\d+)/)?.[1] || '0');
+        return numA - numB;
+      });
+
+      setShopsGrouped(grouped);
+      setSortedBaseAddresses(sortedAddresses);
+      setLoading(false);
+    };
+
+    fetchShops();
+  }, [street]);
+
+  function getStreetName(fullAddress: string | undefined) {
+    if (!fullAddress) return 'Unknown Street';
+    const noNumber = fullAddress.replace(/^(\d+)\s*/, '');
+    const noUnit = noNumber.split(/unit|#/i)[0].trim();
+    return noUnit;
+  }
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-pink-50 to-pink-100 flex flex-col items-center">
+    <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
+      {/* ✅ Back to Streets button */}
       <Link
-        href={`/provinces/${params.city}`}
-        className="self-start mb-6 text-pink-700 hover:text-pink-900 hover:underline"
+        href={`/cities/${city}`}
+        className="self-start mb-6 text-blue-700 hover:text-blue-900 hover:underline"
       >
-        ← Back to City
+        ← Back to Streets
       </Link>
 
-      <h1 className="text-4xl font-bold text-pink-800 mb-2 capitalize">
-        🚶 {decodeURIComponent(params.street).replace(/-/g, ' ')}
+      <h1 className="text-4xl font-bold text-blue-700 mb-8 capitalize">
+        🏙️ {decodeURIComponent(street).replace(/-/g, ' ')}
       </h1>
 
-      {/* Google Maps Mini Preview */}
-      <div className="w-full max-w-4xl mt-4 mb-10">
-        <iframe
-          title="Map preview"
-          width="100%"
-          height="300"
-          loading="lazy"
-          style={{ borderRadius: '12px', border: 0 }}
-          allowFullScreen
-          referrerPolicy="no-referrer-when-downgrade"
-          src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyArtH_bWsU80apkjf203NqNIdnqDFx0PKY&` +
-               `q=${encodeURIComponent(decodeURIComponent(params.street))},Toronto`}
-        ></iframe>
-      </div>
+      {loading && <p className="text-gray-600 text-lg">Loading shops...</p>}
 
-      <p className="text-pink-600 mb-6">
-        Explore the shops like you're walking the street!
-      </p>
+      {error && <p className="text-red-600 text-lg">{error}</p>}
 
-      <div className="w-full max-w-5xl overflow-x-auto whitespace-nowrap space-x-4 flex snap-x snap-mandatory pb-6">
-        {shops.map((shop) => (
-          <div
-            key={shop.slug}
-            className="snap-center min-w-[300px] bg-white rounded-2xl shadow-md p-6 mx-2 flex-shrink-0 text-center hover:shadow-xl transform hover:scale-105 transition-all duration-300 relative"
-          >
-            {shop.event && (
-              <div className="absolute top-0 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded-br-lg shadow">
-                {shop.event}
-              </div>
-            )}
+      {!loading && !error && sortedBaseAddresses.length === 0 && (
+        <p className="text-gray-600 text-lg">No shops found on this street yet.</p>
+      )}
 
-            <button
-              onClick={() => toggleFavorite(shop.slug)}
-              className="absolute top-4 right-4 text-pink-500 hover:text-pink-700 text-xl"
-              title={favorites.includes(shop.slug) ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              {favorites.includes(shop.slug) ? '❤️' : '🤍'}
-            </button>
-
-            <h2 className="text-2xl font-semibold text-pink-700 mb-2">{shop.name}</h2>
-            <p className="text-sm text-gray-600 mb-4">{shop.parking}</p>
-            <Link
-              href={`/cities/${params.city}/${params.street}/shops/${shop.slug}`}
-              className="inline-block mt-2 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition"
-            >
-              View Shop →
-            </Link>
+      {!loading &&
+        !error &&
+        sortedBaseAddresses.map((baseAddress) => (
+          <div key={baseAddress} className="mb-10 w-full max-w-6xl">
+            <h2 className="text-2xl font-bold text-blue-600 mb-4">{baseAddress}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {shopsGrouped[baseAddress].map((shop) => (
+                <Link
+                  key={shop.id}
+                  href={`/cities/${city}/${street}/${shop.slug}`}
+                  className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition flex flex-col justify-between"
+                >
+                  <h3 className="text-xl font-semibold text-blue-700 mb-2">{shop.name}</h3>
+                  <p className="text-gray-600 flex-1">{shop.description || 'No description provided.'}</p>
+                  {shop.parking && (
+                    <p className="text-sm text-gray-500 mt-4">🚗 Parking: {shop.parking}</p>
+                  )}
+                  {shop.description && (
+                    <p className="text-sm text-gray-500 mt-2">📍 {shop.description}</p>
+                  )}
+                </Link>
+              ))}
+            </div>
           </div>
         ))}
-      </div>
     </div>
   );
 }
