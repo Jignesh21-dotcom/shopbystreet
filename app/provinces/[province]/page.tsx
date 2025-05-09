@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getCitiesByProvinceSlug } from '@/lib/data';
 
-
 const provinceBackgrounds: Record<string, string> = {
   ontario: 'https://images.pexels.com/photos/29290069/pexels-photo-29290069.jpeg',
   quebec: 'https://images.pexels.com/photos/462118/pexels-photo-462118.jpeg',
@@ -21,33 +20,43 @@ const provinceBackgrounds: Record<string, string> = {
   yukon: 'https://images.pexels.com/photos/417176/pexels-photo-417176.jpeg',
 };
 
-export default function ProvincePage({
-  params,
-}: {
-  params: { province: string };
-}) {
-  const { province } = params;
+// ✅ Define props locally
+type Props = {
+  params: Promise<{
+    province: string;
+  }>;
+};
+
+export default async function ProvincePage({ params }: Props) {
+  const resolvedParams = await params; // Resolve the promise if params is asynchronous
+  const { province } = resolvedParams;
 
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-
   useEffect(() => {
     const fetchCities = async () => {
       setLoading(true);
-      const data = await getCitiesByProvinceSlug(params.province);
-      if (!data || data.length === 0) {
-        setError('No cities found or an error occurred.');
-      } else {
-        setCities(data);
+      setError(null); // ✅ Clear error before fetching
+
+      try {
+        const data = await getCitiesByProvinceSlug(province);
+        if (!data || data.length === 0) {
+          setError('No cities found or an error occurred.');
+        } else {
+          setCities(data);
+        }
+      } catch (err) {
+        setError('An unexpected error occurred.');
       }
+
       setLoading(false);
     };
 
     fetchCities();
-  }, [params.province]);
+  }, [province]);
 
   const filteredCities = cities.filter((city) =>
     city.name.toLowerCase().includes(search.toLowerCase())
@@ -70,8 +79,8 @@ export default function ProvincePage({
   };
 
   const backgroundImage =
-    provinceBackgrounds[params.province.toLowerCase()] ||
-    'https://images.pexels.com/photos/1029613/pexels-photo-1029613.jpeg'; // fallback
+    provinceBackgrounds[province.toLowerCase()] ||
+    'https://images.pexels.com/photos/1029613/pexels-photo-1029613.jpeg'; // Fallback
 
   return (
     <div
@@ -93,7 +102,7 @@ export default function ProvincePage({
 
         {/* Province Title */}
         <h1 className="text-4xl font-bold text-white mb-6 capitalize text-center">
-          🗺️ {decodeURIComponent(params.province).replace(/-/g, ' ')}
+          🗺️ {decodeURIComponent(province).replace(/-/g, ' ')}
         </h1>
 
         {/* Search Bar */}

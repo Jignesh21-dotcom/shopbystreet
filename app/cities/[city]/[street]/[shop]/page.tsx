@@ -1,9 +1,11 @@
+'use client';
 import ShopPageClient from './ShopPageClient';
 
-export default function ShopPage({
+export default async function ShopPage({
   params,
 }: {
-  params: { city: string; street: string; shop: string };
+  params: Promise<{ city: string; street: string; shop: string }>;
 }) {
-  return <ShopPageClient params={params} />;
+  const resolvedParams = await params; // Resolve the promise if params is asynchronous
+  return <ShopPageClient params={resolvedParams} />;
 }

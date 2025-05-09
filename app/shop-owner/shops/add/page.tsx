@@ -23,25 +23,33 @@ export default function AddShop() {
 
   const router = useRouter();
 
-  // ✅ 1️⃣ Load countries on mount
+  // ✅ Load countries on mount
   useEffect(() => {
     const fetchCountries = async () => {
       const { data, error } = await supabase
         .from('streets')
         .select('country')
         .neq('country', null);
-  
-      console.log('Fetched countries:', data); // ✅ leave this log for now
-      if (error) console.error('Fetch error:', error);
-  
+
+      if (error) {
+        console.error('Fetch error:', error);
+        return;
+      }
+
+      if (!data) {
+        console.error('No data returned for countries.');
+        setCountries([]);
+        return;
+      }
+
       const uniqueCountries = Array.from(new Set(data.map((row) => row.country)));
       setCountries(uniqueCountries);
     };
-  
+
     fetchCountries();
   }, []);
 
-  // ✅ 2️⃣ Load provinces when country changes
+  // ✅ Load provinces when country changes
   useEffect(() => {
     if (!country) {
       setProvinces([]);
@@ -61,6 +69,12 @@ export default function AddShop() {
         return;
       }
 
+      if (!data) {
+        console.error('No data returned for provinces.');
+        setProvinces([]);
+        return;
+      }
+
       const uniqueProvinces = Array.from(new Set(data.map((row) => row.province)));
       setProvinces(uniqueProvinces);
     };
@@ -73,7 +87,7 @@ export default function AddShop() {
     setStreetSlug('');
   }, [country]);
 
-  // ✅ 3️⃣ Load cities when province changes
+  // ✅ Load cities when province changes
   useEffect(() => {
     if (!province) {
       setCities([]);
@@ -94,6 +108,12 @@ export default function AddShop() {
         return;
       }
 
+      if (!data) {
+        console.error('No data returned for cities.');
+        setCities([]);
+        return;
+      }
+
       const uniqueCities = Array.from(new Set(data.map((row) => row.city)));
       setCities(uniqueCities);
     };
@@ -104,7 +124,7 @@ export default function AddShop() {
     setStreetSlug('');
   }, [province, country]);
 
-  // ✅ 4️⃣ Load streets when city changes
+  // ✅ Load streets when city changes
   useEffect(() => {
     if (!city) {
       setStreets([]);
@@ -122,6 +142,12 @@ export default function AddShop() {
 
       if (error) {
         console.error('Failed to load streets:', error);
+        return;
+      }
+
+      if (!data) {
+        console.error('No data returned for streets.');
+        setStreets([]);
         return;
       }
 
