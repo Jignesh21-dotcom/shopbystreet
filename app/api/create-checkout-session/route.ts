@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// ✅ Suppress Stripe's type version conflict using ts-expect-error
-// @ts-expect-error Stripe type version mismatch - safe to ignore
-const stripe = new (Stripe as any)(process.env.STRIPE_SECRET_KEY!, {
+// ✅ Clean Stripe initialization (no more error suppression needed)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
 });
 
