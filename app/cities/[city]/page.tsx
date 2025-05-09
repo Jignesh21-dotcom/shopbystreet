@@ -1,10 +1,13 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import type { PageProps } from 'next';
 
-export default function CityPage({ params }: { params: { city: string } }) {
+export default function CityPage({ params }: PageProps) {
+  const { city } = params as { city: string };
+
   const [streets, setStreets] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

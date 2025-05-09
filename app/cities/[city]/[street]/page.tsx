@@ -1,10 +1,13 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import type { PageProps } from 'next'; // ✅ added this!
 
-export default function StreetPage({ params }: { params: { city: string; street: string } }) {
+export default function StreetPage({ params }: PageProps) {
+  const { city, street } = params as { city: string; street: string };
+
   const [shopsGrouped, setShopsGrouped] = useState<{
     [baseAddress: string]: {
       id: string;
@@ -18,8 +21,6 @@ export default function StreetPage({ params }: { params: { city: string; street:
   const [sortedBaseAddresses, setSortedBaseAddresses] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const { city, street } = params;
 
   useEffect(() => {
     const fetchShops = async () => {
