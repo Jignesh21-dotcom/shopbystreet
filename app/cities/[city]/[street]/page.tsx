@@ -4,13 +4,19 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
-export default function StreetPage({
-  params,
-}: {
-  params: { city: string; street: string };
-}) {
-  const { city, street } = params;
+// ✅ Define props locally
+type Props = {
+  params: Promise<{
+    city: string;
+    street: string;
+  }>;
+};
 
+export default async function StreetPage({ params }: Props) {
+  const resolvedParams = await params; // Resolve the promise if params is asynchronous
+  const { city, street } = resolvedParams;
+
+  // ✅ All your state stays inside the function
   const [shopsGrouped, setShopsGrouped] = useState<{
     [baseAddress: string]: {
       id: string;

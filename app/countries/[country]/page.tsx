@@ -1,12 +1,16 @@
 import Link from 'next/link';
 import { getProvincesByCountrySlug } from '@/lib/data';
 
-export default async function CountryPage({
-  params,
-}: {
-  params: { country: string };
-}) {
-  const provinces = await getProvincesByCountrySlug(params.country);
+// Define the props type explicitly
+type Props = {
+  params: Promise<{
+    country: string;
+  }>;
+};
+
+export default async function CountryPage({ params }: Props) {
+  const resolvedParams = await params; // Resolve the promise if params is asynchronous
+  const provinces = await getProvincesByCountrySlug(resolvedParams.country);
 
   return (
     <div className="min-h-screen p-6 bg-gradient-to-br from-purple-50 to-purple-100 flex flex-col items-center">
@@ -20,7 +24,7 @@ export default async function CountryPage({
 
       {/* Country Title */}
       <h1 className="text-4xl font-bold text-purple-800 mb-10 capitalize">
-        🌎 {decodeURIComponent(params.country).replace(/-/g, " ")}
+        🌎 {decodeURIComponent(resolvedParams.country).replace(/-/g, " ")}
       </h1>
 
       {/* Provinces List */}

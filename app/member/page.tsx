@@ -98,98 +98,96 @@ export default function MemberPage() {
   }, [selectedProvince]);
 
   // Fetch streets when city is selected (with batching)
-useEffect(() => {
-  if (selectedCity) {
-    const fetchStreets = async () => {
-      // 1️⃣ Get total count of streets
-      const { count, error: countError } = await supabase
-        .from('streets')
-        .select('*', { count: 'exact', head: true })
-        .eq('city_id', selectedCity);
+  useEffect(() => {
+    if (selectedCity) {
+      const fetchStreets = async () => {
+        // 1️⃣ Get total count of streets
+        const { count, error: countError } = await supabase
+          .from('streets')
+          .select('*', { count: 'exact', head: true })
+          .eq('city_id', selectedCity);
 
-      if (countError) {
-        console.error('Error fetching street count:', countError);
-        return;
-      }
+        if (countError || count === null) {
+          console.error('Error fetching street count:', countError);
+          return;
+        }
 
-      console.log(`🟢 Total streets count: ${count}`);
+        console.log(`🟢 Total streets count: ${count}`);
 
-      const CHUNK_SIZE = 1000;
-      const promises = [];
+        const CHUNK_SIZE = 1000;
+        const promises = [];
 
-      // 2️⃣ Fetch all streets in batches
-      for (let start = 0; start < count; start += CHUNK_SIZE) {
-        const end = Math.min(start + CHUNK_SIZE - 1, count - 1);
-        promises.push(
-          supabase
-            .from('streets')
-            .select('id, name')
-            .eq('city_id', selectedCity)
-            .order('name', { ascending: true })
-            .range(start, end)
-        );
-      }
+        // 2️⃣ Fetch all streets in batches
+        for (let start = 0; start < count; start += CHUNK_SIZE) {
+          const end = Math.min(start + CHUNK_SIZE - 1, count - 1);
+          promises.push(
+            supabase
+              .from('streets')
+              .select('id, name')
+              .eq('city_id', selectedCity)
+              .order('name', { ascending: true })
+              .range(start, end)
+          );
+        }
 
-      const results = await Promise.all(promises);
-      const allData = results.flatMap((r) => r.data ?? []);
+        const results = await Promise.all(promises);
+        const allData = results.flatMap((r) => r.data ?? []);
 
-      console.log('✅ All streets fetched:', allData.length);
-      setStreets(allData);
-      setShops([]);
-      setSelectedStreet('');
-      setSelectedShop('');
-    };
+        console.log('✅ All streets fetched:', allData.length);
+        setStreets(allData);
+        setShops([]);
+        setSelectedStreet('');
+        setSelectedShop('');
+      };
 
-    fetchStreets();
-  }
-}, [selectedCity]);
-
+      fetchStreets();
+    }
+  }, [selectedCity]);
 
   // Fetch shops when street is selected (with batching)
-useEffect(() => {
-  if (selectedStreet) {
-    const fetchShops = async () => {
-      // 1️⃣ Get total count of shops for this street
-      const { count, error: countError } = await supabase
-        .from('shops')
-        .select('*', { count: 'exact', head: true })
-        .eq('street_id', selectedStreet);
+  useEffect(() => {
+    if (selectedStreet) {
+      const fetchShops = async () => {
+        // 1️⃣ Get total count of shops for this street
+        const { count, error: countError } = await supabase
+          .from('shops')
+          .select('*', { count: 'exact', head: true })
+          .eq('street_id', selectedStreet);
 
-      if (countError) {
-        console.error('Error fetching shop count:', countError);
-        return;
-      }
+        if (countError || count === null) {
+          console.error('Error fetching shop count:', countError);
+          return;
+        }
 
-      console.log(`🟢 Total shops count: ${count}`);
+        console.log(`🟢 Total shops count: ${count}`);
 
-      const CHUNK_SIZE = 1000;
-      const promises = [];
+        const CHUNK_SIZE = 1000;
+        const promises = [];
 
-      // 2️⃣ Fetch in batches of 1000
-      for (let start = 0; start < count; start += CHUNK_SIZE) {
-        const end = Math.min(start + CHUNK_SIZE - 1, count - 1);
-        promises.push(
-          supabase
-            .from('shops')
-            .select('id, name')
-            .eq('street_id', selectedStreet)
-            .order('name', { ascending: true })
-            .range(start, end)
-        );
-      }
+        // 2️⃣ Fetch in batches of 1000
+        for (let start = 0; start < count; start += CHUNK_SIZE) {
+          const end = Math.min(start + CHUNK_SIZE - 1, count - 1);
+          promises.push(
+            supabase
+              .from('shops')
+              .select('id, name')
+              .eq('street_id', selectedStreet)
+              .order('name', { ascending: true })
+              .range(start, end)
+          );
+        }
 
-      const results = await Promise.all(promises);
-      const allData = results.flatMap((r) => r.data ?? []);
+        const results = await Promise.all(promises);
+        const allData = results.flatMap((r) => r.data ?? []);
 
-      console.log('✅ All shops fetched:', allData.length);
-      setShops(allData);
-      setSelectedShop('');
-    };
+        console.log('✅ All shops fetched:', allData.length);
+        setShops(allData);
+        setSelectedShop('');
+      };
 
-    fetchShops();
-  }
-}, [selectedStreet]);
-
+      fetchShops();
+    }
+  }, [selectedStreet]);
 
   // Submit review handler
   const handleSubmit = async (e: React.FormEvent) => {
@@ -328,16 +326,13 @@ useEffect(() => {
                   value={selectedShop}
                   onChange={(e) => setSelectedShop(e.target.value)}
                   className="w-full border px-3 py-2 rounded text-gray-900"
-
                 >
                   <option value="">-- Choose a shop --</option>
                   {shops.map((shop) => (
                     <option key={shop.id} value={shop.id}>
-                       {shop.name || '(Unnamed shop)'}
+                      {shop.name || '(Unnamed shop)'}
                     </option>
                   ))}
-                  {console.log('👀 Shops data:', shops)}
-
                 </select>
               </div>
             )}

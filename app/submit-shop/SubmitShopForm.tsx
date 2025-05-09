@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import emailjs from 'emailjs-com';
 import provinces from '@/data/provinces.json';
 import cities from '@/data/cities.json';
@@ -13,20 +13,17 @@ export default function SubmitShopForm() {
     citySlug: '',
     streetSlug: '',
     parking: 'Paid Parking Nearby',
-    wantsProducts: false  // ✅ NEW: checkbox state
+    wantsProducts: false, // Checkbox state
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const filteredCities = cities.filter(
-    (c) => c.provinceSlug === form.provinceSlug
-  );
+  const filteredCities = cities.filter((c) => c.provinceSlug === form.provinceSlug);
+  const filteredStreets = streets.filter((s) => s.citySlug === form.citySlug);
 
-  const filteredStreets = streets.filter(
-    (s) => s.citySlug === form.citySlug
-  );
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
     setForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
@@ -35,7 +32,7 @@ export default function SubmitShopForm() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newShop = {
       name: form.name,
@@ -43,37 +40,45 @@ export default function SubmitShopForm() {
       streetSlug: form.streetSlug,
       parking: form.parking,
       wantsProducts: form.wantsProducts,
-      paid: false  // default false
+      paid: false, // Default false
     };
 
-    const res = await fetch('/api/submit-shop', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newShop)
-    });
-
-    if (res.ok) {
-      // ✅ Send EmailJS alert
-      emailjs.send(
-        'service_ra938k5',       // your Service ID
-        'template_p1vwnzp',      // your Template ID
-        {
-          shop_name: form.name,
-          street_slug: form.streetSlug,
-          city_slug: form.citySlug,
-          province_slug: form.provinceSlug,
-          parking: form.parking,
-          wants_products: form.wantsProducts ? 'Yes - wants to add products ($49)' : 'No'
-        },
-        'ddd-F-k7CZdBPSiOm'       // your Public Key
-      ).then(() => {
-        console.log('✅ Email sent');
-      }).catch((err) => {
-        console.error('❌ Email error:', err);
+    try {
+      const res = await fetch('/api/submit-shop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newShop),
       });
 
-      setSubmitted(true);
-    } else {
+      if (res.ok) {
+        // Send EmailJS alert
+        emailjs
+          .send(
+            'service_ra938k5', // Your Service ID
+            'template_p1vwnzp', // Your Template ID
+            {
+              shop_name: form.name,
+              street_slug: form.streetSlug,
+              city_slug: form.citySlug,
+              province_slug: form.provinceSlug,
+              parking: form.parking,
+              wants_products: form.wantsProducts ? 'Yes - wants to add products ($49)' : 'No',
+            },
+            'ddd-F-k7CZdBPSiOm' // Your Public Key
+          )
+          .then(() => {
+            console.log('✅ Email sent');
+          })
+          .catch((err) => {
+            console.error('❌ Email error:', err);
+          });
+
+        setSubmitted(true);
+      } else {
+        alert('Error submitting shop.');
+      }
+    } catch (error) {
+      console.error('❌ Submission error:', error);
       alert('Error submitting shop.');
     }
   };
@@ -82,7 +87,9 @@ export default function SubmitShopForm() {
     <main className="min-h-screen p-8 bg-gray-50">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Submit Your Shop</h1>
       {submitted ? (
-        <p className="text-green-600 font-medium">✅ Shop submitted successfully! We’ll contact you if you selected product options.</p>
+        <p className="text-green-600 font-medium">
+          ✅ Shop submitted successfully! We’ll contact you if you selected product options.
+        </p>
       ) : (
         <form
           onSubmit={handleSubmit}
@@ -171,7 +178,6 @@ export default function SubmitShopForm() {
             </select>
           </div>
 
-          {/* ✅ New: Product Checkbox */}
           <div>
             <label className="inline-flex items-center">
               <input

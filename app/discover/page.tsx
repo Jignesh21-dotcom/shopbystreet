@@ -1,10 +1,23 @@
 import shops from "@/data/shops.json";
 import Link from "next/link";
 
+// Define the shop type
+type Shop = {
+  name: string;
+  slug: string;
+  streetSlug: string;
+  parking: string;
+  address: string;
+  group: string;
+  featured?: boolean; // Optional featured property
+  discount?: string; // Optional discount property
+  tagline?: string; // Optional tagline property
+};
+
 export default function DiscoverPage() {
-  const featured = shops.find((s) => s.featured);
-  const discounted = shops.find((s) => s.discount);
-  const gem = shops.find((s) => s.tagline);
+  const featured = (shops as Shop[]).find((s) => s.featured);
+  const discounted = (shops as Shop[]).find((s) => s.discount);
+  const gem = (shops as Shop[]).find((s) => s.tagline);
 
   return (
     <main className="min-h-screen p-8 bg-gradient-to-br from-purple-50 to-indigo-100 flex flex-col items-center">
@@ -37,7 +50,7 @@ export default function DiscoverPage() {
             title="📚 Local Gem"
             shop={gem}
             color="bg-blue-100"
-            highlight={gem.tagline}
+            highlight={gem.tagline || "A hidden gem in your area!"} // Provide a fallback value
           />
         )}
       </div>
@@ -45,7 +58,7 @@ export default function DiscoverPage() {
   );
 }
 
-function Card({ title, shop, color, highlight }: any) {
+function Card({ title, shop, color, highlight }: { title: string; shop: Shop; color: string; highlight: string }) {
   return (
     <div className={`rounded-xl shadow-md p-6 ${color}`}>
       <h2 className="text-2xl font-bold mb-1">{title}</h2>

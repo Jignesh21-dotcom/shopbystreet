@@ -4,13 +4,16 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
-export default function CityPage({
-  params,
-}: {
-  params: { city: string };
-}) {
-  const { city } = params;
+// ✅ Define props locally
+type Props = {
+  params: Promise<{
+    city: string;
+  }>;
+};
 
+export default async function CityPage({ params }: Props) {
+  const resolvedParams = await params; // Resolve the promise if params is asynchronous
+  const { city } = resolvedParams;
 
   const [streets, setStreets] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,41 +24,41 @@ export default function CityPage({
     const fetchStreets = async () => {
       setLoading(true);
       setError(null);
-  
+
       // 1️⃣ Fetch the city by slug to get the city_id
       const { data: cityData, error: cityError } = await supabase
         .from('cities')
         .select('id, name, slug')
-        .eq('slug', params.city)
+        .eq('slug', city)
         .single();
-  
+
       console.log('🔎 cityData:', cityData);
-  
+
       if (cityError || !cityData) {
         console.error('Error fetching city:', cityError);
         setError('City not found.');
         setLoading(false);
         return;
       }
-  
+
       // 2️⃣ Get total count of streets for pagination
       const { count, error: countError } = await supabase
         .from('streets')
         .select('*', { count: 'exact', head: true })
         .eq('city_id', cityData.id);
-  
-      if (countError) {
+
+      if (countError || count === null) {
         console.error('Error fetching count:', countError);
         setError('Failed to load streets.');
         setLoading(false);
         return;
       }
-  
+
       console.log(`🟢 Total streets count for ${cityData.name}:`, count);
-  
+
       const CHUNK_SIZE = 1000;
       const promises = [];
-  
+
       // 3️⃣ Fetch all streets in chunks
       for (let start = 0; start < count; start += CHUNK_SIZE) {
         const end = Math.min(start + CHUNK_SIZE - 1, count - 1);
@@ -68,19 +71,19 @@ export default function CityPage({
             .range(start, end)
         );
       }
-  
+
       const results = await Promise.all(promises);
       const allData = results.flatMap((r) => r.data ?? []);
-  
+
       console.log('✅ All streets fetched:', allData.length, allData);
-  
+
       setStreets(allData);
       setLoading(false);
     };
-  
+
     fetchStreets();
-  }, [params.city]);
-  
+  }, [city]);
+
   const filteredStreets = streets.filter((street) =>
     street.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -127,7 +130,7 @@ export default function CityPage({
       </Link>
 
       <h1 className="text-4xl font-bold text-blue-800 mb-6 capitalize">
-        🏙️ Streets in {params.city.charAt(0).toUpperCase() + params.city.slice(1)}
+        🏙️ Streets in {city.charAt(0).toUpperCase() + city.slice(1)}
       </h1>
 
       <input
@@ -143,7 +146,7 @@ export default function CityPage({
           {filteredStreets.map((street) => (
             <Link
               key={street.slug}
-              href={`/cities/${params.city}/${street.slug}`}
+              href={`/cities/${city}/${street.slug}`}
               className="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl hover:scale-105 transform transition-all duration-300 text-center"
             >
               <h2 className="text-xl font-semibold text-blue-700">

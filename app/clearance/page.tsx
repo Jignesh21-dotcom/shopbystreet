@@ -1,8 +1,16 @@
 import Link from "next/link";
 import products from "@/data/products.json";
 
+// Define the product type
+type Product = {
+  name: string;
+  price: string;
+  shopSlug: string;
+  discount?: number; // Make discount optional
+};
+
 export default function ClearancePage() {
-  const discountedProducts = products.filter(
+  const discountedProducts = (products as Product[]).filter(
     (product) => product.discount && product.discount > 0
   );
 
