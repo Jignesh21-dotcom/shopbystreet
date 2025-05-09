@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getProvincesByCountrySlug } from "@/lib/data";
+import type { PageProps } from "next";
 
-export default async function CountryPage({ params }: { params: { country: string } }) {
+export default async function CountryPage({ params }: PageProps<{ country: string }>) {
   const provinces = await getProvincesByCountrySlug(params.country);
 
   return (
