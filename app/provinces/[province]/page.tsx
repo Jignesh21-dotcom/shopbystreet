@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getCitiesByProvinceSlug } from '@/lib/data';
+import type { PageProps } from 'next';
 
 const provinceBackgrounds: Record<string, string> = {
   ontario: 'https://images.pexels.com/photos/29290069/pexels-photo-29290069.jpeg',
@@ -20,11 +21,14 @@ const provinceBackgrounds: Record<string, string> = {
   yukon: 'https://images.pexels.com/photos/417176/pexels-photo-417176.jpeg',
 };
 
-export default function ProvincePage({ params }: { params: { province: string } }) {
+export default function ProvincePage({ params }: PageProps) {
+  const { province } = params as { province: string };
+
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+
 
   useEffect(() => {
     const fetchCities = async () => {
