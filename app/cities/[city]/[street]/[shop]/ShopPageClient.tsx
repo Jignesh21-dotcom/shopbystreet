@@ -1,6 +1,10 @@
+'use client';
 
-import ShopPageClient from './ShopPageClient';
-export default function ShopPage({
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabaseClient';
+
+export default function ShopPageClient({
   params,
 }: {
   params: { city: string; street: string; shop: string };
