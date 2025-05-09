@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
@@ -19,10 +21,6 @@ export default function StreetPage({
       address?: string;
     }[];
   }>({});
-  
-  // ... ✅ the rest of your existing code stays unchanged
-}
-
   const [sortedBaseAddresses, setSortedBaseAddresses] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,8 +29,6 @@ export default function StreetPage({
     const fetchShops = async () => {
       setLoading(true);
       setError(null);
-
-      console.log('➡️ Fetching street ID for slug:', street);
 
       // 1️⃣ First get the street's ID
       const { data: streetData, error: streetError } = await supabase
@@ -48,8 +44,6 @@ export default function StreetPage({
         return;
       }
 
-      console.log('✅ Found street ID:', streetData.id);
-
       // 2️⃣ Fetch shops linked to that street_id
       const { data: shopsData, error: shopsError } = await supabase
         .from('shops')
@@ -62,8 +56,6 @@ export default function StreetPage({
         setLoading(false);
         return;
       }
-
-      console.log(`✅ Fetched ${shopsData.length} shops:`, shopsData);
 
       const grouped: { [baseAddress: string]: typeof shopsData } = {};
 
@@ -92,6 +84,7 @@ export default function StreetPage({
     fetchShops();
   }, [street]);
 
+  // ✅ Helper function INSIDE component
   function getStreetName(fullAddress: string | undefined) {
     if (!fullAddress) return 'Unknown Street';
     const noNumber = fullAddress.replace(/^(\d+)\s*/, '');
@@ -99,6 +92,7 @@ export default function StreetPage({
     return noUnit;
   }
 
+  // ✅ THIS is the *only* return for the component
   return (
     <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
       {/* ✅ Back to Streets button */}
@@ -133,13 +127,21 @@ export default function StreetPage({
                   href={`/cities/${city}/${street}/${shop.slug}`}
                   className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition flex flex-col justify-between"
                 >
-                  <h3 className="text-xl font-semibold text-blue-700 mb-2">{shop.name}</h3>
-                  <p className="text-gray-600 flex-1">{shop.description || 'No description provided.'}</p>
+                  <h3 className="text-xl font-semibold text-blue-700 mb-2">
+                    {shop.name}
+                  </h3>
+                  <p className="text-gray-600 flex-1">
+                    {shop.description || 'No description provided.'}
+                  </p>
                   {shop.parking && (
-                    <p className="text-sm text-gray-500 mt-4">🚗 Parking: {shop.parking}</p>
+                    <p className="text-sm text-gray-500 mt-4">
+                      🚗 Parking: {shop.parking}
+                    </p>
                   )}
                   {shop.description && (
-                    <p className="text-sm text-gray-500 mt-2">📍 {shop.description}</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      📍 {shop.description}
+                    </p>
                   )}
                 </Link>
               ))}
