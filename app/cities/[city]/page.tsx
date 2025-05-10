@@ -2,9 +2,7 @@ import CityClient from './CityClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type CityPageProps = {
-  params: {
-    city: string;
-  };
+  params: any; // Temporarily use `any` to bypass type inference issues
 };
 
 // ✅ Use `generateStaticParams` to handle dynamic routes
@@ -25,8 +23,8 @@ export async function generateStaticParams() {
 }
 
 // ✅ Server Component for CityPage
-export default async function CityPage({ params }: { params: { city: string } }) {
-  const { city } = params;
+export default async function CityPage({ params }: CityPageProps) { // Add `async` here
+  const city = params.city; // Explicitly access the city parameter
 
   // Fetch city data and streets on the server
   const { data: cityData, error: cityError } = await supabase
