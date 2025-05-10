@@ -2,31 +2,39 @@ import ShopPageClient from './ShopPageClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type ShopPageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: {
+    city: string;
+    street: string;
+    shop: string;
+  };
 };
 
 export default async function ShopPage({ params }: ShopPageProps) {
   const { city, street, shop } = params;
 
-  // Fetch shop data and validate city and street
+  // Fetch shop data
   const { data: shopData, error: shopError } = await supabase
     .from('shops')
-    .select(
-      `
-      *,
+    .select(`
+      id,
+      name,
+      slug,
+      description,
+      parking,
+      image_url,
+      story,
       street:street_id (
         slug,
         city:city_id (
           slug
         )
       )
-    `
-    )
+    `)
     .eq('slug', shop)
     .single();
 
   if (shopError || !shopData) {
-    console.error(`Shop not found: ${shop}`);
+    console.error(`Shop not found: ${shop}`, shopError);
     return <div>Shop not found.</div>;
   }
 
@@ -36,7 +44,8 @@ export default async function ShopPage({ params }: ShopPageProps) {
     shopData.street?.city?.slug !== city
   ) {
     console.error(
-      `Shop does not belong to the specified city (${city}) or street (${street}).`
+      `Shop does not belong to the specified city (${city}) or street (${street}).`,
+      { shopStreetSlug: shopData.street?.slug, shopCitySlug: shopData.street?.city?.slug }
     );
     return <div>Shop not found or mismatched.</div>;
   }
