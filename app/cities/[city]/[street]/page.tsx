@@ -11,7 +11,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
   // Fetch street data
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
-    .select('id, name, slug, city:city_id (name, slug)')
+    .select('id, name, slug, city:city_id!inner (name, slug)')
     .eq('slug', street)
     .single();
 
