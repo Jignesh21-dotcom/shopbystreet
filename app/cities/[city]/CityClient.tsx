@@ -8,7 +8,7 @@ type CityClientProps = {
   streets: { name: string; slug: string }[];
 };
 
-export default function CityClient({ city, streets }: CityClientProps) {
+export default function CityClient({ city, streets }: { city: string }) {
   const [search, setSearch] = useState('');
 
   const filteredStreets = streets.filter((street) =>
