@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -13,6 +14,7 @@ export default function ProfilePage() {
       if (data?.user) {
         setUser(data.user);
       }
+      setIsLoading(false); // Set loading to false after fetching
     };
 
     fetchUser();
@@ -20,7 +22,7 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.href = '/login';  // ✅ Redirect to login after logout
+    window.location.href = '/login'; // Redirect to login after logout
   };
 
   return (
@@ -28,7 +30,9 @@ export default function ProfilePage() {
       <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8 text-center">
         <h1 className="text-3xl font-bold text-green-700 mb-6">👤 Your Profile</h1>
 
-        {user ? (
+        {isLoading ? ( // Show loading state during hydration
+          <p className="text-gray-600">Loading user info...</p>
+        ) : user ? (
           <>
             <p className="text-lg text-gray-700 mb-2">
               <strong>Email:</strong> {user.email}
@@ -46,7 +50,7 @@ export default function ProfilePage() {
             </button>
           </>
         ) : (
-          <p className="text-gray-600">Loading user info...</p>
+          <p className="text-gray-600">No user information available.</p>
         )}
       </div>
 
