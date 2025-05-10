@@ -2,16 +2,13 @@ import StreetClient from './StreetClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type StreetPageProps = {
-  params: {
-    city: string;
-    street: string;
-  };
+  params: any; // Temporarily use `any` to bypass type inference issues
 };
 
 export default async function StreetPage({ params }: StreetPageProps) {
   const { city, street } = params;
 
-  // Fetch street data on the server
+  // Fetch street data
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
     .select('id, name, slug, city:city_id (name, slug)')
@@ -19,8 +16,8 @@ export default async function StreetPage({ params }: StreetPageProps) {
     .single();
 
   if (streetError || !streetData) {
-    console.error(`Street not found: ${street}`, streetError);
-    return <div>Street not found.</div>; // Gracefully handle missing street
+    console.error(`Street not found: ${street}`);
+    return <div>Street not found.</div>;
   }
 
   // Validate that the street belongs to the correct city
@@ -29,7 +26,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
       `Validation failed: Street "${street}" does not belong to city "${city}".`,
       { streetCitySlug: streetData.city?.slug, citySlug: city }
     );
-    return <div>Street not found in this city.</div>; // Gracefully handle mismatched city
+    return <div>Street not found in this city.</div>;
   }
 
   // Fetch shops for the street
@@ -41,7 +38,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
 
   if (shopsError || !shops) {
     console.error(`Failed to load shops for street: ${street}`, shopsError);
-    return <div>No shops found for this street.</div>; // Gracefully handle missing shops
+    return <div>No shops found for this street.</div>;
   }
 
   // Pass the fetched data to the client component
