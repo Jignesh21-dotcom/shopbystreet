@@ -20,11 +20,16 @@ const provinceBackgrounds: Record<string, string> = {
   yukon: 'https://images.pexels.com/photos/417176/pexels-photo-417176.jpeg',
 };
 
+// ✅ Fix: Get params from App Router
 type ProvincePageProps = {
-  province: string;
+  params: {
+    province: string;
+  };
 };
 
-export default function ProvincePage({ province }: ProvincePageProps) {
+export default function ProvincePage({ params }: ProvincePageProps) {
+  const province = params.province;
+
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -133,15 +138,4 @@ export default function ProvincePage({ province }: ProvincePageProps) {
       </div>
     </div>
   );
-}
-
-// ✅ Use getServerSideProps for server-side rendering
-export async function getServerSideProps(context: { params: { province: string } }) {
-  const { province } = context.params;
-
-  return {
-    props: {
-      province,
-    },
-  };
 }
