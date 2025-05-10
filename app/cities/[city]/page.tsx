@@ -4,16 +4,14 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
-// ✅ Define props locally
-type Props = {
-  params: Promise<{
+type CityPageProps = {
+  params: {
     city: string;
-  }>;
+  };
 };
 
-export default async function CityPage({ params }: Props) {
-  const resolvedParams = await params; // Resolve the promise if params is asynchronous
-  const { city } = resolvedParams;
+export default function CityPage({ params }: CityPageProps) {
+  const { city } = params;
 
   const [streets, setStreets] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,60 +23,53 @@ export default async function CityPage({ params }: Props) {
       setLoading(true);
       setError(null);
 
-      // 1️⃣ Fetch the city by slug to get the city_id
-      const { data: cityData, error: cityError } = await supabase
-        .from('cities')
-        .select('id, name, slug')
-        .eq('slug', city)
-        .single();
+      try {
+        // Fetch the city by slug to get the city_id
+        const { data: cityData, error: cityError } = await supabase
+          .from('cities')
+          .select('id, name, slug')
+          .eq('slug', city)
+          .single();
 
-      console.log('🔎 cityData:', cityData);
+        if (cityError || !cityData) {
+          throw new Error('City not found.');
+        }
 
-      if (cityError || !cityData) {
-        console.error('Error fetching city:', cityError);
-        setError('City not found.');
+        // Get total count of streets for pagination
+        const { count, error: countError } = await supabase
+          .from('streets')
+          .select('*', { count: 'exact', head: true })
+          .eq('city_id', cityData.id);
+
+        if (countError || count === null) {
+          throw new Error('Failed to load streets.');
+        }
+
+        const CHUNK_SIZE = 1000;
+        const promises = [];
+
+        // Fetch all streets in chunks
+        for (let start = 0; start < count; start += CHUNK_SIZE) {
+          const end = Math.min(start + CHUNK_SIZE - 1, count - 1);
+          promises.push(
+            supabase
+              .from('streets')
+              .select('name, slug')
+              .eq('city_id', cityData.id)
+              .order('name', { ascending: true })
+              .range(start, end)
+          );
+        }
+
+        const results = await Promise.all(promises);
+        const allData = results.flatMap((r) => r.data ?? []);
+
+        setStreets(allData);
+      } catch (err: any) {
+        setError(err.message || 'An unexpected error occurred.');
+      } finally {
         setLoading(false);
-        return;
       }
-
-      // 2️⃣ Get total count of streets for pagination
-      const { count, error: countError } = await supabase
-        .from('streets')
-        .select('*', { count: 'exact', head: true })
-        .eq('city_id', cityData.id);
-
-      if (countError || count === null) {
-        console.error('Error fetching count:', countError);
-        setError('Failed to load streets.');
-        setLoading(false);
-        return;
-      }
-
-      console.log(`🟢 Total streets count for ${cityData.name}:`, count);
-
-      const CHUNK_SIZE = 1000;
-      const promises = [];
-
-      // 3️⃣ Fetch all streets in chunks
-      for (let start = 0; start < count; start += CHUNK_SIZE) {
-        const end = Math.min(start + CHUNK_SIZE - 1, count - 1);
-        promises.push(
-          supabase
-            .from('streets')
-            .select('name, slug')
-            .eq('city_id', cityData.id)
-            .order('name', { ascending: true })
-            .range(start, end)
-        );
-      }
-
-      const results = await Promise.all(promises);
-      const allData = results.flatMap((r) => r.data ?? []);
-
-      console.log('✅ All streets fetched:', allData.length, allData);
-
-      setStreets(allData);
-      setLoading(false);
     };
 
     fetchStreets();
@@ -123,7 +114,7 @@ export default async function CityPage({ params }: Props) {
     <div className="min-h-screen p-6 bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center">
       {/* Back button */}
       <Link
-        href={`/provinces/ontario`} // (optional: dynamic if needed)
+        href="/provinces/ontario" // Update this to dynamically link back to the province if needed
         className="self-start mb-6 text-blue-700 hover:text-blue-900 hover:underline"
       >
         ← Back to Ontario
