@@ -8,7 +8,7 @@ type ShopPageProps = {
 export default async function ShopPage({ params }: ShopPageProps) {
   const { city, street, shop } = params;
 
-  // Fetch shop data
+  // Fetch shop data (without .single() for more flexibility and debugging)
   const { data: shopData, error: shopError } = await supabase
     .from('shops')
     .select(`
@@ -26,46 +26,51 @@ export default async function ShopPage({ params }: ShopPageProps) {
         )
       )
     `)
-    .eq('slug', shop)
-    .single();
+    .eq('slug', shop);
 
-  if (shopError || !shopData) {
-    console.error(`Shop not found: ${shop}`, shopError);
-    return <div>Shop not found.</div>;
+  if (shopError) {
+    console.error(`Supabase error while fetching shop:`, shopError);
+    return <div>⚠️ Error loading shop. Please try again later.</div>;
   }
 
-  // Log the fetched data for debugging
-  console.log('Fetched shopData:', shopData);
+  if (!shopData || shopData.length === 0) {
+    console.error(`No shop found for slug:`, shop);
+    return <div>🛍️ Shop not found.</div>;
+  }
 
-  // Ensure `street` and `city` are single objects, not arrays
-  const streetData = Array.isArray(shopData.street) ? shopData.street[0] : shopData.street;
+  const shopRecord = shopData[0];
+
+  // Safely unwrap nested objects
+  const streetData = Array.isArray(shopRecord.street) ? shopRecord.street[0] : shopRecord.street;
   const cityData = Array.isArray(streetData?.city) ? streetData.city[0] : streetData?.city;
 
-  // Log the street and city data for debugging
-  console.log('Street data:', streetData);
-  console.log('City data:', cityData);
+  // Log for debugging
+  console.log('✅ Fetched shopRecord:', shopRecord);
+  console.log('📍 Street data:', streetData);
+  console.log('🏙️ City data:', cityData);
 
   // Validate that the shop belongs to the correct street and city
   if (!streetData || streetData.slug !== street || !cityData || cityData.slug !== city) {
-    console.error(
-      `Shop does not belong to the specified city (${city}) or street (${street}).`,
-      { shopStreetSlug: streetData?.slug, shopCitySlug: cityData?.slug }
-    );
-    return <div>Shop not found or mismatched.</div>;
+    console.error(`Shop mismatch`, {
+      expectedStreet: street,
+      actualStreet: streetData?.slug,
+      expectedCity: city,
+      actualCity: cityData?.slug,
+    });
+    return <div>🚫 Shop not found or mismatched street/city.</div>;
   }
 
-  // Pass the fetched data to the client component
   return (
     <ShopPageClient
       city={city}
       street={street}
       shop={shop}
       shopData={{
-        name: shopData.name,
-        description: shopData.description,
-        parking: shopData.parking,
-        image_url: shopData.image_url,
-        story: shopData.story,
+        name: shopRecord.name,
+        description: shopRecord.description,
+        parking: shopRecord.parking,
+        image_url: shopRecord.image_url,
+        story: shopRecord.story,
       }}
     />
   );
