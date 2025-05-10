@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 type CityClientProps = {
   city: string;
-  streets: { name: string; slug: string }[]; // ✅ Add streets property
+  streets: { name: string; slug: string }[];
 };
 
 export default function CityClient({ city, streets }: CityClientProps) {
