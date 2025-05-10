@@ -1,17 +1,25 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// ✅ Initialize Stripe with the secret key
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing STRIPE_SECRET_KEY in environment variables');
+// ✅ Initialize Stripe only at runtime
+let stripe: Stripe | null = null;
+
+if (typeof process.env.STRIPE_SECRET_KEY === 'string') {
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2025-04-30.basil',
+  });
+} else {
+  console.error('STRIPE_SECRET_KEY is missing');
 }
-console.log('STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY);
-console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2025-04-30.basil', // Updated to match the expected version
-});
 
 export async function POST(req: Request) {
+  if (!stripe) {
+    return NextResponse.json(
+      { error: 'Stripe is not initialized' },
+      { status: 500 }
+    );
+  }
+
   try {
     const { email } = await req.json();
 
@@ -24,7 +32,7 @@ export async function POST(req: Request) {
       customer_email: email,
       line_items: [
         {
-          price: 'price_1RL9ocBZgvjk1IFcSIceAEHO', // Replace with your real Price ID from Stripe
+          price: 'price_1RL9ocBZgvjk1IFcSIceAEHO',
           quantity: 1,
         },
       ],
