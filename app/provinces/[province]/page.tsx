@@ -20,16 +20,15 @@ const provinceBackgrounds: Record<string, string> = {
   yukon: 'https://images.pexels.com/photos/417176/pexels-photo-417176.jpeg',
 };
 
-// ✅ Define props locally
+// ✅ Define props correctly (no Promise)
 type Props = {
-  params: Promise<{
+  params: {
     province: string;
-  }>;
+  };
 };
 
-export default async function ProvincePage({ params }: Props) {
-  const resolvedParams = await params; // Resolve the promise if params is asynchronous
-  const { province } = resolvedParams;
+export default function ProvincePage({ params }: Props) {
+  const { province } = params;
 
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +38,7 @@ export default async function ProvincePage({ params }: Props) {
   useEffect(() => {
     const fetchCities = async () => {
       setLoading(true);
-      setError(null); // ✅ Clear error before fetching
+      setError(null);
 
       try {
         const data = await getCitiesByProvinceSlug(province);
@@ -92,7 +91,6 @@ export default async function ProvincePage({ params }: Props) {
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center w-full">
-        {/* Back to Country */}
         <Link
           href="/countries/canada"
           className="self-start mb-6 text-blue-200 hover:text-white hover:underline"
@@ -100,12 +98,10 @@ export default async function ProvincePage({ params }: Props) {
           ← Back to Canada
         </Link>
 
-        {/* Province Title */}
         <h1 className="text-4xl font-bold text-white mb-6 capitalize text-center">
           🗺️ {decodeURIComponent(province).replace(/-/g, ' ')}
         </h1>
 
-        {/* Search Bar */}
         <input
           type="text"
           placeholder="Search for a city..."
@@ -114,7 +110,6 @@ export default async function ProvincePage({ params }: Props) {
           className="mb-8 p-3 w-full max-w-md rounded-lg border border-blue-300 shadow focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition"
         />
 
-        {/* Cities List */}
         {loading ? (
           <p className="text-white text-lg">Loading cities...</p>
         ) : error ? (
