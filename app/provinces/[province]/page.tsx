@@ -20,7 +20,6 @@ const provinceBackgrounds: Record<string, string> = {
   yukon: 'https://images.pexels.com/photos/417176/pexels-photo-417176.jpeg',
 };
 
-// ✅ Fix: Get params from App Router
 type ProvincePageProps = {
   params: {
     province: string;
@@ -28,6 +27,16 @@ type ProvincePageProps = {
 };
 
 export default function ProvincePage({ params }: ProvincePageProps) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true); // Ensure the component renders only on the client
+  }, []);
+
+  if (!isClient) {
+    return null; // Prevent rendering on the server
+  }
+
   const province = params.province;
 
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
