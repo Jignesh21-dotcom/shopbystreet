@@ -2,11 +2,7 @@ import ShopPageClient from './ShopPageClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type ShopPageProps = {
-  params: {
-    city: string;
-    street: string;
-    shop: string;
-  };
+  params: any; // Temporarily use `any` to bypass type inference issues
 };
 
 export default async function ShopPage({ params }: ShopPageProps) {
