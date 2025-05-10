@@ -20,7 +20,6 @@ const provinceBackgrounds: Record<string, string> = {
   yukon: 'https://images.pexels.com/photos/417176/pexels-photo-417176.jpeg',
 };
 
-// ✅ Define props correctly
 type ProvincePageProps = {
   params: {
     province: string;
