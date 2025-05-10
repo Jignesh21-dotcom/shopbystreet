@@ -16,6 +16,7 @@ export default function CityClient({ city, streets }: CityClientProps) {
   );
 
   const highlightText = (name: string) => {
+    if (!search) return name;
     const parts = name.split(new RegExp(`(${search})`, 'gi'));
     return (
       <>
