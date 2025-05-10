@@ -1,4 +1,4 @@
-import ShopClient from './ShopClient';
+import ShopPageClient from './ShopPageClient'; // Updated import
 import { supabase } from '@/lib/supabaseClient';
 
 type ShopPageProps = {
@@ -51,5 +51,5 @@ export default async function ShopPage({ params }: ShopPageProps) {
   }
 
   // Pass the fetched data to the client component
-  return <ShopClient street={streetData.name} shops={shops} />;
+  return <ShopPageClient street={streetData.name} shops={shops} />; // Updated component name
 }
