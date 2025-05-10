@@ -20,8 +20,18 @@ type StreetClientProps = {
 export default function StreetClient({ city, street, shops }: StreetClientProps) {
   const [search, setSearch] = useState('');
 
+  // Helper function to extract the base address number from the description
+  const getBaseAddress = (description: string | undefined) => {
+    if (!description) return Infinity; // Push shops without a description to the end
+    const match = description.match(/^(\d+)/); // Match the first number in the description
+    return match ? parseInt(match[1], 10) : Infinity;
+  };
+
+  // Sort shops numerically by their base address
+  const sortedShops = [...shops].sort((a, b) => getBaseAddress(a.description) - getBaseAddress(b.description));
+
   // Filter shops based on the search input
-  const filteredShops = shops.filter((shop) =>
+  const filteredShops = sortedShops.filter((shop) =>
     shop.name.toLowerCase().includes(search.toLowerCase())
   );
 
