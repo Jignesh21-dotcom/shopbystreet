@@ -21,14 +21,10 @@ const provinceBackgrounds: Record<string, string> = {
 };
 
 type ProvincePageProps = {
-  params: {
-    province: string;
-  };
+  province: string;
 };
 
-export default function ProvincePage({ params }: ProvincePageProps) {
-  const { province } = params;
-
+export default function ProvincePage({ province }: ProvincePageProps) {
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -139,25 +135,13 @@ export default function ProvincePage({ params }: ProvincePageProps) {
   );
 }
 
-// ✅ Add this function to generate static params
-export async function generateStaticParams() {
-  const provinces = [
-    'ontario',
-    'quebec',
-    'british-columbia',
-    'alberta',
-    'manitoba',
-    'saskatchewan',
-    'nova-scotia',
-    'new-brunswick',
-    'newfoundland-and-labrador',
-    'prince-edward-island',
-    'northwest-territories',
-    'nunavut',
-    'yukon',
-  ];
+// ✅ Use getServerSideProps for server-side rendering
+export async function getServerSideProps(context: { params: { province: string } }) {
+  const { province } = context.params;
 
-  return provinces.map((province) => ({
-    province,
-  }));
+  return {
+    props: {
+      province,
+    },
+  };
 }
