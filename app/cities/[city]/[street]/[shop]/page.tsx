@@ -34,14 +34,15 @@ export default async function ShopPage({ params }: ShopPageProps) {
     return <div>Shop not found.</div>;
   }
 
+  // Ensure `street` and `city` are single objects, not arrays
+  const streetData = Array.isArray(shopData.street) ? shopData.street[0] : shopData.street;
+  const cityData = Array.isArray(streetData?.city) ? streetData.city[0] : streetData?.city;
+
   // Validate that the shop belongs to the correct street and city
-  if (
-    shopData.street?.slug !== street ||
-    shopData.street?.city?.slug !== city
-  ) {
+  if (!streetData || streetData.slug !== street || !cityData || cityData.slug !== city) {
     console.error(
       `Shop does not belong to the specified city (${city}) or street (${street}).`,
-      { shopStreetSlug: shopData.street?.slug, shopCitySlug: shopData.street?.city?.slug }
+      { shopStreetSlug: streetData?.slug, shopCitySlug: cityData?.slug }
     );
     return <div>Shop not found or mismatched.</div>;
   }
