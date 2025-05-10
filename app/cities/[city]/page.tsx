@@ -25,8 +25,9 @@ export async function generateStaticParams() {
 }
 
 // ✅ Server Component for CityPage
-export default async function CityPage({ params }: { params: { city: string } }) {
-  const { city } = params;
+export default async function CityPage({ params }: CityPageProps) {
+  // Explicitly resolve the `params` object
+  const city = params.city;
 
   // Fetch city data and streets on the server
   const { data: cityData, error: cityError } = await supabase
