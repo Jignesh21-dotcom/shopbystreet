@@ -26,19 +26,7 @@ type ProvincePageProps = {
   };
 };
 
-export default function ProvincePage({ params }: ProvincePageProps) {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true); // Ensure the component renders only on the client
-  }, []);
-
-  if (!isClient) {
-    return null; // Prevent rendering on the server
-  }
-
-  const province = params.province;
-
+function ProvincePageContent({ province }: { province: string }) {
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -147,4 +135,18 @@ export default function ProvincePage({ params }: ProvincePageProps) {
       </div>
     </div>
   );
+}
+
+export default function ProvincePage({ params }: ProvincePageProps) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true); // Ensure the component renders only on the client
+  }, []);
+
+  if (!isClient) {
+    return null; // Prevent rendering on the server
+  }
+
+  return <ProvincePageContent province={params.province} />;
 }
