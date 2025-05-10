@@ -4,64 +4,34 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
+type ShopPageClientProps = {
+  city: string;
+  street: string;
+  shop: string;
+  shopData: {
+    name: string;
+    description?: string;
+    parking?: string;
+    image_url?: string;
+    story?: string;
+  };
+};
+
 export default function ShopPageClient({
   city,
   street,
   shop,
-}: {
-  city: string;
-  street: string;
-  shop: string;
-}) {
-  const [shopData, setShopData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  shopData,
+}: ShopPageClientProps) {
   const [review, setReview] = useState('');
   const [reviews, setReviews] = useState<string[]>([]);
   const [user, setUser] = useState<any>(null);
 
+  const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const mapQuery = encodeURIComponent(shopData.description || shopData.name);
+
   useEffect(() => {
-    const fetchShop = async () => {
-      setLoading(true);
-
-      // Fetch shop data and validate city and street
-      const { data, error } = await supabase
-        .from('shops')
-        .select(
-          `
-          *,
-          street:street_id (
-            slug,
-            city:city_id (
-              slug
-            )
-          )
-        `
-        )
-        .eq('slug', shop)
-        .single();
-
-      console.log('✅ Shop data fetched:', data);
-
-      if (error || !data) {
-        console.error('❌ Error fetching shop:', error);
-        setError(`Shop not found: "${shop}"`);
-      } else if (
-        data?.street?.slug !== street ||
-        data?.street?.city?.slug !== city
-      ) {
-        console.warn('❌ Shop does not belong to this city/street');
-        setError('Shop not found or mismatched.');
-      } else {
-        setShopData(data);
-      }
-
-      setLoading(false);
-    };
-
-    fetchShop();
-
+    // Fetch user data (if logged in)
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
       if (data?.user) {
@@ -71,41 +41,19 @@ export default function ShopPageClient({
       }
     };
     fetchUser();
-  }, [shop, street, city]);
 
-  useEffect(() => {
-    if (shopData?.slug) {
-      const saved = localStorage.getItem(`reviews-${shopData.slug}`);
-      setReviews(saved ? JSON.parse(saved) : []);
-    }
-  }, [shopData?.slug]);
+    // Load reviews from localStorage
+    const saved = localStorage.getItem(`reviews-${shop}`);
+    setReviews(saved ? JSON.parse(saved) : []);
+  }, [shop]);
 
   const submitReview = () => {
-    if (review.trim().length === 0 || !shopData) return;
+    if (review.trim().length === 0) return;
     const updated = [...reviews, review.trim()];
     setReviews(updated);
-    localStorage.setItem(`reviews-${shopData.slug}`, JSON.stringify(updated));
+    localStorage.setItem(`reviews-${shop}`, JSON.stringify(updated));
     setReview('');
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600">
-        Loading shop...
-      </div>
-    );
-  }
-
-  if (error || !shopData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-red-600 text-center p-4">
-        {error || 'Shop not found.'}
-      </div>
-    );
-  }
-
-  const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const mapQuery = encodeURIComponent(shopData.description || shopData.name);
 
   return (
     <div className="min-h-screen p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 flex flex-col items-center">

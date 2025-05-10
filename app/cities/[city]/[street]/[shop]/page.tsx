@@ -2,48 +2,62 @@ import ShopPageClient from './ShopPageClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type ShopPageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: {
+    city: string;
+    street: string;
+    shop: string;
+  };
 };
 
-export async function generateStaticParams() {
-  const { data: streets, error } = await supabase
-    .from('streets')
-    .select('slug');
-
-  if (error || !streets) {
-    console.error('Failed to fetch streets:', error);
-    return [];
-  }
-
-  return streets.map((street) => ({
-    street: street.slug,
-  }));
-}
-
 export default async function ShopPage({ params }: ShopPageProps) {
-  const { street } = params;
+  const { city, street, shop } = params;
 
-  const { data: streetData, error: streetError } = await supabase
-    .from('streets')
-    .select('id, name, slug')
-    .eq('slug', street)
+  // Fetch shop data and validate city and street
+  const { data: shopData, error: shopError } = await supabase
+    .from('shops')
+    .select(
+      `
+      *,
+      street:street_id (
+        slug,
+        city:city_id (
+          slug
+        )
+      )
+    `
+    )
+    .eq('slug', shop)
     .single();
 
-  if (streetError || !streetData) {
-    console.error(`Street not found: ${street}`);
-    return <div>Street not found.</div>;
+  if (shopError || !shopData) {
+    console.error(`Shop not found: ${shop}`);
+    return <div>Shop not found.</div>;
   }
 
-  const { data: shops, error: shopsError } = await supabase
-    .from('shops')
-    .select('name, slug')
-    .eq('street_id', streetData.id)
-    .order('name', { ascending: true });
-
-  if (shopsError || !shops) {
-    console.error(`Failed to load shops for street: ${street}`);
-    return <div>No shops found for this street.</div>;
+  // Validate that the shop belongs to the correct street and city
+  if (
+    shopData.street?.slug !== street ||
+    shopData.street?.city?.slug !== city
+  ) {
+    console.error(
+      `Shop does not belong to the specified city (${city}) or street (${street}).`
+    );
+    return <div>Shop not found or mismatched.</div>;
   }
 
-  return <ShopPageClient street={streetData.name} shops={shops} />;
+  // Pass the fetched data to the client component
+  return (
+    <ShopPageClient
+      city={city}
+      street={street}
+      shop={shop}
+      shopData={{
+        name: shopData.name,
+        description: shopData.description,
+        parking: shopData.parking,
+        image_url: shopData.image_url,
+        story: shopData.story,
+      }}
+    />
+  );
 }
