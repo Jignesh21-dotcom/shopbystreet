@@ -1,13 +1,11 @@
-import ShopPageClient from './ShopPageClient'; // Updated import
+import ShopPageClient from './ShopPageClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type ShopPageProps = {
   params: any; // Temporarily use `any` to bypass type inference issues
 };
 
-// ✅ Use `generateStaticParams` to handle dynamic routes
 export async function generateStaticParams() {
-  // Fetch all streets from the database
   const { data: streets, error } = await supabase
     .from('streets')
     .select('slug');
@@ -22,11 +20,9 @@ export async function generateStaticParams() {
   }));
 }
 
-// ✅ Server Component for ShopPage
 export default async function ShopPage({ params }: ShopPageProps) {
   const { street } = params;
 
-  // Fetch street data on the server
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
     .select('id, name, slug')
@@ -35,10 +31,9 @@ export default async function ShopPage({ params }: ShopPageProps) {
 
   if (streetError || !streetData) {
     console.error(`Street not found: ${street}`);
-    return <div>Street not found.</div>; // Gracefully handle missing street
+    return <div>Street not found.</div>;
   }
 
-  // Fetch shops for the street
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
     .select('name, slug')
@@ -47,9 +42,8 @@ export default async function ShopPage({ params }: ShopPageProps) {
 
   if (shopsError || !shops) {
     console.error(`Failed to load shops for street: ${street}`);
-    return <div>No shops found for this street.</div>; // Gracefully handle missing shops
+    return <div>No shops found for this street.</div>;
   }
 
-  // Pass the fetched data to the client component
-  return <ShopPageClient street={streetData.name} shops={shops} />; // Updated component name
+  return <ShopPageClient street={streetData.name} shops={shops} />;
 }
