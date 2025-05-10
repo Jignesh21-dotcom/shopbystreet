@@ -21,7 +21,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
   }
 
   // Ensure `city` is a single object, not an array
-  const cityData = streetData.city;
+  const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
   if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
     console.error(
       `Validation failed: Street "${street}" does not belong to city "${city}".`,
