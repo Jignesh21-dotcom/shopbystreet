@@ -138,3 +138,26 @@ export default function ProvincePage({ params }: ProvincePageProps) {
     </div>
   );
 }
+
+// ✅ Add this function to generate static params
+export async function generateStaticParams() {
+  const provinces = [
+    'ontario',
+    'quebec',
+    'british-columbia',
+    'alberta',
+    'manitoba',
+    'saskatchewan',
+    'nova-scotia',
+    'new-brunswick',
+    'newfoundland-and-labrador',
+    'prince-edward-island',
+    'northwest-territories',
+    'nunavut',
+    'yukon',
+  ];
+
+  return provinces.map((province) => ({
+    province,
+  }));
+}
