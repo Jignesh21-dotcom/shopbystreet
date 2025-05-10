@@ -5,7 +5,8 @@ import Stripe from 'stripe';
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing STRIPE_SECRET_KEY in environment variables');
 }
-
+console.log('STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY);
+console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-04-30.basil', // Updated to match the expected version
 });
