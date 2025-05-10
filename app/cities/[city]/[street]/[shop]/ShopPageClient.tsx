@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function ShopPageClient({
-  params,
+  city,
+  street,
+  shop,
 }: {
-  params: { city: string; street: string; shop: string };
+  city: string;
+  street: string;
+  shop: string;
 }) {
-  const { city, street, shop } = params;
-
   const [shopData, setShopData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,10 +25,11 @@ export default function ShopPageClient({
     const fetchShop = async () => {
       setLoading(true);
 
-      // 🚀 Join shops + streets + cities to fully validate
+      // Fetch shop data and validate city and street
       const { data, error } = await supabase
         .from('shops')
-        .select(`
+        .select(
+          `
           *,
           street:street_id (
             slug,
@@ -34,7 +37,8 @@ export default function ShopPageClient({
               slug
             )
           )
-        `)
+        `
+        )
         .eq('slug', shop)
         .single();
 
