@@ -6,8 +6,8 @@ type ProvincePageProps = {
   };
 };
 
-// ✅ Use `getStaticProps` to handle dynamic routes
-export async function getStaticPaths() {
+// ✅ Use `generateStaticParams` to handle dynamic routes
+export async function generateStaticParams() {
   const provinces = [
     'ontario',
     'quebec',
@@ -24,25 +24,12 @@ export async function getStaticPaths() {
     'yukon',
   ];
 
-  const paths = provinces.map((province) => ({
-    params: { province },
+  return provinces.map((province) => ({
+    province,
   }));
-
-  return {
-    paths,
-    fallback: false, // Only generate static pages for the defined paths
-  };
-}
-
-export async function getStaticProps({ params }: { params: { province: string } }) {
-  return {
-    props: {
-      province: params.province,
-    },
-  };
 }
 
 // ✅ Explicitly type the `ProvincePage` component
-export default function ProvincePage({ province }: { province: string }) {
-  return <ProvinceClient province={province} />;
+export default function ProvincePage({ params }: ProvincePageProps) {
+  return <ProvinceClient province={params.province} />;
 }
