@@ -34,7 +34,8 @@ export default async function CityPage({ params }: CityPageProps) {
     .single();
 
   if (cityError || !cityData) {
-    throw new Error('City not found.');
+    console.error(`City not found: ${city}`);
+    return <div>City not found.</div>; // Gracefully handle missing city
   }
 
   // Fetch total count of streets for pagination
@@ -44,7 +45,8 @@ export default async function CityPage({ params }: CityPageProps) {
     .eq('city_id', cityData.id);
 
   if (countError || count === null) {
-    throw new Error('Failed to load streets.');
+    console.error(`Failed to load streets for city: ${city}`);
+    return <div>No streets found for this city.</div>; // Gracefully handle missing streets
   }
 
   const CHUNK_SIZE = 1000; // Define the chunk size for fetching streets
@@ -67,7 +69,8 @@ export default async function CityPage({ params }: CityPageProps) {
   const streets = results.flatMap((result) => result.data ?? []);
 
   if (!streets.length) {
-    throw new Error('Failed to load streets.');
+    console.error(`No streets found for city: ${city}`);
+    return <div>No streets found for this city.</div>; // Gracefully handle empty streets
   }
 
   // Pass the fetched data to the client component
