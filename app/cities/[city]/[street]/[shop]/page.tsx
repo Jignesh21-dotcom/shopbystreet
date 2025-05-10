@@ -34,9 +34,16 @@ export default async function ShopPage({ params }: ShopPageProps) {
     return <div>Shop not found.</div>;
   }
 
+  // Log the fetched data for debugging
+  console.log('Fetched shopData:', shopData);
+
   // Ensure `street` and `city` are single objects, not arrays
   const streetData = Array.isArray(shopData.street) ? shopData.street[0] : shopData.street;
   const cityData = Array.isArray(streetData?.city) ? streetData.city[0] : streetData?.city;
+
+  // Log the street and city data for debugging
+  console.log('Street data:', streetData);
+  console.log('City data:', cityData);
 
   // Validate that the shop belongs to the correct street and city
   if (!streetData || streetData.slug !== street || !cityData || cityData.slug !== city) {
