@@ -29,6 +29,7 @@ export async function generateStaticParams() {
   }));
 }
 
+// ✅ Explicitly type the `ProvincePage` component
 export default function ProvincePage({ params }: ProvincePageProps) {
   return <ProvinceClient province={params.province} />;
 }
