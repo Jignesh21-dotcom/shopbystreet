@@ -20,11 +20,12 @@ export default async function StreetPage({ params }: StreetPageProps) {
     return <div>Street not found.</div>;
   }
 
-  // Validate that the street belongs to the correct city
-  if (!streetData.city || streetData.city.slug.toLowerCase() !== city.toLowerCase()) {
+  // Ensure `city` is a single object, not an array
+  const cityData = streetData.city;
+  if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
     console.error(
       `Validation failed: Street "${street}" does not belong to city "${city}".`,
-      { streetCitySlug: streetData.city?.slug, citySlug: city }
+      { streetCitySlug: cityData?.slug, citySlug: city }
     );
     return <div>Street not found in this city.</div>;
   }
@@ -44,7 +45,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
   // Pass the fetched data to the client component
   return (
     <StreetClient
-      city={streetData.city.name}
+      city={cityData.name}
       street={streetData.name}
       shops={shops}
     />
