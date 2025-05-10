@@ -20,14 +20,14 @@ const provinceBackgrounds: Record<string, string> = {
   yukon: 'https://images.pexels.com/photos/417176/pexels-photo-417176.jpeg',
 };
 
-// ✅ Define props correctly (no Promise)
-type Props = {
+// ✅ Define props correctly
+type ProvincePageProps = {
   params: {
     province: string;
   };
 };
 
-export default function ProvincePage({ params }: Props) {
+export default function ProvincePage({ params }: ProvincePageProps) {
   const { province } = params;
 
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
