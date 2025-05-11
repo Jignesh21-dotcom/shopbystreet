@@ -21,6 +21,9 @@ export default function ShopPageClient({ city, street, shop, shopData }: ShopPag
   const [reviews, setReviews] = useState<string[]>([]);
 
   const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  console.log('Google Maps API Key:', googleApiKey);
+console.log('Map query address:', mapQuery);
+
   const mapQuery = encodeURIComponent(shopData.description || shopData.name);
 
   useEffect(() => {
