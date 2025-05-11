@@ -10,10 +10,20 @@ export default async function StreetPage({ params }: StreetPageProps) {
 
   // Fetch street data
   const { data: streetData, error: streetError } = await supabase
-    .from('streets')
-    .select('id, name, slug, city:city_id!inner (name, slug)')
-    .eq('slug', street)
-    .single();
+  .from('streets')
+  .select(`
+    id,
+    name,
+    slug,
+    city:city_id (
+      name,
+      slug,
+      province
+    )
+  `)
+  .eq('slug', street)
+  .single();
+
 
   if (streetError || !streetData) {
     console.error(`Street not found: ${street}`);
@@ -28,6 +38,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
     );
     return <div>Street not found in this city.</div>;
   }
+const provinceSlug = streetData.city?.province || 'ontario'; // fallback
 
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
@@ -40,11 +51,12 @@ export default async function StreetPage({ params }: StreetPageProps) {
     return <div>No shops found for this street.</div>;
   }
 
-  return (
-    <StreetClient
-      city={cityData.slug}
-      street={streetData.slug}
-      shops={shops}
-    />
-  );
+return (
+  <StreetClient
+    province={provinceSlug}
+    city={streetData.city.slug}
+    street={streetData.slug}
+    shops={shops}
+  />
+);
 }
