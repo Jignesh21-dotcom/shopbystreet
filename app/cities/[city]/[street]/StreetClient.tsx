@@ -21,19 +21,21 @@ type StreetClientProps = {
 export default function StreetClient({ province, city, street, shops }: StreetClientProps) {
   const [search, setSearch] = useState('');
 
+  // Helper function to extract the base address number from the description
   const getBaseAddress = (description: string | undefined) => {
-    if (!description) return Infinity;
-    const match = description.match(/^(\d+)/);
+    if (!description) return Infinity; // Push shops without a description to the end
+    const match = description.match(/^(\d+)/); // Match the first number in the description
     return match ? parseInt(match[1], 10) : Infinity;
   };
 
+  // Helper function to extract the plaza/mall name from the description
   const getPlazaName = (description?: string) => {
     if (!description) return 'Other';
     const match = description.match(/(.+?\b(Plaza|Mall|Centre|Center)\b.*?)/i);
     if (match) return match[1].trim();
     const base = description
-      .replace(/(Unit|Suite|#)\s*\d+/i, '')
-      .replace(/,.*$/, '')
+      .replace(/(Unit|Suite|#)\s*\d+/i, '') // Remove unit/suite numbers
+      .replace(/,.*$/, '') // Remove everything after a comma
       .trim();
     return base || 'Other';
   };
@@ -59,15 +61,20 @@ export default function StreetClient({ province, city, street, shops }: StreetCl
 
   return (
     <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
-      {/* ✅ Fixed Back Link */}
-     <Link href={`/provinces/${province}/${city}`} className="self-start mb-6 text-blue-700 hover:underline">
-  ← Back to City
-</Link>
+      {/* Back to City Link */}
+      <Link
+        href={`/provinces/${province}/${city}`}
+        className="self-start mb-6 text-blue-700 hover:underline"
+      >
+        ← Back to City
+      </Link>
 
+      {/* Street Title */}
       <h1 className="text-4xl font-bold text-blue-700 mb-8 capitalize">
         🏙️ Shops on {street}
       </h1>
 
+      {/* Search Bar */}
       <input
         type="text"
         placeholder="Search for a shop..."
@@ -76,6 +83,7 @@ export default function StreetClient({ province, city, street, shops }: StreetCl
         className="mb-8 p-3 w-full max-w-md rounded-lg border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
 
+      {/* Shops List */}
       {displayBlocks.length > 0 ? (
         <div className="w-full max-w-6xl space-y-10">
           {displayBlocks.map((block, i) => (
