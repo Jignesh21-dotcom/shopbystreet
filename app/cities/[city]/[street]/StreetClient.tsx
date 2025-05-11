@@ -12,12 +12,13 @@ type Shop = {
 };
 
 type StreetClientProps = {
+  province: string;
   city: string;
   street: string;
   shops: Shop[];
 };
 
-export default function StreetClient({ city, street, shops }: StreetClientProps) {
+export default function StreetClient({ province, city, street, shops }: StreetClientProps) {
   const [search, setSearch] = useState('');
 
   const getBaseAddress = (description: string | undefined) => {
@@ -42,7 +43,7 @@ export default function StreetClient({ city, street, shops }: StreetClientProps)
     .filter((shop) => shop.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => getBaseAddress(a.description) - getBaseAddress(b.description));
 
-  // Step 2: Build display blocks as we iterate (preserving order)
+  // Step 2: Build display blocks preserving order
   const displayBlocks: { plaza: string; items: Shop[] }[] = [];
 
   for (const shop of filteredShops) {
@@ -58,8 +59,9 @@ export default function StreetClient({ city, street, shops }: StreetClientProps)
 
   return (
     <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
+      {/* ✅ Fixed Back Link */}
       <Link
-        href={`/cities/${city}`}
+        href={`/provinces/${province}/${city}`}
         className="self-start mb-6 text-blue-700 hover:underline"
       >
         ← Back to City
