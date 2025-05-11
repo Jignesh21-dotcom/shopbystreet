@@ -11,7 +11,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
   // Fetch street data
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
-    .select('id, name, slug, city:city_id!inner (name, slug)')
+    .select('id, name, slug, city:city_id!inner (name, slug, province_slug)')
     .eq('slug', street)
     .single();
 
@@ -45,9 +45,10 @@ export default async function StreetPage({ params }: StreetPageProps) {
   // Pass the fetched data to the client component
   return (
     <StreetClient
-      city={cityData.name}
-      street={streetData.name}
-      shops={shops}
+  province={cityData.province_slug}
+  city={cityData.slug}
+  street={streetData.slug}
+  shops={shops}
     />
   );
 }
