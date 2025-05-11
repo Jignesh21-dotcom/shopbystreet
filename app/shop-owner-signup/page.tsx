@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 
-export default function ShopOwnerSignUp() {
+export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'member' | 'owner'>('member');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -21,8 +22,8 @@ export default function ShopOwnerSignUp() {
       password,
       options: {
         data: {
-          isShopOwner: true,
-          shopStatus: 'pendingPayment',
+          isShopOwner: role === 'owner',
+          shopStatus: role === 'owner' ? 'pendingPayment' : null,
         },
       },
     });
@@ -31,20 +32,42 @@ export default function ShopOwnerSignUp() {
       setError(error.message);
       setLoading(false);
     } else {
-      // ✅ Redirect to shop owner dashboard
-      router.push('/shop-owner');
+      router.push(role === 'owner' ? '/shop-owner' : '/member');
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">🏪 Shop Owner Sign Up</h1>
+        <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">🔐 Sign Up</h1>
         <p className="text-gray-600 text-center mb-6">
-          Register as a shop owner to manage your products and get listed on ShopStreet.
+          Join ShopStreet as a member or shop owner.
         </p>
 
         <form onSubmit={handleSignUp} className="flex flex-col space-y-4">
+          <div className="flex justify-center gap-4 mb-2">
+            <label>
+              <input
+                type="radio"
+                name="role"
+                value="member"
+                checked={role === 'member'}
+                onChange={() => setRole('member')}
+              />
+              <span className="ml-2">👤 Member</span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="role"
+                value="owner"
+                checked={role === 'owner'}
+                onChange={() => setRole('owner')}
+              />
+              <span className="ml-2">🏪 Shop Owner</span>
+            </label>
+          </div>
+
           <input
             type="email"
             placeholder="Email"
@@ -65,9 +88,9 @@ export default function ShopOwnerSignUp() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
           >
-            {loading ? 'Signing Up...' : 'Sign Up as Shop Owner'}
+            {loading ? 'Signing Up...' : `Sign Up as ${role === 'owner' ? 'Shop Owner' : 'Member'}`}
           </button>
 
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
