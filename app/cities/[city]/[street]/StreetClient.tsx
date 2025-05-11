@@ -20,36 +20,27 @@ type StreetClientProps = {
 export default function StreetClient({ city, street, shops }: StreetClientProps) {
   const [search, setSearch] = useState('');
 
-  // Helper to extract address number for sorting
   const getBaseAddress = (description: string | undefined) => {
     if (!description) return Infinity;
     const match = description.match(/^(\d+)/);
     return match ? parseInt(match[1], 10) : Infinity;
   };
 
-  // Enhanced function to extract plaza/mall/centre or fallback to address
   const getPlazaName = (description?: string) => {
     if (!description) return 'Other';
-
-    // Match known plaza-like names
     const match = description.match(/(.+?\b(Plaza|Mall|Centre|Center)\b.*?)/i);
     if (match) return match[1].trim();
-
-    // Fallback to base address without unit/suite
     const base = description
       .replace(/(Unit|Suite|#)\s*\d+/i, '')
       .replace(/,.*$/, '')
       .trim();
-
     return base || 'Other';
   };
 
-  // Filter shops by search
   const filteredShops = shops.filter((shop) =>
     shop.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Group shops by plaza name
   const grouped = filteredShops.reduce((acc, shop) => {
     const plaza = getPlazaName(shop.description);
     if (!acc[plaza]) acc[plaza] = [];
@@ -57,7 +48,6 @@ export default function StreetClient({ city, street, shops }: StreetClientProps)
     return acc;
   }, {} as Record<string, Shop[]>);
 
-  // Sort groups alphabetically by plaza name
   const sortedGroups = Object.entries(grouped).sort(([a], [b]) =>
     a.localeCompare(b)
   );
@@ -90,7 +80,14 @@ export default function StreetClient({ city, street, shops }: StreetClientProps)
               <h2 className="text-2xl font-semibold text-blue-800 mb-4">{plaza}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {group
-                  .sort((a, b) => getBaseAddress(a.description) - getBaseAddress(b.description))
+                  .sort((a, b) => {
+                    const aNum = getBaseAddress(a.description);
+                    const bNum = getBaseAddress(b.description);
+                    if (aNum === bNum) {
+                      return a.name.localeCompare(b.name);
+                    }
+                    return aNum - bNum;
+                  })
                   .map((shop) => (
                     <Link
                       key={shop.id}
