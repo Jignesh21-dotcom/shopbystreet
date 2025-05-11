@@ -10,27 +10,28 @@ export default async function StreetPage({ params }: StreetPageProps) {
 
   // Fetch street data
   const { data: streetData, error: streetError } = await supabase
-  .from('streets')
-  .select(`
-    id,
-    name,
-    slug,
-    city:city_id (
+    .from('streets')
+    .select(`
+      id,
       name,
       slug,
-      province
-    )
-  `)
-  .eq('slug', street)
-  .single();
-
+      city:city_id (
+        name,
+        slug,
+        province
+      )
+    `)
+    .eq('slug', street)
+    .single();
 
   if (streetError || !streetData) {
     console.error(`Street not found: ${street}`);
     return <div>Street not found.</div>;
   }
 
+  // Ensure `city` is a single object, not an array
   const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
+
   if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
     console.error(
       `Validation failed: Street "${street}" does not belong to city "${city}".`,
@@ -38,8 +39,11 @@ export default async function StreetPage({ params }: StreetPageProps) {
     );
     return <div>Street not found in this city.</div>;
   }
-const provinceSlug = streetData.city?.province || 'ontario'; // fallback
 
+  // Safely access `province`
+  const provinceSlug = cityData?.province || 'ontario'; // fallback
+
+  // Fetch shops for the street
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
     .select('id, name, slug, description, parking')
@@ -51,12 +55,12 @@ const provinceSlug = streetData.city?.province || 'ontario'; // fallback
     return <div>No shops found for this street.</div>;
   }
 
-return (
-  <StreetClient
-    province={provinceSlug}
-    city={streetData.city.slug}
-    street={streetData.slug}
-    shops={shops}
-  />
-);
+  return (
+    <StreetClient
+      province={provinceSlug}
+      city={cityData.slug}
+      street={streetData.slug}
+      shops={shops}
+    />
+  );
 }
