@@ -10,9 +10,10 @@ export default async function ShopPage({ params }: ShopPageProps) {
   const slugify = (str: string) =>
   decodeURIComponent(str).toLowerCase().replace(/\s+/g, '-');
 
-const rawCity = slugify(params.city);
-const rawStreet = slugify(params.street);
-const rawShop = slugify(params.shop);
+const rawCity = decodeURIComponent(params.city).toLowerCase();
+const rawStreet = decodeURIComponent(params.street).toLowerCase();
+const rawShop = decodeURIComponent(params.shop).toLowerCase();
+
 
 
   // Fetch shop data
