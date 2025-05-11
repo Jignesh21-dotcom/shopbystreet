@@ -63,7 +63,7 @@ export default function StreetClient({ province, city, street, shops }: StreetCl
     <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
       {/* Back to City Link */}
       <Link
-        href={`/provinces/${province}/${city}`}
+        href={`/cities/${city}`} // Corrected to point to the city route
         className="self-start mb-6 text-blue-700 hover:underline"
       >
         ← Back to City
