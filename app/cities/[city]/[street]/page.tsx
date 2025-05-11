@@ -5,14 +5,13 @@ type StreetPageProps = {
   params: any; // Temporarily use `any` to bypass type inference issues
 };
 
-
 export default async function StreetPage({ params }: StreetPageProps) {
   const { city, street } = params;
 
-  // ✅ Fetch street with its city relation
+  // Fetch street data
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
-    .select('id, name, slug, city:city_id!inner (name, slug, province:province_slug (slug))')
+    .select('id, name, slug, city:city_id!inner (name, slug)')
     .eq('slug', street)
     .single();
 
@@ -21,7 +20,6 @@ export default async function StreetPage({ params }: StreetPageProps) {
     return <div>Street not found.</div>;
   }
 
-  // ✅ Extract and normalize city info
   const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
   if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
     console.error(
@@ -30,12 +28,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
     );
     return <div>Street not found in this city.</div>;
   }
- const provinceSlug = Array.isArray(cityData.province)
-  ? (cityData.province[0] as { slug: string })?.slug || 'ontario'
-  : (cityData.province as { slug: string })?.slug || 'ontario';
 
-
-  // ✅ Fetch all shops on this street
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
     .select('id, name, slug, description, parking')
@@ -49,7 +42,6 @@ export default async function StreetPage({ params }: StreetPageProps) {
 
   return (
     <StreetClient
-      province={provinceSlug}
       city={cityData.slug}
       street={streetData.slug}
       shops={shops}
