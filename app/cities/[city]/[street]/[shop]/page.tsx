@@ -48,8 +48,8 @@ export default async function ShopPage({ params }: ShopPageProps) {
   }
 
   // Safely unwrap nested data
-  const streetData = shopData.street || {};
-  const cityData = streetData.city || {};
+  const streetData = Array.isArray(shopData.street) ? shopData.street[0] : shopData.street || {};
+  const cityData = Array.isArray(streetData?.city) ? streetData.city[0] : streetData.city || {};
 
   const dbStreetSlug = streetData?.slug?.toLowerCase() || '';
   const dbCitySlug = cityData?.slug?.toLowerCase() || '';
