@@ -17,7 +17,7 @@ type StreetClientProps = {
   shops: Shop[];
 };
 
-export default function StreetClient({ province, city, street, shops }: StreetClientProps) {
+export default function StreetClient({city, street, shops }: StreetClientProps) {
   const [search, setSearch] = useState('');
 
   const getBaseAddress = (description: string | undefined) => {
