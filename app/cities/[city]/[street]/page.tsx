@@ -5,40 +5,38 @@ type StreetPageProps = {
   params: any; // Temporarily use `any` to bypass type inference issues
 };
 
-export default async function StreetPage({ params }: StreetPageProps) {
-  // ✅ Decode and normalize the city and street slugs
-  const citySlug = decodeURIComponent(params.city).toLowerCase();
-  const streetSlug = decodeURIComponent(params.street).toLowerCase();
+import StreetClient from './StreetClient';
+import { supabase } from '@/lib/supabaseClient';
 
-  // ✅ Fetch street and its related city (with province)
+type StreetPageProps = {
+  params: {
+    city: string;
+    street: string;
+  };
+};
+
+export default async function StreetPage({ params }: StreetPageProps) {
+  const { city, street } = params;
+
+  // ✅ Fetch street with its city relation
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
-    .select(`
-      id,
-      name,
-      slug,
-      city:city_id (
-        name,
-        slug,
-        province_slug
-      )
-    `)
-    .eq('slug', streetSlug)
+    .select('id, name, slug, city:city_id!inner (name, slug)')
+    .eq('slug', street)
     .single();
 
   if (streetError || !streetData) {
-    console.error(`Street not found: ${streetSlug}`, streetError);
+    console.error(`Street not found: ${street}`);
     return <div>Street not found.</div>;
   }
 
+  // ✅ Extract and normalize city info
   const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
-
-  // ✅ Validate that the street belongs to the correct city
-  if (!cityData || cityData.slug.toLowerCase() !== citySlug) {
-    console.error(`Validation failed: Street "${streetSlug}" does not belong to city "${citySlug}".`, {
-      streetCitySlug: cityData?.slug,
-      expectedCitySlug: citySlug,
-    });
+  if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
+    console.error(
+      `Validation failed: Street "${street}" does not belong to city "${city}".`,
+      { streetCitySlug: cityData?.slug, citySlug: city }
+    );
     return <div>Street not found in this city.</div>;
   }
 
@@ -50,13 +48,12 @@ export default async function StreetPage({ params }: StreetPageProps) {
     .order('name', { ascending: true });
 
   if (shopsError || !shops) {
-    console.error(`Failed to load shops for street: ${streetSlug}`, shopsError);
+    console.error(`Failed to load shops for street: ${street}`, shopsError);
     return <div>No shops found for this street.</div>;
   }
 
   return (
     <StreetClient
-      province={cityData.province_slug}
       city={cityData.slug}
       street={streetData.slug}
       shops={shops}
