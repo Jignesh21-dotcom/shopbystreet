@@ -20,34 +20,49 @@ type StreetClientProps = {
 export default function StreetClient({ city, street, shops }: StreetClientProps) {
   const [search, setSearch] = useState('');
 
+  // Extract number from address (used for sorting)
   const getBaseAddress = (description: string | undefined) => {
     if (!description) return Infinity;
     const match = description.match(/^(\d+)/);
     return match ? parseInt(match[1], 10) : Infinity;
   };
 
+  // Extract plaza/mall/centre name or fallback to address
   const getPlazaName = (description?: string) => {
     if (!description) return 'Other';
+
     const match = description.match(/(.+?\b(Plaza|Mall|Centre|Center)\b.*?)/i);
     if (match) return match[1].trim();
+
     const base = description
       .replace(/(Unit|Suite|#)\s*\d+/i, '')
       .replace(/,.*$/, '')
       .trim();
+
     return base || 'Other';
   };
 
+  // Step 1: Filter by search term
   const filteredShops = shops.filter((shop) =>
     shop.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const grouped = filteredShops.reduce((acc, shop) => {
+  // Step 2: Sort globally by address BEFORE grouping
+  const sortedShops = [...filteredShops].sort((a, b) => {
+    const aNum = getBaseAddress(a.description);
+    const bNum = getBaseAddress(b.description);
+    return aNum - bNum;
+  });
+
+  // Step 3: Group by plaza name after sorting
+  const grouped = sortedShops.reduce((acc, shop) => {
     const plaza = getPlazaName(shop.description);
     if (!acc[plaza]) acc[plaza] = [];
     acc[plaza].push(shop);
     return acc;
   }, {} as Record<string, Shop[]>);
 
+  // Step 4: Sort plaza groups alphabetically
   const sortedGroups = Object.entries(grouped).sort(([a], [b]) =>
     a.localeCompare(b)
   );
@@ -79,32 +94,23 @@ export default function StreetClient({ city, street, shops }: StreetClientProps)
             <div key={plaza}>
               <h2 className="text-2xl font-semibold text-blue-800 mb-4">{plaza}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {group
-                  .sort((a, b) => {
-                    const aNum = getBaseAddress(a.description);
-                    const bNum = getBaseAddress(b.description);
-                    if (aNum === bNum) {
-                      return a.name.localeCompare(b.name);
-                    }
-                    return aNum - bNum;
-                  })
-                  .map((shop) => (
-                    <Link
-                      key={shop.id}
-                      href={`/cities/${city}/${street}/${shop.slug}`}
-                      className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
-                    >
-                      <h3 className="text-xl font-semibold text-blue-700 mb-2">{shop.name}</h3>
-                      <p className="text-gray-600 flex-1">
-                        {shop.description || 'No description provided.'}
+                {group.map((shop) => (
+                  <Link
+                    key={shop.id}
+                    href={`/cities/${city}/${street}/${shop.slug}`}
+                    className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
+                  >
+                    <h3 className="text-xl font-semibold text-blue-700 mb-2">{shop.name}</h3>
+                    <p className="text-gray-600 flex-1">
+                      {shop.description || 'No description provided.'}
+                    </p>
+                    {shop.parking && (
+                      <p className="text-sm text-gray-500 mt-4">
+                        🚗 Parking: {shop.parking}
                       </p>
-                      {shop.parking && (
-                        <p className="text-sm text-gray-500 mt-4">
-                          🚗 Parking: {shop.parking}
-                        </p>
-                      )}
-                    </Link>
-                  ))}
+                    )}
+                  </Link>
+                ))}
               </div>
             </div>
           ))}
