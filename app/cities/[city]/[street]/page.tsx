@@ -12,7 +12,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
   // ✅ Fetch street with its city relation
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
-    .select('id, name, slug, city:city_id!inner (name, slug)')
+    .select('id, name, slug, city:city_id!inner (name, slug, province:province_slug (slug))')
     .eq('slug', street)
     .single();
 
@@ -30,7 +30,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
     );
     return <div>Street not found in this city.</div>;
   }
-
+ const provinceSlug = cityData?.province?.slug || 'ontario';
   // ✅ Fetch all shops on this street
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
@@ -44,11 +44,12 @@ export default async function StreetPage({ params }: StreetPageProps) {
   }
 
   return (
+   return (
     <StreetClient
-  province={cityData.province.slug}
-  city={cityData.slug}
-  street={streetData.slug}
-  shops={shops}
-/>
+      province={provinceSlug}
+      city={cityData.slug}
+      street={streetData.slug}
+      shops={shops}
+    />
   );
 }
