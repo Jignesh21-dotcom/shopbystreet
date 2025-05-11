@@ -30,38 +30,31 @@ export default function StreetClient({ city, street, shops }: StreetClientProps)
     if (!description) return 'Other';
     const match = description.match(/(.+?\b(Plaza|Mall|Centre|Center)\b.*?)/i);
     if (match) return match[1].trim();
-
     const base = description
       .replace(/(Unit|Suite|#)\s*\d+/i, '')
       .replace(/,.*$/, '')
       .trim();
-
     return base || 'Other';
   };
 
-  // Filter by name search
-  const filteredShops = shops.filter((shop) =>
-    shop.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // Step 1: Filter and sort all shops by address
+  const filteredShops = shops
+    .filter((shop) => shop.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => getBaseAddress(a.description) - getBaseAddress(b.description));
 
-  // Step 1: Group shops by plaza
-  const grouped: Record<string, Shop[]> = {};
+  // Step 2: Build display blocks as we iterate (preserving order)
+  const displayBlocks: { plaza: string; items: Shop[] }[] = [];
 
   for (const shop of filteredShops) {
     const plaza = getPlazaName(shop.description);
-    if (!grouped[plaza]) grouped[plaza] = [];
-    grouped[plaza].push(shop);
-  }
+    const lastBlock = displayBlocks[displayBlocks.length - 1];
 
-  // Step 2: Sort each group by address number
-  for (const plaza in grouped) {
-    grouped[plaza].sort((a, b) => getBaseAddress(a.description) - getBaseAddress(b.description));
+    if (!lastBlock || lastBlock.plaza !== plaza) {
+      displayBlocks.push({ plaza, items: [shop] });
+    } else {
+      lastBlock.items.push(shop);
+    }
   }
-
-  // Step 3: Sort plaza groups alphabetically
-  const sortedGroups = Object.entries(grouped).sort(([a], [b]) =>
-    a.localeCompare(b)
-  );
 
   return (
     <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
@@ -84,13 +77,13 @@ export default function StreetClient({ city, street, shops }: StreetClientProps)
         className="mb-8 p-3 w-full max-w-md rounded-lg border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
 
-      {sortedGroups.length > 0 ? (
+      {displayBlocks.length > 0 ? (
         <div className="w-full max-w-6xl space-y-10">
-          {sortedGroups.map(([plaza, group]) => (
-            <div key={plaza}>
-              <h2 className="text-2xl font-semibold text-blue-800 mb-4">{plaza}</h2>
+          {displayBlocks.map((block, i) => (
+            <div key={`${block.plaza}-${i}`}>
+              <h2 className="text-2xl font-semibold text-blue-800 mb-4">{block.plaza}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {group.map((shop) => (
+                {block.items.map((shop) => (
                   <Link
                     key={shop.id}
                     href={`/cities/${city}/${street}/${shop.slug}`}
