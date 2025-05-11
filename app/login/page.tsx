@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [role, setRole] = useState<'member' | 'owner'>('member');
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,7 +44,11 @@ export default function LoginPage() {
         email,
         password,
         options: {
-          data: { username },
+          data: {
+            username,
+            isShopOwner: role === 'owner',
+            shopStatus: role === 'owner' ? 'pendingPayment' : null,
+          },
         },
       });
       if (error) {
@@ -76,16 +81,41 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {isSignUp && !showReset && (
-            <div>
-              <label className="block mb-1 text-sm font-semibold text-gray-700">Username</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
-            </div>
+            <>
+              <div>
+                <label className="block mb-1 text-sm font-semibold text-gray-700">Username</label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-4 justify-center">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="member"
+                    checked={role === 'member'}
+                    onChange={() => setRole('member')}
+                  />
+                  <span className="ml-2">👤 Member</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="owner"
+                    checked={role === 'owner'}
+                    onChange={() => setRole('owner')}
+                  />
+                  <span className="ml-2">🏪 Shop Owner</span>
+                </label>
+              </div>
+            </>
           )}
 
           <div>
@@ -99,7 +129,7 @@ export default function LoginPage() {
             />
           </div>
 
-          {!showReset && !isSignUp && (
+          {!showReset && (
             <div>
               <label className="block mb-1 text-sm font-semibold text-gray-700">Password</label>
               <input
