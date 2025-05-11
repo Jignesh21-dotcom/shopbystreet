@@ -12,7 +12,6 @@ type Shop = {
 };
 
 type StreetClientProps = {
-  province: string;
   city: string;
   street: string;
   shops: Shop[];
