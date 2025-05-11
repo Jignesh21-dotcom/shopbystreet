@@ -30,7 +30,10 @@ export default async function StreetPage({ params }: StreetPageProps) {
     );
     return <div>Street not found in this city.</div>;
   }
- const provinceSlug = cityData?.province?.slug || 'ontario';
+ const provinceSlug = Array.isArray(cityData.province)
+  ? cityData.province[0]?.slug || 'ontario'
+  : cityData.province?.slug || 'ontario';
+
   // ✅ Fetch all shops on this street
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
