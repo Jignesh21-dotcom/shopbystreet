@@ -45,7 +45,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
 
   return (
     <StreetClient
-  province={provinceData.slug}
+  province={cityData.province.slug}
   city={cityData.slug}
   street={streetData.slug}
   shops={shops}
