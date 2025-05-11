@@ -20,17 +20,14 @@ type StreetClientProps = {
 export default function StreetClient({ city, street, shops }: StreetClientProps) {
   const [search, setSearch] = useState('');
 
-  // Extract number from address (used for sorting)
   const getBaseAddress = (description: string | undefined) => {
     if (!description) return Infinity;
     const match = description.match(/^(\d+)/);
     return match ? parseInt(match[1], 10) : Infinity;
   };
 
-  // Extract plaza/mall/centre name or fallback to address
   const getPlazaName = (description?: string) => {
     if (!description) return 'Other';
-
     const match = description.match(/(.+?\b(Plaza|Mall|Centre|Center)\b.*?)/i);
     if (match) return match[1].trim();
 
@@ -42,27 +39,26 @@ export default function StreetClient({ city, street, shops }: StreetClientProps)
     return base || 'Other';
   };
 
-  // Step 1: Filter by search term
+  // Filter by name search
   const filteredShops = shops.filter((shop) =>
     shop.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Step 2: Sort globally by address BEFORE grouping
-  const sortedShops = [...filteredShops].sort((a, b) => {
-    const aNum = getBaseAddress(a.description);
-    const bNum = getBaseAddress(b.description);
-    return aNum - bNum;
-  });
+  // Step 1: Group shops by plaza
+  const grouped: Record<string, Shop[]> = {};
 
-  // Step 3: Group by plaza name after sorting
-  const grouped = sortedShops.reduce((acc, shop) => {
+  for (const shop of filteredShops) {
     const plaza = getPlazaName(shop.description);
-    if (!acc[plaza]) acc[plaza] = [];
-    acc[plaza].push(shop);
-    return acc;
-  }, {} as Record<string, Shop[]>);
+    if (!grouped[plaza]) grouped[plaza] = [];
+    grouped[plaza].push(shop);
+  }
 
-  // Step 4: Sort plaza groups alphabetically
+  // Step 2: Sort each group by address number
+  for (const plaza in grouped) {
+    grouped[plaza].sort((a, b) => getBaseAddress(a.description) - getBaseAddress(b.description));
+  }
+
+  // Step 3: Sort plaza groups alphabetically
   const sortedGroups = Object.entries(grouped).sort(([a], [b]) =>
     a.localeCompare(b)
   );
