@@ -6,9 +6,12 @@ type ShopPageProps = {
 };
 
 export default async function ShopPage({ params }: ShopPageProps) {
-  const { city, street, shop } = params;
+  // Decode and normalize route slugs
+  const rawCity = decodeURIComponent(params.city).toLowerCase();
+  const rawStreet = decodeURIComponent(params.street).toLowerCase();
+  const rawShop = decodeURIComponent(params.shop).toLowerCase();
 
-  // Fetch shop data (without .single() for more flexibility and debugging)
+  // Fetch shop data
   const { data: shopData, error: shopError } = await supabase
     .from('shops')
     .select(`
@@ -26,7 +29,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
         )
       )
     `)
-    .eq('slug', shop);
+    .eq('slug', rawShop);
 
   if (shopError) {
     console.error(`Supabase error while fetching shop:`, shopError);
@@ -34,44 +37,42 @@ export default async function ShopPage({ params }: ShopPageProps) {
   }
 
   if (!shopData || shopData.length === 0) {
-    console.error(`No shop found for slug:`, shop);
+    console.error(`No shop found for slug:`, rawShop);
     return <div>🛍️ Shop not found.</div>;
   }
 
   const shopRecord = shopData[0];
 
-  // Safely unwrap nested objects
+  // Safely unwrap nested data
   const streetData = Array.isArray(shopRecord.street) ? shopRecord.street[0] : shopRecord.street;
   const cityData = Array.isArray(streetData?.city) ? streetData.city[0] : streetData?.city;
 
-  // Log for debugging
-  console.log('✅ Fetched shopRecord:', shopRecord);
-  console.log('📍 Street data:', streetData);
-  console.log('🏙️ City data:', cityData);
+  const dbStreetSlug = streetData?.slug?.toLowerCase() || '';
+  const dbCitySlug = cityData?.slug?.toLowerCase() || '';
 
-  // Validate that the shop belongs to the correct street and city
-  const normalizedStreet = decodeURIComponent(street).toLowerCase();
-const normalizedCity = decodeURIComponent(city).toLowerCase();
+  console.log('✅ Shop match debug:', {
+    expectedStreet: rawStreet,
+    actualStreet: dbStreetSlug,
+    expectedCity: rawCity,
+    actualCity: dbCitySlug,
+  });
 
-if (
-  !streetData || streetData.slug.toLowerCase() !== normalizedStreet ||
-  !cityData || cityData.slug.toLowerCase() !== normalizedCity
-) {
-
-    console.error(`Shop mismatch`, {
-      expectedStreet: street,
-      actualStreet: streetData?.slug,
-      expectedCity: city,
-      actualCity: cityData?.slug,
+  // Validate match
+  if (dbStreetSlug !== rawStreet || dbCitySlug !== rawCity) {
+    console.error('❌ Shop mismatch', {
+      expectedStreet: rawStreet,
+      actualStreet: dbStreetSlug,
+      expectedCity: rawCity,
+      actualCity: dbCitySlug,
     });
     return <div>🚫 Shop not found or mismatched street/city.</div>;
   }
 
   return (
     <ShopPageClient
-      city={city}
-      street={street}
-      shop={shop}
+      city={rawCity}
+      street={rawStreet}
+      shop={rawShop}
       shopData={{
         name: shopRecord.name,
         description: shopRecord.description,
