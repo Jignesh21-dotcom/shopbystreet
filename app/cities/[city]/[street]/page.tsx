@@ -2,7 +2,7 @@ import StreetClient from './StreetClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type StreetPageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: any;
 };
 
 export default async function StreetPage({ params }: StreetPageProps) {
@@ -29,7 +29,6 @@ export default async function StreetPage({ params }: StreetPageProps) {
     return <div>Street not found.</div>;
   }
 
-  // Ensure `city` is a single object, not an array
   const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
 
   if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
@@ -40,15 +39,16 @@ export default async function StreetPage({ params }: StreetPageProps) {
     return <div>Street not found in this city.</div>;
   }
 
-  // Safely access `province`
-  const provinceSlug = cityData?.province || 'ontario'; // fallback
+  const provinceSlug = cityData?.province || 'ontario';
 
-  // Fetch shops for the street
+  // ✅ FIXED: Fetch shops using streetSlug instead of street_id
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
     .select('id, name, slug, description, parking')
-    .eq('street_id', streetData.id)
-    .order('name', { ascending: true });
+    .eq('streetSlug', streetData.slug)  // ✅ USE streetSlug HERE
+    .order('sequence', { ascending: true });
+
+  console.log('Fetched shops:', shops);
 
   if (shopsError || !shops) {
     console.error(`Failed to load shops for street: ${street}`, shopsError);

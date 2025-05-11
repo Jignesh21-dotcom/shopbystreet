@@ -2,21 +2,25 @@ import ShopPageClient from './ShopPageClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type ShopPageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: {
+    city?: string;
+    street?: string;
+    shop?: string;
+  };
 };
 
 export default async function ShopPage({ params }: ShopPageProps) {
+  // Validate and destructure `params`
+  const city = params?.city || '';
+  const street = params?.street || '';
+  const shop = params?.shop || '';
+
   // Decode and normalize route slugs
-  const slugify = (str: string) =>
-  decodeURIComponent(str).toLowerCase().replace(/\s+/g, '-');
+  const rawCity = decodeURIComponent(city).toLowerCase();
+  const rawStreet = decodeURIComponent(street).toLowerCase();
+  const rawShop = decodeURIComponent(shop).toLowerCase();
 
-const rawCity = decodeURIComponent(params.city).toLowerCase();
-const rawStreet = decodeURIComponent(params.street).toLowerCase();
-const rawShop = decodeURIComponent(params.shop).toLowerCase();
-
-
-
-  // Fetch shop data
+  // Fetch shop data with explicit joins for street and city
   const { data: shopData, error: shopError } = await supabase
     .from('shops')
     .select(`
@@ -34,23 +38,22 @@ const rawShop = decodeURIComponent(params.shop).toLowerCase();
         )
       )
     `)
-    .eq('slug', rawShop);
+    .eq('slug', rawShop)
+    .single(); // Ensure we fetch a single shop record
 
   if (shopError) {
     console.error(`Supabase error while fetching shop:`, shopError);
     return <div>⚠️ Error loading shop. Please try again later.</div>;
   }
 
-  if (!shopData || shopData.length === 0) {
+  if (!shopData) {
     console.error(`No shop found for slug:`, rawShop);
     return <div>🛍️ Shop not found.</div>;
   }
 
-  const shopRecord = shopData[0];
-
   // Safely unwrap nested data
-  const streetData = Array.isArray(shopRecord.street) ? shopRecord.street[0] : shopRecord.street;
-  const cityData = Array.isArray(streetData?.city) ? streetData.city[0] : streetData?.city;
+  const streetData = shopData.street || {};
+  const cityData = streetData.city || {};
 
   const dbStreetSlug = streetData?.slug?.toLowerCase() || '';
   const dbCitySlug = cityData?.slug?.toLowerCase() || '';
@@ -73,17 +76,18 @@ const rawShop = decodeURIComponent(params.shop).toLowerCase();
     return <div>🚫 Shop not found or mismatched street/city.</div>;
   }
 
+  // Pass the fetched data to the client component
   return (
     <ShopPageClient
       city={rawCity}
       street={rawStreet}
       shop={rawShop}
       shopData={{
-        name: shopRecord.name,
-        description: shopRecord.description,
-        parking: shopRecord.parking,
-        image_url: shopRecord.image_url,
-        story: shopRecord.story,
+        name: shopData.name,
+        description: shopData.description,
+        parking: shopData.parking,
+        image_url: shopData.image_url,
+        story: shopData.story,
       }}
     />
   );

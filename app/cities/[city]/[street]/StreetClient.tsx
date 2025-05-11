@@ -98,7 +98,7 @@ export default function StreetClient({ province, city, street, shops }: StreetCl
                   >
                     <h3 className="text-xl font-semibold text-blue-700 mb-2">{shop.name}</h3>
                     <p className="text-gray-600 flex-1">
-                      {shop.description || 'No description provided.'}
+                      {shop.description || 'No address available.'}
                     </p>
                     {shop.parking && (
                       <p className="text-sm text-gray-500 mt-4">
