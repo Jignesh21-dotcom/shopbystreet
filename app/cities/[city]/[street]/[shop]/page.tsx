@@ -7,9 +7,13 @@ type ShopPageProps = {
 
 export default async function ShopPage({ params }: ShopPageProps) {
   // Decode and normalize route slugs
-  const rawCity = decodeURIComponent(params.city).toLowerCase();
-  const rawStreet = decodeURIComponent(params.street).toLowerCase();
-  const rawShop = decodeURIComponent(params.shop).toLowerCase();
+  const slugify = (str: string) =>
+  decodeURIComponent(str).toLowerCase().replace(/\s+/g, '-');
+
+const rawCity = slugify(params.city);
+const rawStreet = slugify(params.street);
+const rawShop = slugify(params.shop);
+
 
   // Fetch shop data
   const { data: shopData, error: shopError } = await supabase
