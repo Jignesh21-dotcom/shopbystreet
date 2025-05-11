@@ -5,12 +5,6 @@ type StreetPageProps = {
   params: any; // Temporarily use `any` to bypass type inference issues
 };
 
-type StreetPageProps = {
-  params: {
-    city: string;
-    street: string;
-  };
-};
 
 export default async function StreetPage({ params }: StreetPageProps) {
   const { city, street } = params;
