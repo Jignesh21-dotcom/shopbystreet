@@ -6,31 +6,43 @@ type StreetPageProps = {
 };
 
 export default async function StreetPage({ params }: StreetPageProps) {
-  const { city, street } = params;
+  // ✅ Decode and normalize the city and street slugs
+  const citySlug = decodeURIComponent(params.city).toLowerCase();
+  const streetSlug = decodeURIComponent(params.street).toLowerCase();
 
-  // Fetch street data
+  // ✅ Fetch street and its related city (with province)
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
-    .select('id, name, slug, city:city_id!inner (name, slug, province_slug)')
-    .eq('slug', street)
+    .select(`
+      id,
+      name,
+      slug,
+      city:city_id (
+        name,
+        slug,
+        province_slug
+      )
+    `)
+    .eq('slug', streetSlug)
     .single();
 
   if (streetError || !streetData) {
-    console.error(`Street not found: ${street}`);
+    console.error(`Street not found: ${streetSlug}`, streetError);
     return <div>Street not found.</div>;
   }
 
-  // Ensure `city` is a single object, not an array
   const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
-  if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
-    console.error(
-      `Validation failed: Street "${street}" does not belong to city "${city}".`,
-      { streetCitySlug: cityData?.slug, citySlug: city }
-    );
+
+  // ✅ Validate that the street belongs to the correct city
+  if (!cityData || cityData.slug.toLowerCase() !== citySlug) {
+    console.error(`Validation failed: Street "${streetSlug}" does not belong to city "${citySlug}".`, {
+      streetCitySlug: cityData?.slug,
+      expectedCitySlug: citySlug,
+    });
     return <div>Street not found in this city.</div>;
   }
 
-  // Fetch shops for the street
+  // ✅ Fetch all shops on this street
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
     .select('id, name, slug, description, parking')
@@ -38,17 +50,16 @@ export default async function StreetPage({ params }: StreetPageProps) {
     .order('name', { ascending: true });
 
   if (shopsError || !shops) {
-    console.error(`Failed to load shops for street: ${street}`, shopsError);
+    console.error(`Failed to load shops for street: ${streetSlug}`, shopsError);
     return <div>No shops found for this street.</div>;
   }
 
-  // Pass the fetched data to the client component
   return (
     <StreetClient
-  province={cityData.province_slug}
-  city={cityData.slug}
-  street={streetData.slug}
-  shops={shops}
+      province={cityData.province_slug}
+      city={cityData.slug}
+      street={streetData.slug}
+      shops={shops}
     />
   );
 }
