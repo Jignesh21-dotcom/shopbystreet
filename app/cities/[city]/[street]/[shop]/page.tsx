@@ -50,7 +50,14 @@ export default async function ShopPage({ params }: ShopPageProps) {
   console.log('🏙️ City data:', cityData);
 
   // Validate that the shop belongs to the correct street and city
-  if (!streetData || streetData.slug !== street || !cityData || cityData.slug !== city) {
+  const normalizedStreet = decodeURIComponent(street).toLowerCase();
+const normalizedCity = decodeURIComponent(city).toLowerCase();
+
+if (
+  !streetData || streetData.slug.toLowerCase() !== normalizedStreet ||
+  !cityData || cityData.slug.toLowerCase() !== normalizedCity
+) {
+
     console.error(`Shop mismatch`, {
       expectedStreet: street,
       actualStreet: streetData?.slug,
