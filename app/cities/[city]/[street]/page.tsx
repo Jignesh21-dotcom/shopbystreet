@@ -5,9 +5,6 @@ type StreetPageProps = {
   params: any; // Temporarily use `any` to bypass type inference issues
 };
 
-import StreetClient from './StreetClient';
-import { supabase } from '@/lib/supabaseClient';
-
 type StreetPageProps = {
   params: {
     city: string;
