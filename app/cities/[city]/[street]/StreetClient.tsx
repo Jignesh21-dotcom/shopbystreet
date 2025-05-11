@@ -12,12 +12,13 @@ type Shop = {
 };
 
 type StreetClientProps = {
+  province: string;
   city: string;
   street: string;
   shops: Shop[];
 };
 
-export default function StreetClient({city, street, shops }: StreetClientProps) {
+export default function StreetClient({ province, city, street, shops }: StreetClientProps) {
   const [search, setSearch] = useState('');
 
   const getBaseAddress = (description: string | undefined) => {
@@ -59,8 +60,8 @@ export default function StreetClient({city, street, shops }: StreetClientProps) 
   return (
     <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
       {/* ✅ Fixed Back Link */}
-      <Link href="/countries/canada" className="self-start mb-6 text-blue-700 hover:underline">
-  ← Back to Canada
+     <Link href={`/provinces/${province}/${city}`} className="self-start mb-6 text-blue-700 hover:underline">
+  ← Back to City
 </Link>
 
       <h1 className="text-4xl font-bold text-blue-700 mb-8 capitalize">
