@@ -44,7 +44,6 @@ export default async function StreetPage({ params }: StreetPageProps) {
   }
 
   return (
-   return (
     <StreetClient
       province={provinceSlug}
       city={cityData.slug}
