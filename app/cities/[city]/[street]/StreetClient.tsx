@@ -40,9 +40,15 @@ export default function StreetClient({ province, city, street, shops }: StreetCl
     return base || 'Other';
   };
 
-  // Step 1: Filter and sort all shops by address
+  // Enhanced filtering logic to search by name or street number
   const filteredShops = shops
-    .filter((shop) => shop.name.toLowerCase().includes(search.toLowerCase()))
+    .filter((shop) => {
+      const nameMatch = shop.name.toLowerCase().includes(search.toLowerCase());
+      const addressMatch = shop.description
+        ? shop.description.toLowerCase().includes(search.toLowerCase())
+        : false;
+      return nameMatch || addressMatch;
+    })
     .sort((a, b) => getBaseAddress(a.description) - getBaseAddress(b.description));
 
   // Step 2: Build display blocks preserving order
@@ -77,7 +83,7 @@ export default function StreetClient({ province, city, street, shops }: StreetCl
       {/* Search Bar */}
       <input
         type="text"
-        placeholder="Search for a shop..."
+        placeholder="Search for a shop or street number..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="mb-8 p-3 w-full max-w-md rounded-lg border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
