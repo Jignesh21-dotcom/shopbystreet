@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ExpansionNotice from '@/app/components/ExpansionNotice';
 import { getCitiesByProvinceSlug } from '@/lib/data';
 
 const provinceBackgrounds: Record<string, string> = {
@@ -24,7 +25,7 @@ type ProvinceClientProps = {
   province: string;
 };
 
-export default function ProvinceClient({ province }: { province: string }) {
+export default function ProvinceClient({ province }: ProvinceClientProps) {
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,6 +87,7 @@ export default function ProvinceClient({ province }: { province: string }) {
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center w-full">
+        {/* Back to Canada */}
         <Link
           href="/countries/canada"
           className="self-start mb-6 text-blue-200 hover:text-white hover:underline"
@@ -93,10 +95,15 @@ export default function ProvinceClient({ province }: { province: string }) {
           ← Back to Canada
         </Link>
 
+        {/* Expansion Notice */}
+        <ExpansionNotice />
+
+        {/* Province Title */}
         <h1 className="text-4xl font-bold text-white mb-6 capitalize text-center">
           🗺️ {decodeURIComponent(province).replace(/-/g, ' ')}
         </h1>
 
+        {/* Search Input */}
         <input
           type="text"
           placeholder="Search for a city..."
@@ -105,6 +112,7 @@ export default function ProvinceClient({ province }: { province: string }) {
           className="mb-8 p-3 w-full max-w-md rounded-lg border border-blue-300 shadow focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition"
         />
 
+        {/* Cities List */}
         {loading ? (
           <p className="text-white text-lg">Loading cities...</p>
         ) : error ? (
