@@ -46,6 +46,8 @@ export default async function StreetPage({ params }: StreetPageProps) {
     .from('shops')
     .select('id, name, slug, description, parking')
     .eq('streetSlug', streetData.slug)  // ✅ USE streetSlug HERE
+   .eq('streetSlug', streetData.slug)
+.eq('approved', true)
     .order('sequence', { ascending: true });
 
   console.log('Fetched shops:', shops);
