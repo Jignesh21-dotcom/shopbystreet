@@ -24,7 +24,9 @@ export async function generateStaticParams() {
 
 // ✅ Server Component for CityPage
 export default async function CityPage({ params }: CityPageProps) {
-  const city = params.city; // Explicitly access the city parameter
+  // Await the params to access the city parameter
+  const resolvedParams = await params;
+  const city = resolvedParams.city;
 
   // Fetch city data on the server
   const { data: cityData, error: cityError } = await supabase
@@ -68,9 +70,16 @@ export default async function CityPage({ params }: CityPageProps) {
   const results = await Promise.all(promises);
   const streets = results.flatMap((result) => result.data ?? []);
 
+  // Handle no streets found
   if (!streets.length) {
     console.error(`No streets found for city: ${city}`);
-    return <div>No streets found for this city.</div>; // Gracefully handle empty streets
+    return (
+      city.toLowerCase() === 'toronto' ? (
+        <div>No streets found for this city.</div>
+      ) : (
+        <CityClient city={cityData.name} streets={[]} />
+      )
+    );
   }
 
   // Pass the fetched data to the client component

@@ -1,114 +1,91 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabaseClient';
 
 export default function HomePage() {
-  const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const comingSoonCities = ['Montreal', 'Vancouver', 'Ottawa', '...and more!'];
-
-  useEffect(() => {
-    const fetchCities = async () => {
-      const { data, error } = await supabase
-      .from('active_cities')
-        .select('name, slug')
-        .order('name', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching cities:', error);
-        setCities([]);
-      } else {
-        setCities(data ?? []);
-      }
-      setLoading(false);
-    };
-
-    fetchCities();
-  }, []);
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-white to-gray-100 flex flex-col items-center justify-center p-10 text-center">
-      {/* Image or banner */}
-      <img
-        src="https://images.pexels.com/photos/29290069/pexels-photo-29290069.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-        alt="Street Shopping"
-        className="w-full max-w-4xl rounded-xl shadow-md mb-10"
-      />
+    <main
+      className="min-h-screen w-full bg-cover bg-center text-white"
+      style={{
+        backgroundImage: `url('https://tse1.mm.bing.net/th?id=OIP.sjxOoT2piZkvHmRBKevBjwHaE7&pid=Api')`,
+      }}
+    >
+      <div className="bg-black bg-opacity-60 min-h-screen w-full flex flex-col items-center justify-center px-4 py-20 space-y-12 text-center">
+        {/* 🛍️ Welcome Message */}
+        <div className="space-y-6 max-w-3xl animate-fade-in">
+          <h1 className="text-5xl font-bold opacity-0 animate-fade-in-up delay-100">🛍️ Welcome to Shop Street</h1>
+          <p className="text-xl opacity-0 animate-fade-in-up delay-200">
+            Discover authentic local businesses and explore real shops across Canadian streets.
+            Support small, shop local, and experience Canada city by city.
+          </p>
+          <div className="opacity-0 animate-fade-in-up delay-300">
+            <Link
+              href="/countries/canada"
+              className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full text-lg font-semibold transition"
+            >
+              🌎 Explore Canada
+            </Link>
+          </div>
+        </div>
 
-      {/* Heading */}
-      <h1 className="text-5xl font-bold text-gray-800 mb-6">
-        🛍️ Welcome to Shop Street
-      </h1>
-
-      {/* Description */}
-      <p className="text-xl text-gray-600 max-w-2xl mb-8">
-        Discover authentic local businesses and explore real shops across Canadian streets. Support small, shop local, and experience Canada city by city.
-      </p>
-
-      {/* Explore button */}
-      <Link
-        href="/countries/canada"
-        className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full text-lg font-semibold transition mb-12"
-      >
-        🌎 Explore Canada
-      </Link>
-
-      {/* 🚧 Coverage Notice */}
-      <div className="bg-yellow-100 border border-yellow-300 p-6 rounded-lg max-w-2xl shadow">
-        <h2 className="text-2xl font-bold text-yellow-800 mb-4">🚧 We’re Expanding!</h2>
-        <p className="text-gray-700 mb-4">
-          ShopByStreet is just getting started! Right now, we’re live with shops in{' '}
-          {loading ? (
-            <span className="italic text-gray-500">Loading cities...</span>
-          ) : cities.length === 0 ? (
-            <span className="italic text-gray-500">No cities found.</span>
-          ) : (
-            cities.map((city, index) => (
-              <span key={city.slug}>
+        {/* 🚧 Expansion Message */}
+        <div className="bg-yellow-100 bg-opacity-90 text-yellow-900 rounded-lg p-6 max-w-3xl text-left space-y-4 shadow-lg animate-fade-in-up delay-500">
+          <h2 className="text-2xl font-bold">🚧 We’re Expanding!</h2>
+          <p>
+            ShopByStreet is just getting started! Right now, we’re live with shops in{' '}
+            <Link
+              href="/cities/toronto"
+              className="text-blue-600 underline hover:text-blue-800 font-semibold"
+            >
+              Toronto
+            </Link>
+            , and we’re working hard to add more cities and provinces across Canada—and soon, worldwide.
+          </p>
+          <div>
+            <p className="font-semibold">✅ Current Available City:</p>
+            <ul className="list-disc ml-6 mb-4">
+              <li>
                 <Link
-                  href={`/cities/${city.slug}`}
-                  className="text-blue-500 underline hover:text-blue-700"
+                  href="/cities/toronto"
+                  className="text-blue-600 underline hover:text-blue-800"
                 >
-                  {city.name}
+                  Toronto
                 </Link>
-                {index < cities.length - 1 ? ', ' : ''}
-              </span>
-            ))
-          )}
-          , and we’re working hard to add more cities and provinces across Canada—and soon, worldwide.
-        </p>
-
-        <div className="text-left text-gray-800">
-          <p className="font-semibold">✅ Current Available City:</p>
-          <ul className="list-disc ml-6 mb-4">
-            {loading ? (
-              <li className="italic text-gray-500">Loading cities...</li>
-            ) : cities.length === 0 ? (
-              <li className="italic text-gray-500">No cities found.</li>
-            ) : (
-              cities.map((city) => (
-                <li key={city.slug}>
-                  <Link
-                    href={`/cities/${city.slug}`}
-                    className="text-blue-500 underline hover:text-blue-700"
-                  >
-                    {city.name}
-                  </Link>
-                </li>
-              ))
-            )}
-          </ul>
-          <p className="font-semibold">🚀 Coming Soon:</p>
-          <ul className="list-disc ml-6">
-            {comingSoonCities.map((city, index) => (
-              <li key={index}>{city}</li>
-            ))}
-          </ul>
+              </li>
+            </ul>
+            <p className="font-semibold">🚀 Coming Soon:</p>
+            <ul className="list-disc ml-6">
+              <li>Montreal</li>
+              <li>Vancouver</li>
+              <li>Ottawa</li>
+              <li>...and more!</li>
+            </ul>
+          </div>
         </div>
       </div>
+
+      {/* Tailwind Keyframe Animations */}
+      <style jsx>{`
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 0.8s ease-out forwards;
+        }
+
+        .delay-100 { animation-delay: 0.1s; animation-fill-mode: forwards; }
+        .delay-200 { animation-delay: 0.2s; animation-fill-mode: forwards; }
+        .delay-300 { animation-delay: 0.3s; animation-fill-mode: forwards; }
+        .delay-500 { animation-delay: 0.5s; animation-fill-mode: forwards; }
+      `}</style>
     </main>
   );
 }

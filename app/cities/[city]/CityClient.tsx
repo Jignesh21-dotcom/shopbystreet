@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import ExpansionNotice from '@/app/components/ExpansionNotice';
 
 type CityClientProps = {
   city: string;
@@ -67,10 +68,12 @@ export default function CityClient({ city, streets }: CityClientProps) {
             </Link>
           ))}
         </div>
-      ) : (
+      ) : city.toLowerCase() === 'toronto' ? (
         <div className="text-center mt-10 text-gray-600 text-lg">
           😕 No streets found matching "<span className="font-semibold">{search}</span>"
         </div>
+      ) : (
+        <ExpansionNotice />
       )}
     </div>
   );

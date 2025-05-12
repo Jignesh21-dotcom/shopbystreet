@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getProvincesByCountrySlug } from '@/lib/data';
+import ExpansionNotice from '@/app/components/ExpansionNotice';
 
 // Define the props type explicitly
 type Props = {
@@ -9,7 +10,8 @@ type Props = {
 };
 
 export default async function CountryPage({ params }: Props) {
-  const resolvedParams = await params; // Resolve the promise if params is asynchronous
+  // Resolve the promise if params is asynchronous
+  const resolvedParams = await params;
   const provinces = await getProvincesByCountrySlug(resolvedParams.country);
 
   return (
@@ -21,6 +23,9 @@ export default async function CountryPage({ params }: Props) {
       >
         ← Back to Home
       </Link>
+
+      {/* Expansion Notice */}
+      <ExpansionNotice />
 
       {/* Country Title */}
       <h1 className="text-4xl font-bold text-purple-800 mb-10 capitalize">
