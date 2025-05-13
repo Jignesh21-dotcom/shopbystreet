@@ -49,7 +49,12 @@ export default function ShopPageClient({ city, street, shop, shopData }: ShopPag
 
       {/* Shop Info */}
       <h1 className="text-4xl font-bold text-yellow-800 mb-4">{shopData.name}</h1>
-
+<Link
+  href={`/shops/${shop}/products`}
+  className="inline-block mt-4 px-4 py-2 border border-blue-300 text-blue-700 rounded-md hover:bg-blue-50 transition text-sm font-medium"
+>
+  🛍 View Products
+</Link>
       {shopData.description && (
         <p className="mb-4 text-gray-700 text-lg">
           📍 <strong>Address:</strong> {shopData.description}
