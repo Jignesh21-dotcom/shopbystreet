@@ -17,9 +17,11 @@ export default function ContactUsPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +45,7 @@ export default function ContactUsPage() {
 
     const { data: urlData } = supabase.storage
       .from('contact-uploads')
-      .getPublicUrl(filePath); // or use signed URL if bucket is private
+      .getPublicUrl(filePath);
 
     return urlData.publicUrl;
   };
@@ -63,27 +65,43 @@ export default function ContactUsPage() {
       }
     }
 
-    const { error } = await supabase.from('contact_requests').insert([
+    const { error: insertError } = await supabase.from('contact_requests').insert([
       {
         ...formData,
         file_url: fileUrl,
       },
     ]);
 
-    if (error) {
+    if (insertError) {
+      console.error('Supabase insert error:', insertError);
       setError('Something went wrong. Please try again.');
-    } else {
-      setSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: 'General Inquiry',
-        message: '',
-      });
-      setFile(null);
+      setLoading(false);
+      return;
     }
 
+    // ✅ Send to Zapier
+    try {
+      await fetch('https://hooks.zapier.com/hooks/catch/22913226/27y98q1/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...formData, fileUrl }),
+      });
+    } catch (zapError) {
+      console.warn('Zapier webhook failed:', zapError);
+      // not fatal
+    }
+
+    setSuccess(true);
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      subject: 'General Inquiry',
+      message: '',
+    });
+    setFile(null);
     setLoading(false);
   };
 
@@ -91,7 +109,7 @@ export default function ContactUsPage() {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Contact Us</h1>
       <p className="mb-6 text-gray-600">
-        Need help listing products or have a general question? Send us a message below or email us at <strong>support@yourdomain.com</strong>.
+        Need help listing products or have a general question? Send us a message below.
       </p>
 
       {success && <p className="mb-4 text-green-600">Thanks! We'll get back to you soon.</p>}
