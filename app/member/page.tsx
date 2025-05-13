@@ -215,9 +215,20 @@ export default function MemberPage() {
     }
   };
 
+  if (user && user.user_metadata?.isShopOwner) {
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 border rounded-lg shadow">
-      {!user ? (
+    <div className="max-w-2xl mx-auto mt-20 p-6 text-center border rounded-lg shadow text-red-600">
+      🛑 Access Denied: This page is for members only.
+      <p className="mt-4">
+        Please <Link href="/shop-owner" className="text-blue-600 underline">go to the Shop Owner area</Link>.
+      </p>
+    </div>
+  );
+}
+return (
+  <div className="max-w-2xl mx-auto mt-10 p-6 border rounded-lg shadow">
+    {!user ? (
+
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Not a member yet?</h2>
           <p className="mb-4">
@@ -229,14 +240,15 @@ export default function MemberPage() {
             <li>🎯 Earn points & rewards (coming soon!)</li>
             <li>🎉 Early access to special deals</li>
           </ul>
-          <div className="flex justify-center gap-4">
-            <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-              Log In
-            </Link>
-            <Link href="/signup" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-              Sign Up
-            </Link>
-          </div>
+         <div className="flex justify-center gap-4">
+  <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+    Log In
+  </Link>
+  <Link href="/shop-owner-signup" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+    Sign Up
+  </Link>
+</div>
+
         </div>
       ) : (
         <div>

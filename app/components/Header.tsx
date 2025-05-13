@@ -48,43 +48,26 @@ export default function Header() {
 
       {/* Navigation */}
       <nav className="flex items-center space-x-6 text-gray-700 font-medium">
-        {/* 🏠 Home */}
-        <Link
-          href="/"
-          className="hover:text-blue-700 transition flex items-center space-x-1"
-        >
+        <Link href="/" className="hover:text-blue-700 transition flex items-center space-x-1">
           <span role="img" aria-label="Home">🏠</span>
           <span>Home</span>
         </Link>
 
-        {/* 👤 Member */}
-        <Link
-          href="/member"
-          className="hover:text-blue-700 transition flex items-center space-x-1"
-        >
+        <Link href="/member" className="hover:text-blue-700 transition flex items-center space-x-1">
           <span role="img" aria-label="Member">👤</span>
           <span>Member</span>
         </Link>
 
-        {/* 🏪 Shop Owner */}
-        <Link
-          href="/shop-owner"
-          className="hover:text-blue-700 transition flex items-center space-x-1"
-        >
+        <Link href="/shop-owner" className="hover:text-blue-700 transition flex items-center space-x-1">
           <span role="img" aria-label="Shop Owner">🏪</span>
           <span>Shop Owner</span>
         </Link>
 
-        {/* 🧵 Home Businesses */}
-        <Link
-          href="/home-businesses"
-          className="hover:text-blue-700 transition flex items-center space-x-1"
-        >
+        <Link href="/home-businesses" className="hover:text-blue-700 transition flex items-center space-x-1">
           <span role="img" aria-label="Home Biz">🧵</span>
           <span>Home Biz</span>
         </Link>
 
-        {/* Login / Profile / Admin */}
         {!user ? (
           <Link
             href="/login"
@@ -101,7 +84,6 @@ export default function Header() {
               👤 {user.user_metadata?.username || user.email}
             </Link>
 
-            {/* 👑 Admin link (only if isAdmin is true) */}
             {user.user_metadata?.isAdmin && (
               <Link
                 href="/admin/shops"
@@ -120,14 +102,6 @@ export default function Header() {
             </button>
           </div>
         )}
-
-        {/* ℹ️ About */}
-        <Link
-          href="/about"
-          className="hover:text-blue-700 transition"
-        >
-          About
-        </Link>
       </nav>
     </header>
   );
