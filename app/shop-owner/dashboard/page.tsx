@@ -19,11 +19,17 @@ export default function ShopOwnerDashboard() {
         setUser(data.user);
 
         // ✅ Fetch their shop once we have the user
-        const { data: shopData } = await supabase
-          .from('shops')
-          .select('*')
-          .eq('owner_id', data.user.id)
-          .single();
+        const { data: shopData, error } = await supabase
+  .from('shops')
+  .select('*')
+  .eq('owner_id', data.user.id)
+  .eq('approved', true)
+  .maybeSingle(); // ✅ prevents crashing if no shop is found
+
+if (error) {
+  console.error('Error fetching shop:', error.message);
+}
+
 
         setShop(shopData);
       } else {
