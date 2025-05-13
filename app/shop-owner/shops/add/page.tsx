@@ -11,178 +11,101 @@ export default function AddShop() {
   const [parking, setParking] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [country, setCountry] = useState('');
-  const [province, setProvince] = useState('');
-  const [city, setCity] = useState('');
-  const [streetSlug, setStreetSlug] = useState('');
+  const [countries, setCountries] = useState<any[]>([]);
+  const [provinces, setProvinces] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>([]);
+  const [streets, setStreets] = useState<any[]>([]);
 
-  const [countries, setCountries] = useState<string[]>([]);
-  const [provinces, setProvinces] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
-  const [streets, setStreets] = useState<{ name: string; slug: string }[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedStreet, setSelectedStreet] = useState('');
 
   const router = useRouter();
 
-  // ✅ Load countries on mount
+  // Load countries on mount
   useEffect(() => {
     const fetchCountries = async () => {
       const { data, error } = await supabase
-        .from('streets')
-        .select('country')
-        .neq('country', null);
-
-      if (error) {
-        console.error('Fetch error:', error);
-        return;
-      }
-
-      if (!data) {
-        console.error('No data returned for countries.');
-        setCountries([]);
-        return;
-      }
-
-      const uniqueCountries = Array.from(new Set(data.map((row) => row.country)));
-      setCountries(uniqueCountries);
+        .from('countries')
+        .select('id, name')
+        .order('name');
+      if (data) setCountries(data);
     };
-
     fetchCountries();
   }, []);
 
-  // ✅ Load provinces when country changes
+  // Load provinces when country is selected
   useEffect(() => {
-    if (!country) {
-      setProvinces([]);
-      setProvince('');
-      return;
-    }
-
+    if (!selectedCountry) return;
     const fetchProvinces = async () => {
-      const { data, error } = await supabase
-        .from('streets')
-        .select('province')
-        .eq('country', country)
-        .neq('province', null);
-
-      if (error) {
-        console.error('Failed to load provinces:', error);
-        return;
-      }
-
-      if (!data) {
-        console.error('No data returned for provinces.');
-        setProvinces([]);
-        return;
-      }
-
-      const uniqueProvinces = Array.from(new Set(data.map((row) => row.province)));
-      setProvinces(uniqueProvinces);
-    };
-
-    fetchProvinces();
-    setProvince('');
-    setCities([]);
-    setCity('');
-    setStreets([]);
-    setStreetSlug('');
-  }, [country]);
-
-  // ✅ Load cities when province changes
-  useEffect(() => {
-    if (!province) {
+      const { data } = await supabase
+        .from('provinces')
+        .select('id, name')
+        .eq('country_id', selectedCountry)
+        .order('name');
+      setProvinces(data || []);
+      setSelectedProvince('');
+      setSelectedCity('');
+      setSelectedStreet('');
       setCities([]);
-      setCity('');
-      return;
-    }
-
-    const fetchCities = async () => {
-      const { data, error } = await supabase
-        .from('streets')
-        .select('city')
-        .eq('country', country)
-        .eq('province', province)
-        .neq('city', null);
-
-      if (error) {
-        console.error('Failed to load cities:', error);
-        return;
-      }
-
-      if (!data) {
-        console.error('No data returned for cities.');
-        setCities([]);
-        return;
-      }
-
-      const uniqueCities = Array.from(new Set(data.map((row) => row.city)));
-      setCities(uniqueCities);
-    };
-
-    fetchCities();
-    setCity('');
-    setStreets([]);
-    setStreetSlug('');
-  }, [province, country]);
-
-  // ✅ Load streets when city changes
-  useEffect(() => {
-    if (!city) {
       setStreets([]);
-      setStreetSlug('');
-      return;
-    }
-
-    const fetchStreets = async () => {
-      const { data, error } = await supabase
-        .from('streets')
-        .select('name, slug')
-        .eq('country', country)
-        .eq('province', province)
-        .eq('city', city);
-
-      if (error) {
-        console.error('Failed to load streets:', error);
-        return;
-      }
-
-      if (!data) {
-        console.error('No data returned for streets.');
-        setStreets([]);
-        return;
-      }
-
-      setStreets(data);
     };
+    fetchProvinces();
+  }, [selectedCountry]);
 
+  // Load cities when province is selected
+  useEffect(() => {
+    if (!selectedProvince) return;
+    const fetchCities = async () => {
+      const { data } = await supabase
+        .from('cities')
+        .select('id, name')
+        .eq('province_id', selectedProvince)
+        .order('name');
+      setCities(data || []);
+      setSelectedCity('');
+      setSelectedStreet('');
+      setStreets([]);
+    };
+    fetchCities();
+  }, [selectedProvince]);
+
+  // Load streets when city is selected
+  useEffect(() => {
+    if (!selectedCity) return;
+    const fetchStreets = async () => {
+      const { data } = await supabase
+        .from('streets')
+        .select('id, name, slug')
+        .eq('city_id', selectedCity)
+        .order('name');
+      setStreets(data || []);
+      setSelectedStreet('');
+    };
     fetchStreets();
-    setStreetSlug('');
-  }, [city, province, country]);
+  }, [selectedCity]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!name || !slug || !country || !province || !city || !streetSlug) {
+    if (!name || !slug || !selectedStreet) {
       alert('Please fill in all required fields.');
       return;
     }
 
     setLoading(true);
-
     try {
       const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError || !userData.user) {
-        throw new Error('User not logged in.');
-      }
-      const userId = userData.user.id;
+      if (!userData?.user) throw new Error('Not logged in.');
 
       const { error: insertError } = await supabase.from('shops').insert([
         {
           name,
           slug,
-          streetSlug,
+          streetSlug: streets.find((s) => s.id === selectedStreet)?.slug,
           description,
           parking,
-          owner_id: userId,
+          owner_id: userData.user.id,
         },
       ]);
 
@@ -210,7 +133,7 @@ export default function AddShop() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="p-3 rounded-lg border border-gray-300"
           />
           <input
             type="text"
@@ -218,65 +141,63 @@ export default function AddShop() {
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
             required
-            className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="p-3 rounded-lg border border-gray-300"
           />
 
-          {/* ✅ Country Dropdown */}
+          {/* Country Dropdown */}
           <select
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
+            value={selectedCountry}
+            onChange={(e) => setSelectedCountry(e.target.value)}
             required
-            className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="p-3 rounded-lg border border-gray-300"
           >
             <option value="">Select Country</option>
             {countries.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
 
-          {/* ✅ Province Dropdown */}
-          {country && (
+          {/* Province Dropdown */}
+          {provinces.length > 0 && (
             <select
-              value={province}
-              onChange={(e) => setProvince(e.target.value)}
+              value={selectedProvince}
+              onChange={(e) => setSelectedProvince(e.target.value)}
               required
-              className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="p-3 rounded-lg border border-gray-300"
             >
               <option value="">Select Province</option>
               {provinces.map((p) => (
-                <option key={p} value={p}>{p}</option>
+                <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>
           )}
 
-          {/* ✅ City Dropdown */}
-          {province && (
+          {/* City Dropdown */}
+          {cities.length > 0 && (
             <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
               required
-              className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="p-3 rounded-lg border border-gray-300"
             >
               <option value="">Select City</option>
-              {cities.map((ct) => (
-                <option key={ct} value={ct}>{ct}</option>
+              {cities.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           )}
 
-          {/* ✅ Street Dropdown */}
-          {city && (
+          {/* Street Dropdown */}
+          {streets.length > 0 && (
             <select
-              value={streetSlug}
-              onChange={(e) => setStreetSlug(e.target.value)}
+              value={selectedStreet}
+              onChange={(e) => setSelectedStreet(e.target.value)}
               required
-              className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="p-3 rounded-lg border border-gray-300"
             >
               <option value="">Select Street</option>
-              {streets.map((st) => (
-                <option key={st.slug} value={st.slug}>
-                  {st.name}
-                </option>
+              {streets.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
           )}
@@ -286,20 +207,20 @@ export default function AddShop() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="p-3 rounded-lg border border-gray-300"
           />
           <input
             type="text"
             placeholder="Parking Info (optional)"
             value={parking}
             onChange={(e) => setParking(e.target.value)}
-            className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="p-3 rounded-lg border border-gray-300"
           />
 
           <button
             type="submit"
             disabled={loading}
-            className="bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg transition font-semibold"
+            className="bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold"
           >
             {loading ? 'Saving...' : 'Save Shop'}
           </button>
