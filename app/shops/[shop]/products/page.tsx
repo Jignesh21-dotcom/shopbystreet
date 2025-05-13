@@ -1,8 +1,12 @@
-// app/shops/[shop]/products/page.tsx
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 
-export default async function ShopProductsPage({ params }: { params: { shop: string } }) {
+type ShopPageProps = {
+  params: any; // Temporarily use `any` to bypass type inference issues
+};
+
+export default async function ShopProductsPage({ params }: ShopPageProps) {
+  // Access the shop parameter
   const shopSlug = decodeURIComponent(params.shop).toLowerCase();
 
   // 1️⃣ Get shop info including city/street slugs
