@@ -2,12 +2,15 @@ import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 
 type ShopPageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: Promise<{
+    shop: string;
+  }>; // Temporarily use `Promise` to handle async params
 };
 
 export default async function ShopProductsPage({ params }: ShopPageProps) {
-  // Access the shop parameter
-  const shopSlug = decodeURIComponent(params.shop).toLowerCase();
+  // Await the params to access the shop parameter
+  const resolvedParams = await params;
+  const shopSlug = decodeURIComponent(resolvedParams.shop).toLowerCase();
 
   // 1️⃣ Get shop info including city/street slugs
   const { data: shopData, error: shopError } = await supabase
@@ -29,8 +32,12 @@ export default async function ShopProductsPage({ params }: ShopPageProps) {
     return <div className="p-8 text-red-600">❌ Shop not found.</div>;
   }
 
-  const citySlug = shopData?.street?.city?.slug || '';
-  const streetSlug = shopData?.street?.slug || '';
+  // Safely unwrap nested data
+  const streetData = Array.isArray(shopData.street) ? shopData.street[0] : shopData.street || {};
+  const cityData = Array.isArray(streetData?.city) ? streetData.city[0] : streetData.city || {};
+
+  const citySlug = cityData?.slug || '';
+  const streetSlug = streetData?.slug || '';
 
   // 2️⃣ Get products for this shop
   const { data: products, error: productError } = await supabase
@@ -46,7 +53,7 @@ export default async function ShopProductsPage({ params }: ShopPageProps) {
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* 🔙 Back to shop */}
       <Link
-        href={`/cities/${citySlug}/${streetSlug}/${params.shop}`}
+        href={`/cities/${citySlug}/${streetSlug}/${resolvedParams.shop}`}
         className="inline-block mb-6 text-sm text-blue-600 hover:underline"
       >
         ← Back to Shop
