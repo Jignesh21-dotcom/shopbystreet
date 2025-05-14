@@ -1,25 +1,37 @@
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 
-export default async function SegmentPage({
-  params,
-}: {
-  params: { city: string; street: string; segment: string };
-}) {
+type SegmentPageProps = {
+  params: any; // Temporarily use `any` to bypass type inference issues
+};
+
+export default async function SegmentPage({ params }: SegmentPageProps) {
   const { city, street, segment } = params;
 
-  // 1️⃣ Fetch street
+  // 1️⃣ Fetch street data
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
-    .select(`id, name, slug, city:city_id ( slug )`)
+    .select(`
+      id,
+      name,
+      slug,
+      city:city_id (
+        slug
+      )
+    `)
     .eq('slug', street)
     .single();
 
   if (streetError || !streetData) {
+    console.error(`Street not found: ${street}`, streetError);
     return <div className="p-6 text-red-600">❌ Street not found.</div>;
   }
 
-  if (streetData.city?.slug.toLowerCase() !== city.toLowerCase()) {
+  // Safely unwrap city data
+  const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
+
+  if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
+    console.error(`Street "${street}" does not belong to city "${city}".`);
     return <div className="p-6 text-red-600">❌ Street does not belong to city.</div>;
   }
 
@@ -28,10 +40,11 @@ export default async function SegmentPage({
     .from('street_segments')
     .select('*')
     .eq('street_id', streetData.id)
-    .ilike('name', decodeURIComponent(segment).replace(/-/g, ' ')) // loose match
+    .ilike('name', decodeURIComponent(segment).replace(/-/g, ' ')) // Loose match
     .single();
 
   if (segmentError || !segmentData) {
+    console.error(`Segment not found for street: ${street}`, segmentError);
     return <div className="p-6 text-red-600">❌ Segment not found for this street.</div>;
   }
 
@@ -43,10 +56,11 @@ export default async function SegmentPage({
     .eq('approved', true);
 
   if (shopError || !allShops) {
+    console.error(`Failed to load shops for street: ${street}`, shopError);
     return <div className="p-6 text-red-600">❌ Could not load shops.</div>;
   }
 
-  // 4️⃣ Filter by description range
+  // 4️⃣ Filter shops by description range
   const rangeStart = segmentData.range_start || 0;
   const rangeEnd = segmentData.range_end || 99999;
 
@@ -58,10 +72,12 @@ export default async function SegmentPage({
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Back to Street Link */}
       <Link href={`/cities/${city}/${street}`} className="text-blue-600 hover:underline mb-4 block">
         ← Back to Street
       </Link>
 
+      {/* Segment Header */}
       <h1 className="text-3xl font-bold mb-2 text-blue-800">
         🧭 {segmentData.name}
       </h1>
@@ -71,6 +87,7 @@ export default async function SegmentPage({
         {segmentData.range_start}–{segmentData.range_end})
       </p>
 
+      {/* Shops List */}
       {filteredShops.length === 0 ? (
         <p className="text-gray-600">No shops listed in this segment yet.</p>
       ) : (
