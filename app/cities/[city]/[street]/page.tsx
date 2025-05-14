@@ -3,11 +3,16 @@ import StreetClient from './StreetClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type StreetPageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: Promise<{
+    city: string;
+    street: string;
+  }>; // Temporarily use `Promise` to handle async params
 };
 
 export default async function StreetPage({ params }: StreetPageProps) {
-  const { city, street } = params;
+  // Await the params to access the city and street parameters
+  const resolvedParams = await params;
+  const { city, street } = resolvedParams;
 
   // ✅ Fetch street data
   const { data: streetData, error: streetError } = await supabase
