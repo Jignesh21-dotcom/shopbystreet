@@ -1,14 +1,18 @@
+// app/cities/[city]/[street]/page.tsx
 import StreetClient from './StreetClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type StreetPageProps = {
-  params: any;
+  params: {
+    city: string;
+    street: string;
+  };
 };
 
 export default async function StreetPage({ params }: StreetPageProps) {
   const { city, street } = params;
 
-  // Fetch street data
+  // ✅ Fetch street data
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
     .select(`
@@ -32,25 +36,33 @@ export default async function StreetPage({ params }: StreetPageProps) {
   const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
 
   if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
-    console.error(
-      `Validation failed: Street "${street}" does not belong to city "${city}".`,
-      { streetCitySlug: cityData?.slug, citySlug: city }
-    );
+    console.error(`Validation failed: Street "${street}" does not belong to city "${city}".`, {
+      streetCitySlug: cityData?.slug,
+      citySlug: city,
+    });
     return <div>Street not found in this city.</div>;
   }
 
   const provinceSlug = cityData?.province || 'ontario';
 
-  // ✅ FIXED: Fetch shops using streetSlug instead of street_id
+  // ✅ Fetch segments (if any)
+  const { data: segments, error: segmentsError } = await supabase
+    .from('street_segments')
+    .select('id, name, slug, from_intersection, to_intersection, range_start, range_end')
+    .eq('street_id', streetData.id)
+    .order('range_start', { ascending: true });
+
+  if (segmentsError) {
+    console.error('Failed to fetch street segments:', segmentsError);
+  }
+
+  // ✅ Fetch approved shops for the street
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
     .select('id, name, slug, description, parking')
-    .eq('streetSlug', streetData.slug)  // ✅ USE streetSlug HERE
-   .eq('streetSlug', streetData.slug)
-.eq('approved', true)
+    .eq('streetSlug', streetData.slug)
+    .eq('approved', true)
     .order('sequence', { ascending: true });
-
-  console.log('Fetched shops:', shops);
 
   if (shopsError || !shops) {
     console.error(`Failed to load shops for street: ${street}`, shopsError);
@@ -61,8 +73,9 @@ export default async function StreetPage({ params }: StreetPageProps) {
     <StreetClient
       province={provinceSlug}
       city={cityData.slug}
-      street={streetData.slug}
+      street={streetData.slug} // for header display
       shops={shops}
+      segments={segments || []}
     />
   );
 }

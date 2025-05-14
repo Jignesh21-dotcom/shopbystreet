@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 type Shop = {
@@ -11,115 +11,190 @@ type Shop = {
   parking?: string;
 };
 
+type Segment = {
+  id: string;
+  name: string;
+  slug: string;
+  from_intersection: string;
+  to_intersection: string;
+  range_start: number;
+  range_end: number;
+};
+
 type StreetClientProps = {
   province: string;
   city: string;
   street: string;
   shops: Shop[];
+  segments: Segment[];
 };
 
-export default function StreetClient({ province, city, street, shops }: StreetClientProps) {
-  const [search, setSearch] = useState('');
+// Highlight matched text
+function highlightMatch(text: string, query: string) {
+  if (!query) return text;
+  const parts = text.split(new RegExp(`(${query})`, 'gi'));
+  return parts.map((part, i) =>
+    part.toLowerCase() === query.toLowerCase() ? (
+      <mark key={i} className="bg-yellow-300 px-1 rounded">{part}</mark>
+    ) : (
+      <span key={i}>{part}</span>
+    )
+  );
+}
 
-  // Helper function to extract the base address number from the description
+export default function StreetClient({
+  province,
+  city,
+  street,
+  shops,
+  segments,
+}: StreetClientProps) {
+  const [search, setSearch] = useState('');
+  const [manuallyOpenedSegmentId, setManuallyOpenedSegmentId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (search) setManuallyOpenedSegmentId(null);
+  }, [search]);
+
   const getBaseAddress = (description: string | undefined) => {
-    if (!description) return Infinity; // Push shops without a description to the end
-    const match = description.match(/^(\d+)/); // Match the first number in the description
+    if (!description) return Infinity;
+    const match = description.match(/^(\d+)/);
     return match ? parseInt(match[1], 10) : Infinity;
   };
 
-  // Helper function to extract the plaza/mall name from the description
-  const getPlazaName = (description?: string) => {
-    if (!description) return 'Other';
-    const match = description.match(/(.+?\b(Plaza|Mall|Centre|Center)\b.*?)/i);
-    if (match) return match[1].trim();
-    const base = description
-      .replace(/(Unit|Suite|#)\s*\d+/i, '') // Remove unit/suite numbers
-      .replace(/,.*$/, '') // Remove everything after a comma
-      .trim();
-    return base || 'Other';
-  };
+  const segmentBlocks = segments.map((segment) => {
+    const segmentShops = shops.filter((shop) => {
+      const number = getBaseAddress(shop.description);
+      const fullText = `${shop.name} ${shop.description || ''} ${segment.from_intersection} ${segment.to_intersection}`.toLowerCase();
 
-  // Enhanced filtering logic to search by name or street number
-  const filteredShops = shops
-    .filter((shop) => {
-      const nameMatch = shop.name.toLowerCase().includes(search.toLowerCase());
-      const addressMatch = shop.description
-        ? shop.description.toLowerCase().includes(search.toLowerCase())
-        : false;
-      return nameMatch || addressMatch;
-    })
-    .sort((a, b) => getBaseAddress(a.description) - getBaseAddress(b.description));
+      const matchesByRange =
+        segment.range_start != null &&
+        segment.range_end != null &&
+        number >= segment.range_start &&
+        number <= segment.range_end;
 
-  // Step 2: Build display blocks preserving order
-  const displayBlocks: { plaza: string; items: Shop[] }[] = [];
+      const matchesByIntersection =
+        shop.description?.toLowerCase().includes(segment.from_intersection.toLowerCase()) ||
+        shop.description?.toLowerCase().includes(segment.to_intersection.toLowerCase());
 
-  for (const shop of filteredShops) {
-    const plaza = getPlazaName(shop.description);
-    const lastBlock = displayBlocks[displayBlocks.length - 1];
+      const matchesSearch = fullText.includes(search.toLowerCase());
 
-    if (!lastBlock || lastBlock.plaza !== plaza) {
-      displayBlocks.push({ plaza, items: [shop] });
-    } else {
-      lastBlock.items.push(shop);
-    }
-  }
+      return (matchesByRange || matchesByIntersection) && matchesSearch;
+    });
+
+    return { ...segment, shops: segmentShops };
+  });
+
+  const unmatchedShops = shops.filter((shop) => {
+    const number = getBaseAddress(shop.description);
+    const fullText = `${shop.name} ${shop.description || ''}`.toLowerCase();
+
+    const matchedInSegment = segments.some((segment) => {
+      const matchesByRange =
+        segment.range_start != null &&
+        segment.range_end != null &&
+        number >= segment.range_start &&
+        number <= segment.range_end;
+
+      const matchesByIntersection =
+        shop.description?.toLowerCase().includes(segment.from_intersection.toLowerCase()) ||
+        shop.description?.toLowerCase().includes(segment.to_intersection.toLowerCase());
+
+      return matchesByRange || matchesByIntersection;
+    });
+
+    return !matchedInSegment && fullText.includes(search.toLowerCase());
+  });
 
   return (
     <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
-      {/* Back to City Link */}
       <Link
-        href={`/cities/${city}`} // Corrected to point to the city route
+        href={`/cities/${city}`}
         className="self-start mb-6 text-blue-700 hover:underline"
       >
         ← Back to City
       </Link>
 
-      {/* Street Title */}
       <h1 className="text-4xl font-bold text-blue-700 mb-8 capitalize">
         🏙️ Shops on {street}
       </h1>
 
-      {/* Search Bar */}
       <input
         type="text"
-        placeholder="Search for a shop or street number..."
+        placeholder="Search for a shop, address, number, or intersection..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="mb-8 p-3 w-full max-w-md rounded-lg border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
 
-      {/* Shops List */}
-      {displayBlocks.length > 0 ? (
-        <div className="w-full max-w-6xl space-y-10">
-          {displayBlocks.map((block, i) => (
-            <div key={`${block.plaza}-${i}`}>
-              <h2 className="text-2xl font-semibold text-blue-800 mb-4">{block.plaza}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {block.items.map((shop) => (
-                  <Link
-                    key={shop.id}
-                    href={`/cities/${city}/${street}/${shop.slug}`}
-                    className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
-                  >
-                    <h3 className="text-xl font-semibold text-blue-700 mb-2">{shop.name}</h3>
-                    <p className="text-gray-600 flex-1">
-                      {shop.description || 'No address available.'}
-                    </p>
-                    {shop.parking && (
-                      <p className="text-sm text-gray-500 mt-4">
-                        🚗 Parking: {shop.parking}
+      <div className="w-full max-w-6xl space-y-12">
+        {segmentBlocks.map((segment) => {
+          const shouldAutoOpen = search && segment.shops.length > 0;
+          const isOpen = shouldAutoOpen || manuallyOpenedSegmentId === segment.id;
+
+          return segment.shops.length > 0 ? (
+            <div key={segment.id}>
+              <button
+                onClick={() =>
+                  setManuallyOpenedSegmentId(
+                    manuallyOpenedSegmentId === segment.id ? null : segment.id
+                  )
+                }
+                className="text-2xl font-semibold text-left text-blue-800 mb-3 block w-full hover:underline focus:outline-none"
+              >
+                🧭 {highlightMatch(segment.name, search)}
+              </button>
+
+              {isOpen && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {segment.shops.map((shop) => (
+                    <Link
+                      key={shop.id}
+                      href={`/cities/${city}/${street}/${shop.slug}`}
+                      className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition"
+                    >
+                      <h3 className="text-xl font-semibold text-blue-700 mb-2">
+                        {highlightMatch(shop.name, search)}
+                      </h3>
+                      <p className="text-gray-600">
+                        {highlightMatch(shop.description || 'No address available', search)}
                       </p>
-                    )}
-                  </Link>
-                ))}
-              </div>
+                      {shop.parking && (
+                        <p className="text-sm text-gray-500 mt-2">🚗 Parking: {shop.parking}</p>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-600 text-lg">No shops found on this street.</p>
-      )}
+          ) : null;
+        })}
+
+        {unmatchedShops.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-3">Other Shops</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {unmatchedShops.map((shop) => (
+                <Link
+                  key={shop.id}
+                  href={`/cities/${city}/${street}/${shop.slug}`}
+                  className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition"
+                >
+                  <h3 className="text-xl font-semibold text-blue-700 mb-2">
+                    {highlightMatch(shop.name, search)}
+                  </h3>
+                  <p className="text-gray-600">
+                    {highlightMatch(shop.description || 'No address available', search)}
+                  </p>
+                  {shop.parking && (
+                    <p className="text-sm text-gray-500 mt-2">🚗 Parking: {shop.parking}</p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
