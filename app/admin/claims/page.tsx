@@ -32,7 +32,13 @@ export default function AdminClaimsPage() {
     if (error) {
       console.error('Failed to fetch claims:', error.message);
     } else {
-      setClaims(data || []);
+      // Safely unwrap nested data
+      const unwrappedClaims = (data || []).map((claim: any) => ({
+        ...claim,
+        shop: Array.isArray(claim.shop) ? claim.shop[0] : claim.shop,
+        user: Array.isArray(claim.user) ? claim.user[0] : claim.user,
+      }));
+      setClaims(unwrappedClaims);
     }
 
     setLoading(false);
