@@ -45,7 +45,6 @@ export default function AdminClaimsPage() {
   };
 
   const approveClaim = async (claim: Claim) => {
-    // Step 1: Set shop.owner_id to user
     const { error: updateError } = await supabase
       .from('shops')
       .update({ owner_id: claim.user.id })
@@ -56,7 +55,6 @@ export default function AdminClaimsPage() {
       return;
     }
 
-    // Step 2: Mark claim as approved
     const { error: claimError } = await supabase
       .from('shop_claims')
       .update({ status: 'approved', reviewed_at: new Date() })

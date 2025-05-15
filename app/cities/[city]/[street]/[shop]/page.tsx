@@ -2,77 +2,55 @@ import ShopPageClient from './ShopPageClient';
 import { supabase } from '@/lib/supabaseClient';
 
 type ShopPageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: {
+    city: string;
+    street: string;
+    shop: string;
+  };
 };
 
 export default async function ShopPage({ params }: ShopPageProps) {
-  // Validate and destructure `params`
-  const city = params?.city || '';
-  const street = params?.street || '';
-  const shop = params?.shop || '';
+  const rawCity = decodeURIComponent(params.city).toLowerCase().trim();
+  const rawStreet = decodeURIComponent(params.street).toLowerCase().trim();
+  const rawShop = decodeURIComponent(params.shop).toLowerCase().trim();
 
-  // Decode and normalize route slugs
-  const rawCity = decodeURIComponent(city).toLowerCase();
-  const rawStreet = decodeURIComponent(street).toLowerCase();
-  const rawShop = decodeURIComponent(shop).toLowerCase();
-
-  // Fetch shop data with explicit joins for street and city
+  // Step 1: Fetch the shop
   const { data: shopData, error: shopError } = await supabase
     .from('shops')
-    .select(`
-      id,
-      name,
-      slug,
-      description,
-      parking,
-      image_url,
-      story,
-      street:street_id (
-        slug,
-        city:city_id (
-          slug
-        )
-      )
-    `)
+    .select('*')
     .eq('slug', rawShop)
-    .single(); // Ensure we fetch a single shop record
+    .eq('streetSlug', rawStreet)
+    .eq('approved', true)
+    .single();
 
-  if (shopError) {
-    console.error(`Supabase error while fetching shop:`, shopError);
-    return <div>⚠️ Error loading shop. Please try again later.</div>;
-  }
-
-  if (!shopData) {
-    console.error(`No shop found for slug:`, rawShop);
-    return <div>🛍️ Shop not found.</div>;
-  }
-
-  // Safely unwrap nested data
-  const streetData = Array.isArray(shopData.street) ? shopData.street[0] : shopData.street || {};
-  const cityData = Array.isArray(streetData?.city) ? streetData.city[0] : streetData.city || {};
-
-  const dbStreetSlug = streetData?.slug?.toLowerCase() || '';
-  const dbCitySlug = cityData?.slug?.toLowerCase() || '';
-
-  console.log('✅ Shop match debug:', {
-    expectedStreet: rawStreet,
-    actualStreet: dbStreetSlug,
-    expectedCity: rawCity,
-    actualCity: dbCitySlug,
-  });
-
-  // Validate match
-  if (dbStreetSlug !== rawStreet || dbCitySlug !== rawCity) {
-    console.error('❌ Shop mismatch', {
-      expectedStreet: rawStreet,
-      actualStreet: dbStreetSlug,
-      expectedCity: rawCity,
-      actualCity: dbCitySlug,
-    });
+  if (shopError || !shopData) {
+    console.error('❌ Shop fetch error:', shopError);
     return <div>🚫 Shop not found or mismatched street/city.</div>;
   }
 
-  // Pass the fetched data to the client component
+  // Step 2: Fetch the matching street
+  const { data: streetData, error: streetError } = await supabase
+    .from('streets')
+    .select('slug, city')
+    .eq('slug', rawStreet)
+    .single();
+
+  const dbStreetSlug = streetData?.slug?.toLowerCase().trim() || '';
+  const dbCitySlug = streetData?.city?.toLowerCase().trim() || '';
+
+  console.log('🛠️ Comparing shop location slugs:', {
+    dbStreetSlug,
+    dbCitySlug,
+    rawStreet,
+    rawCity,
+    matchStreet: dbStreetSlug === rawStreet,
+    matchCity: dbCitySlug === rawCity,
+  });
+
+  if (dbStreetSlug !== rawStreet || dbCitySlug !== rawCity) {
+    return <div>🚫 Shop not found or mismatched street/city.</div>;
+  }
+
   return (
     <ShopPageClient
       city={rawCity}
