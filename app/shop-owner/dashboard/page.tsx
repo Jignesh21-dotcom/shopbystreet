@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -7,29 +7,26 @@ import { useRouter } from 'next/navigation';
 
 export default function ShopOwnerDashboard() {
   const [user, setUser] = useState<any>(null);
-  const [shop, setShop] = useState<any>(null); // ✅ new shop state
+  const [shop, setShop] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // ✅ Fetch current user info
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
       if (data?.user) {
         setUser(data.user);
 
-        // ✅ Fetch their shop once we have the user
         const { data: shopData, error } = await supabase
-  .from('shops')
-  .select('*')
-  .eq('owner_id', data.user.id)
-  .eq('approved', true)
-  .maybeSingle(); // ✅ prevents crashing if no shop is found
+          .from('shops')
+          .select('*')
+          .eq('owner_id', data.user.id)
+          .eq('approved', true)
+          .maybeSingle();
 
-if (error) {
-  console.error('Error fetching shop:', error.message);
-}
-
+        if (error) {
+          console.error('Error fetching shop:', error.message);
+        }
 
         setShop(shopData);
       } else {
@@ -40,7 +37,6 @@ if (error) {
     fetchUser();
   }, [router]);
 
-  // ✅ Redirect non-shop-owners back to info page
   useEffect(() => {
     if (user && !user.user_metadata?.isShopOwner) {
       router.push('/shop-owner');
@@ -49,7 +45,6 @@ if (error) {
 
   const shopStatus = user?.user_metadata?.shopStatus || 'pendingPayment';
 
-  // ✅ Stripe payment handler
   const handlePayment = async () => {
     setLoading(true);
     try {
@@ -63,7 +58,7 @@ if (error) {
 
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url; // Redirect to Stripe Checkout
+        window.location.href = data.url;
       } else {
         alert('Failed to start payment.');
       }
@@ -78,30 +73,39 @@ if (error) {
   return (
     <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
       <div className="w-full max-w-4xl bg-white p-6 rounded-xl shadow-md">
-        <h1 className="text-3xl font-bold text-blue-700 mb-4">
-          🛍️ Shop Owner Dashboard
-        </h1>
-
+        <h1 className="text-3xl font-bold text-blue-700 mb-4">🛍️ Shop Owner Dashboard</h1>
         <p className="text-gray-700 mb-6">
           Welcome, <strong>{user?.email}</strong>! This is your shop management area.
         </p>
 
-        {/* ✅ If no shop exists, show Add Shop prompt */}
         {!shop ? (
           <div className="bg-yellow-100 border border-yellow-300 p-4 rounded-lg text-yellow-800 mb-6">
-            🚨 You have not added a shop yet. Please add your shop to start managing products.
+            🚨 You have not added or claimed a shop yet. Please check if your shop is already listed.
+
+            <div className="mt-4">
+              <Link
+                href="/shop-owner/claim"
+                className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full text-lg font-semibold transition"
+              >
+                🔍 Check Existing Shops
+              </Link>
+            </div>
+
+            <p className="mt-2 text-sm text-gray-600">
+              If you find your shop, you can submit a request to claim ownership. Otherwise, you can add a new shop.
+            </p>
+
             <div className="mt-4">
               <Link
                 href="/shop-owner/shops/add"
-                className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full text-lg font-semibold transition"
+                className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full text-lg font-semibold transition"
               >
-                ➕ Add Shop
+                ➕ Add New Shop
               </Link>
             </div>
           </div>
         ) : (
           <>
-            {/* ✅ Show shop details */}
             <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-6 text-green-800">
               ✅ <strong>Your Shop:</strong> {shop.name} (on {shop.streetSlug})
             </div>
