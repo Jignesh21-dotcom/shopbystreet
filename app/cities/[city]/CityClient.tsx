@@ -6,15 +6,17 @@ import ExpansionNotice from '@/app/components/ExpansionNotice';
 
 type CityClientProps = {
   city: string;
-  streets: { name: string; slug: string }[];
+  streets: { name: string | null; slug: string }[];
 };
 
 export default function CityClient({ city, streets }: CityClientProps) {
   const [search, setSearch] = useState('');
 
-  const filteredStreets = streets.filter((street) =>
-    street.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredStreets = streets
+    .filter((street) => street.name) // ✅ Ensure name is not null
+    .filter((street) =>
+      street.name!.toLowerCase().includes(search.toLowerCase()) // safe with '!'
+    );
 
   const highlightText = (name: string) => {
     if (!search) return name;
@@ -36,7 +38,7 @@ export default function CityClient({ city, streets }: CityClientProps) {
     <div className="min-h-screen p-6 bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center">
       {/* Back button */}
       <Link
-        href="/provinces/ontario" // Update this to dynamically link back to the province if needed
+        href="/provinces/ontario"
         className="self-start mb-6 text-blue-700 hover:text-blue-900 hover:underline"
       >
         ← Back to Ontario
@@ -63,7 +65,7 @@ export default function CityClient({ city, streets }: CityClientProps) {
               className="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl hover:scale-105 transform transition-all duration-300 text-center"
             >
               <h2 className="text-xl font-semibold text-blue-700">
-                {highlightText(street.name)}
+                {highlightText(street.name!)}
               </h2>
             </Link>
           ))}
