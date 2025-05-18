@@ -10,14 +10,16 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
+    "@turf/turf": "^7.2.0",
     "axios": "^1.9.0",
     "cloudinary": "^2.6.1",
     "csv-parser": "^3.2.0",
+    "csv-writer": "^1.6.0",
     "dotenv": "^16.5.0",
     "emailjs-com": "^3.2.0",
     "leaflet": "^1.9.4",
     "next": "^15.3.2",
-    "node-fetch": "^3.3.2",
+    "node-fetch": "^2.7.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
@@ -36,5 +38,21 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
-  }
+  },
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "allStreetBatches.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jignesh21-dotcom/shopbystreet.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jignesh21-dotcom/shopbystreet/issues"
+  },
+  "homepage": "https://github.com/Jignesh21-dotcom/shopbystreet#readme"
 }

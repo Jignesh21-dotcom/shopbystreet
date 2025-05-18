@@ -60,7 +60,7 @@ export default async function CityPage({ params }: CityPageProps) {
     promises.push(
       supabase
         .from('streets')
-        .select('name, slug')
+        .select('id, name, slug, lat, lon, city')
         .eq('city_id', cityData.id)
         .order('name', { ascending: true })
         .range(start, end)
