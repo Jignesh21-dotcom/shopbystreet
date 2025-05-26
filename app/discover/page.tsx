@@ -1,7 +1,6 @@
-import shops from "@/data/shops.json";
-import Link from "next/link";
+import { createClient } from '@/lib/supabaseServerClient';
+import Link from 'next/link';
 
-// Define the shop type
 type Shop = {
   name: string;
   slug: string;
@@ -9,22 +8,34 @@ type Shop = {
   parking: string;
   address: string;
   group: string;
-  featured?: boolean; // Optional featured property
-  discount?: string; // Optional discount property
-  tagline?: string; // Optional tagline property
+  featured?: boolean;
+  discount?: string;
+  tagline?: string;
 };
 
-export default function DiscoverPage() {
-  const featured = (shops as Shop[]).find((s) => s.featured);
-  const discounted = (shops as Shop[]).find((s) => s.discount);
-  const gem = (shops as Shop[]).find((s) => s.tagline);
+export default async function DiscoverPage() {
+  const supabase = createClient();
+
+  // Fetch shops that have either featured, discount, or tagline set
+  const { data: shops, error } = await supabase
+    .from('shops')
+    .select('*')
+    .or('featured.eq.true,discount.not.is.null,tagline.not.is.null');
+
+  if (error) {
+    console.error('Failed to load shops:', error.message);
+    return <div className="p-8 text-red-600">Error loading shops. Please try again later.</div>;
+  }
+
+  const featured = shops.find((s) => s.featured);
+  const discounted = shops.find((s) => s.discount);
+  const gem = shops.find((s) => s.tagline);
 
   return (
     <main className="min-h-screen p-8 bg-gradient-to-br from-purple-50 to-indigo-100 flex flex-col items-center">
       <h1 className="text-4xl font-bold text-indigo-800 mb-10">🔍 Discover Local Highlights</h1>
 
       <div className="grid gap-8 w-full max-w-5xl">
-        {/* Editor's Pick */}
         {featured && (
           <Card
             title="🏆 Editor's Pick"
@@ -34,7 +45,6 @@ export default function DiscoverPage() {
           />
         )}
 
-        {/* On Sale */}
         {discounted && (
           <Card
             title="💰 On Sale Now"
@@ -44,13 +54,12 @@ export default function DiscoverPage() {
           />
         )}
 
-        {/* Local Gem */}
         {gem && (
           <Card
             title="📚 Local Gem"
             shop={gem}
             color="bg-blue-100"
-            highlight={gem.tagline || "A hidden gem in your area!"} // Provide a fallback value
+            highlight={gem.tagline || 'A hidden gem in your area!'}
           />
         )}
       </div>
