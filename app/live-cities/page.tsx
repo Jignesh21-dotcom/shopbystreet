@@ -4,8 +4,14 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
+type City = {
+  slug: string;
+  name: string;
+  shop_count: number;
+};
+
 export default function LiveCitiesPage() {
-  const [cities, setCities] = useState([]);
+  const [cities, setCities] = useState<City[]>([]); // ✅ Added type
 
   useEffect(() => {
     const fetchCitiesWithShops = async () => {

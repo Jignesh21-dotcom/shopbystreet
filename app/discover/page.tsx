@@ -1,30 +1,29 @@
-import { createClient } from '@/lib/supabaseServerClient';
+import { supabaseServer } from '@/lib/supabaseServerClient';
 import Link from 'next/link';
 
 type Shop = {
+  id: string;
   name: string;
   slug: string;
   streetSlug: string;
-  parking: string;
-  address: string;
-  group: string;
+  citySlug?: string;
+  parking?: string;
+  address?: string;
+  group?: string;
   featured?: boolean;
   discount?: string;
   tagline?: string;
 };
 
 export default async function DiscoverPage() {
-  const supabase = createClient();
-
-  // Fetch shops that have either featured, discount, or tagline set
-  const { data: shops, error } = await supabase
+  const { data, error } = await supabaseServer
     .from('shops')
     .select('*')
-    .or('featured.eq.true,discount.not.is.null,tagline.not.is.null');
-
+    .limit(100); // Limit to avoid long load times
+    const shops = data as Shop[];
   if (error) {
-    console.error('Failed to load shops:', error.message);
-    return <div className="p-8 text-red-600">Error loading shops. Please try again later.</div>;
+    console.error('Failed to fetch shops:', error.message);
+    return <div className="p-6 text-red-600">Error loading shops.</div>;
   }
 
   const featured = shops.find((s) => s.featured);
@@ -59,7 +58,7 @@ export default async function DiscoverPage() {
             title="📚 Local Gem"
             shop={gem}
             color="bg-blue-100"
-            highlight={gem.tagline || 'A hidden gem in your area!'}
+            highlight={gem.tagline || "A hidden gem in your area!"}
           />
         )}
       </div>
@@ -67,7 +66,17 @@ export default async function DiscoverPage() {
   );
 }
 
-function Card({ title, shop, color, highlight }: { title: string; shop: Shop; color: string; highlight: string }) {
+function Card({
+  title,
+  shop,
+  color,
+  highlight,
+}: {
+  title: string;
+  shop: Shop;
+  color: string;
+  highlight: string;
+}) {
   return (
     <div className={`rounded-xl shadow-md p-6 ${color}`}>
       <h2 className="text-2xl font-bold mb-1">{title}</h2>
