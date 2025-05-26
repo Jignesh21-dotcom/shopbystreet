@@ -1,0 +1,9 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = true
+	symlinks = false
+	ignorecase = true
+[remote "origin"]
+	url = https://github.com/Jignesh21-dotcom/shopbystreet.git
+	fetch = +refs/heads/*:refs/remotes/origin/*

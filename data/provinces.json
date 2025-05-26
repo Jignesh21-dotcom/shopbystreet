@@ -1,0 +1,58 @@
+[
+    {
+      "name": "Ontario",
+      "slug": "ontario",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "Quebec",
+      "slug": "quebec",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "British Columbia",
+      "slug": "british-columbia",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "Alberta",
+      "slug": "alberta",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "Manitoba",
+      "slug": "manitoba",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "Saskatchewan",
+      "slug": "saskatchewan",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "Nova Scotia",
+      "slug": "nova-scotia",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "New Brunswick",
+      "slug": "new-brunswick",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "Newfoundland and Labrador",
+      "slug": "newfoundland-and-labrador",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "Prince Edward Island",
+      "slug": "prince-edward-island",
+      "countrySlug": "canada"
+    },
+    {
+      "name": "Northwest Territories",
+      "slug": "northwest-territories",
+      "countrySlug": "canada"
+    } 
+  ]
+  
