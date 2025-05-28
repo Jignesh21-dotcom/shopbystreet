@@ -4,7 +4,7 @@ import { useState } from 'react';
 import emailjs from 'emailjs-com';
 import provinces from '@/data/provinces.json';
 import cities from '@/data/cities.json';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function SubmitStreetPage() {
   const [form, setForm] = useState({

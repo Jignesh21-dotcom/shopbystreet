@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function ShopOwnerDashboard() {
   const [user, setUser] = useState<any>(null);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);

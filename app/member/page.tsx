@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function MemberPage() {
   const [user, setUser] = useState<any>(null);

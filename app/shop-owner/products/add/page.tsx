@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function AddProduct() {
   const [name, setName] = useState('');

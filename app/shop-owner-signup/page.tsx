@@ -1,6 +1,6 @@
 // app/shop-owner-signup/page.tsx
 import SignUpClient from './SignUpClient';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function ShopOwnerSignUpPage() {
   return (

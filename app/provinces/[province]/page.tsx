@@ -1,5 +1,6 @@
 import ProvinceClient from './ProvinceClient';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
+
 
 type ProvincePageProps = {
   params: any;

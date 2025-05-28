@@ -1,4 +1,3 @@
-// components/SEO.tsx
 import Head from 'next/head';
 
 type SEOProps = {
@@ -6,9 +5,10 @@ type SEOProps = {
   description?: string;
   image?: string;
   url?: string;
+  noindex?: boolean;
 };
 
-export default function SEO({ title, description, image, url }: SEOProps) {
+export default function SEO({ title, description, image, url, noindex }: SEOProps) {
   return (
     <Head>
       <title>{title}</title>
@@ -17,6 +17,7 @@ export default function SEO({ title, description, image, url }: SEOProps) {
       {image && <meta property="og:image" content={image} />}
       <meta property="og:title" content={title} />
       {description && <meta property="og:description" content={description} />}
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
       <meta name="viewport" content="width=device-width, initial-scale=1" />
     </Head>
   );

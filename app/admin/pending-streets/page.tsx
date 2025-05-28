@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function AdminPendingStreetsPage() {
   const [pending, setPending] = useState<any[]>([]);

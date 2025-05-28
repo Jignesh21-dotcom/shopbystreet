@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function HomeBusinessesPage() {
   const [submitted, setSubmitted] = useState(false);

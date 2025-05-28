@@ -1,6 +1,6 @@
 import Link from "next/link";
 import products from "@/data/products.json";
-import SEO from "@/components/SEO";
+import SEO from "@/app/components/SEO";
 
 // Define the product type
 type Product = {

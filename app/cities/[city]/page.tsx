@@ -1,6 +1,7 @@
 import CityClient from './CityClient';
 import { supabase } from '@/lib/supabaseClient';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
+
 
 type CityPageProps = {
   params: any; // Temporarily use `any` to bypass type inference issues

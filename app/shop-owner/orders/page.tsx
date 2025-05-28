@@ -1,6 +1,6 @@
 'use client';
 
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function Orders() {
   return (

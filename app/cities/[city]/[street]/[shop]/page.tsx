@@ -1,6 +1,7 @@
 import ShopPageClient from './ShopPageClient';
 import { supabase } from '@/lib/supabaseClient';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
+
 
 type ShopPageProps = {
   params: any;

@@ -1,6 +1,7 @@
 import StreetClient from './StreetClient';
 import { supabase } from '@/lib/supabaseClient';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
+
 
 type StreetPageProps = {
   params: any;

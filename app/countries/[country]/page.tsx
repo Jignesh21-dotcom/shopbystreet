@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getProvincesByCountrySlug } from '@/lib/data';
 import ExpansionNotice from '@/app/components/ExpansionNotice';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 type Props = {
   params: Promise<{

@@ -1,4 +1,4 @@
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 type Street = {
   name: string;

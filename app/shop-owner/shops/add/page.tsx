@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 export default function AddShop() {
   const [name, setName] = useState('');
@@ -24,13 +24,9 @@ export default function AddShop() {
 
   const router = useRouter();
 
-  // Load countries on mount
   useEffect(() => {
     const fetchCountries = async () => {
-      const { data } = await supabase
-        .from('countries')
-        .select('id, name')
-        .order('name');
+      const { data } = await supabase.from('countries').select('id, name').order('name');
       if (data) setCountries(data);
     };
     fetchCountries();
@@ -117,13 +113,14 @@ export default function AddShop() {
     }
   };
 
+  // SEO meta variables
   const title = 'Add Your Shop | Local Street Shop';
-  const description = 'Shop owners can easily add their local business to Local Street Shop. Connect with nearby customers and grow your presence online.';
+  const metaDescription = 'Shop owners can easily add their local business to Local Street Shop. Connect with nearby customers and grow your presence online.';
   const url = 'https://www.localstreetshop.com/shops/add';
 
   return (
     <>
-      <SEO title={title} description={description} url={url} />
+      <SEO title={title} description={metaDescription} url={url} />
 
       <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
         <div className="w-full max-w-2xl bg-white p-6 rounded-xl shadow-md">

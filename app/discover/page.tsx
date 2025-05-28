@@ -1,6 +1,6 @@
 import { supabaseServer } from '@/lib/supabaseServerClient';
 import Link from 'next/link';
-import SEO from '@/components/SEO';
+import SEO from '@/app/components/SEO';
 
 type Shop = {
   id: string;
