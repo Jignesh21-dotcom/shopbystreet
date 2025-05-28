@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import SEO from '@/components/SEO';
 
 export default function PaymentSuccess() {
   const router = useRouter();
@@ -21,8 +22,18 @@ export default function PaymentSuccess() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-xl text-green-600">✅ Payment successful! Activating your shop...</p>
-    </div>
+    <>
+      <SEO
+        title="Payment Success | Shop Street"
+        description="Your payment was successful. Your shop is being activated and you'll be redirected shortly."
+        url="https://www.localstreetshop.com/shop-owner/payment-success"
+      />
+
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-xl text-green-600">
+          ✅ Payment successful! Activating your shop...
+        </p>
+      </div>
+    </>
   );
 }

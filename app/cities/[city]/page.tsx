@@ -1,5 +1,6 @@
 import CityClient from './CityClient';
 import { supabase } from '@/lib/supabaseClient';
+import SEO from '@/components/SEO';
 
 type CityPageProps = {
   params: any; // Temporarily use `any` to bypass type inference issues
@@ -7,7 +8,6 @@ type CityPageProps = {
 
 // ✅ Use `generateStaticParams` to handle dynamic routes
 export async function generateStaticParams() {
-  // Fetch all cities from the database
   const { data: cities, error } = await supabase
     .from('cities')
     .select('slug');
@@ -22,13 +22,10 @@ export async function generateStaticParams() {
   }));
 }
 
-// ✅ Server Component for CityPage
 export default async function CityPage({ params }: CityPageProps) {
-  // Await the params to access the city parameter
   const resolvedParams = await params;
   const city = resolvedParams.city;
 
-  // Fetch city data on the server
   const { data: cityData, error: cityError } = await supabase
     .from('cities')
     .select('id, name, slug')
@@ -37,10 +34,9 @@ export default async function CityPage({ params }: CityPageProps) {
 
   if (cityError || !cityData) {
     console.error(`City not found: ${city}`);
-    return <div>City not found.</div>; // Gracefully handle missing city
+    return <div>City not found.</div>;
   }
 
-  // Fetch total count of streets for pagination
   const { count, error: countError } = await supabase
     .from('streets')
     .select('*', { count: 'exact', head: true })
@@ -48,13 +44,12 @@ export default async function CityPage({ params }: CityPageProps) {
 
   if (countError || count === null) {
     console.error(`Failed to load streets for city: ${city}`);
-    return <div>No streets found for this city.</div>; // Gracefully handle missing streets
+    return <div>No streets found for this city.</div>;
   }
 
-  const CHUNK_SIZE = 1000; // Define the chunk size for fetching streets
+  const CHUNK_SIZE = 1000;
   const promises = [];
 
-  // Fetch all streets in chunks
   for (let start = 0; start < count; start += CHUNK_SIZE) {
     const end = Math.min(start + CHUNK_SIZE - 1, count - 1);
     promises.push(
@@ -70,18 +65,22 @@ export default async function CityPage({ params }: CityPageProps) {
   const results = await Promise.all(promises);
   const streets = results.flatMap((result) => result.data ?? []);
 
-  // Handle no streets found
-  if (!streets.length) {
-    console.error(`No streets found for city: ${city}`);
-    return (
-      city.toLowerCase() === 'toronto' ? (
-        <div>No streets found for this city.</div>
-      ) : (
-        <CityClient city={cityData.name} streets={[]} />
-      )
-    );
-  }
+  const title = `Explore Streets in ${cityData.name} | Local Street Shop`;
+  const description = `Browse all streets in ${cityData.name}, Ontario. Discover local businesses, shop small, and explore neighborhoods.`;
+  const url = `https://www.localstreetshop.com/cities/${city}`;
 
-  // Pass the fetched data to the client component
-  return <CityClient city={cityData.name} streets={streets} />;
+  return (
+    <>
+      <SEO title={title} description={description} url={url} />
+      {streets.length > 0 ? (
+        <CityClient city={cityData.name} streets={streets} />
+      ) : (
+        city.toLowerCase() === 'toronto' ? (
+          <div>No streets found for this city.</div>
+        ) : (
+          <CityClient city={cityData.name} streets={[]} />
+        )
+      )}
+    </>
+  );
 }

@@ -1,5 +1,6 @@
 import { supabaseServer } from '@/lib/supabaseServerClient';
 import Link from 'next/link';
+import SEO from '@/components/SEO';
 
 type Shop = {
   id: string;
@@ -19,8 +20,9 @@ export default async function DiscoverPage() {
   const { data, error } = await supabaseServer
     .from('shops')
     .select('*')
-    .limit(100); // Limit to avoid long load times
-    const shops = data as Shop[];
+    .limit(100);
+
+  const shops = data as Shop[];
   if (error) {
     console.error('Failed to fetch shops:', error.message);
     return <div className="p-6 text-red-600">Error loading shops.</div>;
@@ -30,39 +32,47 @@ export default async function DiscoverPage() {
   const discounted = shops.find((s) => s.discount);
   const gem = shops.find((s) => s.tagline);
 
+  const title = 'Discover Local Gems | Local Street Shop';
+  const description = 'Explore featured businesses, hidden gems, and local discounts across Canadian cities. Handpicked highlights from Local Street Shop.';
+  const url = 'https://www.localstreetshop.com/discover';
+
   return (
-    <main className="min-h-screen p-8 bg-gradient-to-br from-purple-50 to-indigo-100 flex flex-col items-center">
-      <h1 className="text-4xl font-bold text-indigo-800 mb-10">🔍 Discover Local Highlights</h1>
+    <>
+      <SEO title={title} description={description} url={url} />
 
-      <div className="grid gap-8 w-full max-w-5xl">
-        {featured && (
-          <Card
-            title="🏆 Editor's Pick"
-            shop={featured}
-            color="bg-yellow-100"
-            highlight="Featured by our team"
-          />
-        )}
+      <main className="min-h-screen p-8 bg-gradient-to-br from-purple-50 to-indigo-100 flex flex-col items-center">
+        <h1 className="text-4xl font-bold text-indigo-800 mb-10">🔍 Discover Local Highlights</h1>
 
-        {discounted && (
-          <Card
-            title="💰 On Sale Now"
-            shop={discounted}
-            color="bg-green-100"
-            highlight={`Save ${discounted.discount}`}
-          />
-        )}
+        <div className="grid gap-8 w-full max-w-5xl">
+          {featured && (
+            <Card
+              title="🏆 Editor's Pick"
+              shop={featured}
+              color="bg-yellow-100"
+              highlight="Featured by our team"
+            />
+          )}
 
-        {gem && (
-          <Card
-            title="📚 Local Gem"
-            shop={gem}
-            color="bg-blue-100"
-            highlight={gem.tagline || "A hidden gem in your area!"}
-          />
-        )}
-      </div>
-    </main>
+          {discounted && (
+            <Card
+              title="💰 On Sale Now"
+              shop={discounted}
+              color="bg-green-100"
+              highlight={`Save ${discounted.discount}`}
+            />
+          )}
+
+          {gem && (
+            <Card
+              title="📚 Local Gem"
+              shop={gem}
+              color="bg-blue-100"
+              highlight={gem.tagline || "A hidden gem in your area!"}
+            />
+          )}
+        </div>
+      </main>
+    </>
   );
 }
 

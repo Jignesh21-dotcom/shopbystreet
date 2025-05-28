@@ -1,8 +1,9 @@
 import ShopPageClient from './ShopPageClient';
 import { supabase } from '@/lib/supabaseClient';
+import SEO from '@/components/SEO';
 
 type ShopPageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: any;
 };
 
 export default async function ShopPage({ params }: ShopPageProps) {
@@ -47,18 +48,28 @@ export default async function ShopPage({ params }: ShopPageProps) {
     return <div>🚫 Shop not found or mismatched street/city.</div>;
   }
 
+  // 🧠 SEO content
+  const title = `${shopData.name} | ${rawStreet.replace(/-/g, ' ')} | Local Street Shop`;
+  const description = shopData.description
+    ? `${shopData.name} - ${shopData.description}`
+    : `Visit ${shopData.name} located on ${rawStreet.replace(/-/g, ' ')} in ${rawCity}. Support local shopping.`;
+  const url = `https://www.localstreetshop.com/cities/${rawCity}/${rawStreet}/${rawShop}`;
+
   return (
-    <ShopPageClient
-      city={rawCity}
-      street={rawStreet}
-      shop={rawShop}
-      shopData={{
-        name: shopData.name,
-        description: shopData.description,
-        parking: shopData.parking,
-        image_url: shopData.image_url,
-        story: shopData.story,
-      }}
-    />
+    <>
+      <SEO title={title} description={description} url={url} />
+      <ShopPageClient
+        city={rawCity}
+        street={rawStreet}
+        shop={rawShop}
+        shopData={{
+          name: shopData.name,
+          description: shopData.description,
+          parking: shopData.parking,
+          image_url: shopData.image_url,
+          story: shopData.story,
+        }}
+      />
+    </>
   );
 }

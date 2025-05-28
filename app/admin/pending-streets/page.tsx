@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import SEO from '@/components/SEO';
 
 export default function AdminPendingStreetsPage() {
   const [pending, setPending] = useState<any[]>([]);
@@ -13,7 +14,6 @@ export default function AdminPendingStreetsPage() {
   const handleApprove = async (index: number) => {
     const approvedStreet = pending[index];
 
-    // Send to backend API to write into streets.json
     const res = await fetch('/api/approve-street', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -25,7 +25,6 @@ export default function AdminPendingStreetsPage() {
       return;
     }
 
-    // Remove from pending
     const updated = [...pending];
     updated.splice(index, 1);
     setPending(updated);
@@ -42,45 +41,47 @@ export default function AdminPendingStreetsPage() {
   };
 
   return (
-    <main className="min-h-screen p-8 bg-gradient-to-br from-red-50 to-yellow-100">
-      <h1 className="text-3xl font-bold text-red-800 mb-6">🛠 Pending Street Submissions</h1>
+    <>
+      <SEO
+        title="Admin: Pending Street Approvals | Shop Street"
+        description="Review and approve newly submitted streets from users."
+        url="https://www.localstreetshop.com/admin/pending-streets"
+        noindex
+      />
+      <main className="min-h-screen p-8 bg-gradient-to-br from-red-50 to-yellow-100">
+        <h1 className="text-3xl font-bold text-red-800 mb-6">🛠 Pending Street Submissions</h1>
 
-      {pending.length === 0 ? (
-        <p className="text-gray-600">No pending streets right now.</p>
-      ) : (
-        <div className="space-y-6 max-w-3xl">
-          {pending.map((street, index) => (
-            <div
-              key={index}
-              className="bg-white p-5 rounded-xl shadow border-l-4 border-yellow-400 space-y-2"
-            >
-              <p>
-                <strong>Street:</strong> {street.name}
-              </p>
-              <p>
-                <strong>City:</strong> {street.citySlug}
-              </p>
-              <p>
-                <strong>Province:</strong> {street.provinceSlug}
-              </p>
-              <div className="flex gap-4 mt-2">
-                <button
-                  onClick={() => handleApprove(index)}
-                  className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
-                >
-                  ✅ Approve
-                </button>
-                <button
-                  onClick={() => handleReject(index)}
-                  className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
-                >
-                  ❌ Reject
-                </button>
+        {pending.length === 0 ? (
+          <p className="text-gray-600">No pending streets right now.</p>
+        ) : (
+          <div className="space-y-6 max-w-3xl">
+            {pending.map((street, index) => (
+              <div
+                key={index}
+                className="bg-white p-5 rounded-xl shadow border-l-4 border-yellow-400 space-y-2"
+              >
+                <p><strong>Street:</strong> {street.name}</p>
+                <p><strong>City:</strong> {street.citySlug}</p>
+                <p><strong>Province:</strong> {street.provinceSlug}</p>
+                <div className="flex gap-4 mt-2">
+                  <button
+                    onClick={() => handleApprove(index)}
+                    className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
+                  >
+                    ✅ Approve
+                  </button>
+                  <button
+                    onClick={() => handleReject(index)}
+                    className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
+                  >
+                    ❌ Reject
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </main>
+            ))}
+          </div>
+        )}
+      </main>
+    </>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import SEO from '@/components/SEO';
 
 type Claim = {
   id: string;
@@ -32,7 +33,6 @@ export default function AdminClaimsPage() {
     if (error) {
       console.error('Failed to fetch claims:', error.message);
     } else {
-      // Safely unwrap nested data
       const unwrappedClaims = (data || []).map((claim: any) => ({
         ...claim,
         shop: Array.isArray(claim.shop) ? claim.shop[0] : claim.shop,
@@ -88,45 +88,53 @@ export default function AdminClaimsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen p-6 bg-gray-50">
-      <h1 className="text-3xl font-bold mb-6 text-blue-700">📋 Admin: Shop Claim Requests</h1>
+    <>
+      <SEO
+        title="Admin: Shop Claims | Shop Street"
+        description="Review and approve shop ownership claims."
+        url="https://www.localstreetshop.com/admin"
+        noindex
+      />
+      <main className="min-h-screen p-6 bg-gray-50">
+        <h1 className="text-3xl font-bold mb-6 text-blue-700">📋 Admin: Shop Claim Requests</h1>
 
-      {loading ? (
-        <p>Loading claims...</p>
-      ) : claims.length === 0 ? (
-        <p className="text-green-600 font-semibold">✅ No pending claims to review.</p>
-      ) : (
-        <ul className="space-y-6">
-          {claims.map((claim) => (
-            <li
-              key={claim.id}
-              className="bg-white p-4 rounded-lg shadow border border-gray-200"
-            >
-              <div className="text-lg font-semibold text-gray-800">{claim.shop.name}</div>
-              <p className="text-sm text-gray-600 mb-1">
-                Claimed by: <strong>{claim.user.email}</strong>
-              </p>
-              <p className="text-sm text-gray-700 italic">
-                {claim.message || 'No message provided.'}
-              </p>
-              <div className="flex space-x-4 mt-3">
-                <button
-                  onClick={() => approveClaim(claim)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-                >
-                  ✅ Approve
-                </button>
-                <button
-                  onClick={() => rejectClaim(claim.id)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-                >
-                  ❌ Reject
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
+        {loading ? (
+          <p>Loading claims...</p>
+        ) : claims.length === 0 ? (
+          <p className="text-green-600 font-semibold">✅ No pending claims to review.</p>
+        ) : (
+          <ul className="space-y-6">
+            {claims.map((claim) => (
+              <li
+                key={claim.id}
+                className="bg-white p-4 rounded-lg shadow border border-gray-200"
+              >
+                <div className="text-lg font-semibold text-gray-800">{claim.shop.name}</div>
+                <p className="text-sm text-gray-600 mb-1">
+                  Claimed by: <strong>{claim.user.email}</strong>
+                </p>
+                <p className="text-sm text-gray-700 italic">
+                  {claim.message || 'No message provided.'}
+                </p>
+                <div className="flex space-x-4 mt-3">
+                  <button
+                    onClick={() => approveClaim(claim)}
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                  >
+                    ✅ Approve
+                  </button>
+                  <button
+                    onClick={() => rejectClaim(claim.id)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                  >
+                    ❌ Reject
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
+    </>
   );
 }

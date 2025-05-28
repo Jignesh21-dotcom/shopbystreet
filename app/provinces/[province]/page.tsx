@@ -1,7 +1,8 @@
 import ProvinceClient from './ProvinceClient';
+import SEO from '@/components/SEO';
 
 type ProvincePageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: any;
 };
 
 // ✅ Use `generateStaticParams` to handle dynamic routes
@@ -22,20 +23,24 @@ export async function generateStaticParams() {
     'yukon',
   ];
 
-  const staticParams = provinces.map((province) => ({
-    province,
-  }));
-
-  // Debugging log to verify the structure of staticParams
-  console.log('Static Params:', staticParams);
-
-  return staticParams;
+  return provinces.map((province) => ({ province }));
 }
 
-// ✅ Explicitly type the `ProvincePage` component
 export default function ProvincePage({ params }: ProvincePageProps) {
-  // Debugging log to verify the structure of params
-  console.log('Params:', params);
+  const { province } = params;
 
-  return <ProvinceClient province={params.province} />;
+  const displayName = decodeURIComponent(province)
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+  const title = `Explore Cities in ${displayName} | Local Street Shop`;
+  const description = `Browse cities in ${displayName} and discover local businesses street by street.`;
+  const url = `https://www.localstreetshop.com/provinces/${province}`;
+
+  return (
+    <>
+      <SEO title={title} description={description} url={url} />
+      <ProvinceClient province={province} />
+    </>
+  );
 }

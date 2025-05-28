@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
+import SEO from '@/components/SEO';
 
 export default function ShopOwnerLanding() {
   const [user, setUser] = useState<any>(null);
@@ -29,34 +30,42 @@ export default function ShopOwnerLanding() {
     }
   }, [user, router]);
 
+  const title = 'Shop Owner Portal | Manage Your Business on Local Street Shop';
+  const description = 'Sign up or log in to manage your local shop, add products, and reach customers across Canada. Powered by Local Street Shop.';
+  const url = 'https://www.localstreetshop.com/shop-owner';
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-2xl text-center">
-        <h1 className="text-3xl font-bold text-blue-700 mb-4">🏪 Shop Owner Area</h1>
-        <p className="text-gray-700 mb-6">
-          Welcome to the ShopStreet Shop Owner section!  
-          List your shop, manage your products, and reach new customers across Canada.
-        </p>
+    <>
+      <SEO title={title} description={description} url={url} />
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link
-            href="/shop-owner-signup"
-            className="px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition font-semibold"
-          >
-            📝 Sign Up as Shop Owner
-          </Link>
-          <Link
-            href="/login"
-            className="px-6 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition font-semibold"
-          >
-            🔑 Login
-          </Link>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+        <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-2xl text-center">
+          <h1 className="text-3xl font-bold text-blue-700 mb-4">🏪 Shop Owner Area</h1>
+          <p className="text-gray-700 mb-6">
+            Welcome to the ShopStreet Shop Owner section!  
+            List your shop, manage your products, and reach new customers across Canada.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link
+              href="/shop-owner-signup"
+              className="px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition font-semibold"
+            >
+              📝 Sign Up as Shop Owner
+            </Link>
+            <Link
+              href="/login"
+              className="px-6 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition font-semibold"
+            >
+              🔑 Login
+            </Link>
+          </div>
+
+          <p className="text-sm text-gray-500 mt-6">
+            Already a shop owner? Log in to manage your products.
+          </p>
         </div>
-
-        <p className="text-sm text-gray-500 mt-6">
-          Already a shop owner? Log in to manage your products.
-        </p>
       </div>
-    </div>
+    </>
   );
 }

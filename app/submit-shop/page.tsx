@@ -1,8 +1,10 @@
+import SEO from '@/components/SEO';
+
 type Street = {
   name: string;
   slug: string;
   citySlug: string;
-  provinceSlug?: string; // Optional provinceSlug
+  provinceSlug?: string;
 };
 
 export default function SubmitShopPage() {
@@ -13,16 +15,24 @@ export default function SubmitShopPage() {
   ];
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Submit Your Shop</h1>
-      <ul>
-        {streets.map((street) => (
-          <li key={street.slug}>
-            {street.name} - {street.citySlug}
-            {street.provinceSlug && `, ${street.provinceSlug}`}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <SEO
+        title="Submit Your Shop | Local Street Shop"
+        description="Add your local business to Local Street Shop and help customers find you online. Choose your street and start listing today!"
+        url="https://www.localstreetshop.com/submit-shop"
+      />
+
+      <div className="p-6 max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">Submit Your Shop</h1>
+        <ul className="space-y-2">
+          {streets.map((street) => (
+            <li key={street.slug} className="text-gray-800">
+              {street.name} — {street.citySlug}
+              {street.provinceSlug && `, ${street.provinceSlug}`}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }
