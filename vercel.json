@@ -1,0 +1,18 @@
+{
+  "ignoreCommand": "echo 'Skipping non-web folders'",
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SUPABASE_URL": "https://qdyjfdruhrpcwwmdwpzd.supabase.co",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "hbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkeWpmZHJ1aHJwY3d3bWR3cHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMTcxMDIsImV4cCI6MjA2MTg5MzEwMn0.rAXHAnIiOlhuNPIHqNNzzXXGzZNNhcWLsbFO-PsJXiQ"
+    }
+  },
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@vercel/next"
+    }
+  ],
+  "ignore": [
+    "localstreetshop-app/**"
+  ]
+}
