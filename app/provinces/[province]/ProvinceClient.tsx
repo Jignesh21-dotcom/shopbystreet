@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import ExpansionNotice from '@/app/components/ExpansionNotice';
 import { getCitiesByProvinceSlug } from '@/lib/data';
 
@@ -19,6 +20,22 @@ const provinceBackgrounds: Record<string, string> = {
   'northwest-territories': 'https://images.pexels.com/photos/417174/pexels-photo-417174.jpeg',
   nunavut: 'https://images.pexels.com/photos/417175/pexels-photo-417175.jpeg',
   yukon: 'https://images.pexels.com/photos/417176/pexels-photo-417176.jpeg',
+};
+
+const provinceFlags: Record<string, string> = {
+  ontario: '/flags/ontario.png',
+  quebec: '/flags/quebec.png',
+  'british-columbia': '/flags/british-columbia.png',
+  alberta: '/flags/alberta.png',
+  manitoba: '/flags/manitoba.png',
+  saskatchewan: '/flags/saskatchewan.png',
+  'nova-scotia': '/flags/nova-scotia.png',
+  'new-brunswick': '/flags/new-brunswick.png',
+  'newfoundland-and-labrador': '/flags/newfoundland-and-labrador.png',
+  'prince-edward-island': '/flags/prince-edward-island.png',
+  'northwest-territories': '/flags/northwest-territories.png',
+  nunavut: '/flags/nunavut.png',
+  yukon: '/flags/yukon.png',
 };
 
 type ProvinceClientProps = {
@@ -75,19 +92,18 @@ export default function ProvinceClient({ province }: ProvinceClientProps) {
 
   const backgroundImage =
     provinceBackgrounds[province.toLowerCase()] ||
-    'https://images.pexels.com/photos/1029613/pexels-photo-1029613.jpeg'; // Fallback
+    'https://images.pexels.com/photos/1029613/pexels-photo-1029613.jpeg'; // fallback
+
+  const provinceFlag = provinceFlags[province.toLowerCase()] || '/flags/ontario.png';
 
   return (
     <div
       className="min-h-screen p-6 bg-cover bg-center flex flex-col items-center relative overflow-hidden"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
 
-      {/* Main content */}
       <div className="relative z-10 flex flex-col items-center w-full">
-        {/* Back to Canada */}
         <Link
           href="/countries/canada"
           className="self-start mb-6 text-blue-200 hover:text-white hover:underline"
@@ -95,15 +111,19 @@ export default function ProvinceClient({ province }: ProvinceClientProps) {
           ← Back to Canada
         </Link>
 
-        {/* Expansion Notice */}
         <ExpansionNotice />
 
-        {/* Province Title */}
-        <h1 className="text-4xl font-bold text-white mb-6 capitalize text-center">
-          🗺️ {decodeURIComponent(province).replace(/-/g, ' ')}
+        <h1 className="text-4xl font-bold text-white mb-6 capitalize text-center flex items-center gap-4">
+          <Image
+            src={provinceFlag}
+            alt={`${province} flag`}
+            width={48}
+            height={32}
+            className="rounded border shadow"
+          />
+          {decodeURIComponent(province).replace(/-/g, ' ')}
         </h1>
 
-        {/* Search Input */}
         <input
           type="text"
           placeholder="Search for a city..."
@@ -112,7 +132,6 @@ export default function ProvinceClient({ province }: ProvinceClientProps) {
           className="mb-8 p-3 w-full max-w-md rounded-lg border border-blue-300 shadow focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition"
         />
 
-        {/* Cities List */}
         {loading ? (
           <p className="text-white text-lg">Loading cities...</p>
         ) : error ? (
