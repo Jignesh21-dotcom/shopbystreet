@@ -21,7 +21,7 @@ export default function HomePage() {
         <div className="bg-black bg-opacity-60 min-h-screen w-full flex flex-col items-center justify-center px-4 py-20 text-center">
           <div className="space-y-8 max-w-3xl animate-fade-in">
             <h1 className="text-5xl font-extrabold tracking-tight leading-tight opacity-0 animate-fade-in-up delay-100 drop-shadow-xl">
-              🛍️ Welcome to Shop Street
+              🛍️ Welcome to Local Street Shop
             </h1>
             <p className="text-xl md:text-2xl font-light opacity-0 animate-fade-in-up delay-200">
               Discover authentic local businesses and explore real shops across Canadian streets.
