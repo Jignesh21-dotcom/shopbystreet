@@ -9,16 +9,17 @@ import {
   Dimensions,
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import Footer from '../components/Footer';
 
 const API_URL = 'https://qdyjfdruhrpcwwmdwpzd.supabase.co/rest/v1';
-const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkeWpmZHJ1aHJwY3d3bWR3cHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMTcxMDIsImV4cCI6MjA2MTg5MzEwMn0.rAXHAnIiOlhuNPIHqNNzzXXGzZNNhcWLsbFO-PsJXiQ';
+const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkeWpmZHJ1aHJwY3d3bWR3cHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMTcxMDIsImV4cCI6MjA2MTg5MzEwMn0.rAXHAnIiOlhuNPIHqNNzzXXGzZNNhcWLsbFO-PsJXiQ'; // Replace with secure env value
 
 const { width } = Dimensions.get('window');
 const backgroundColors = ['#E3F2FD', '#FFF3E0', '#E8F5E9', '#FCE4EC', '#F3E5F5'];
 
 export default function CitiesScreen({ navigation }: any) {
   const route = useRoute<any>();
-  const { provinceSlug } = route.params;
+  const { provinceSlug } = route.params || {};
 
   const [cities, setCities] = useState<{ id: string; name: string; slug: string }[]>([]);
   const [filteredCities, setFilteredCities] = useState(cities);
@@ -32,6 +33,8 @@ export default function CitiesScreen({ navigation }: any) {
   };
 
   useEffect(() => {
+    if (!provinceSlug) return;
+
     const provinceName = convertSlugToName(provinceSlug);
 
     fetch(`${API_URL}/cities?select=id,name,slug&province=eq.${provinceName}`, {
@@ -62,9 +65,9 @@ export default function CitiesScreen({ navigation }: any) {
         { backgroundColor: backgroundColors[index % backgroundColors.length] },
       ]}
       onPress={() =>
-        navigation.navigate('Streets', {
-          citySlug: item.slug,
-          provinceSlug: provinceSlug,
+        navigation.navigate('StreetScreen', {
+          cityId: item.id,
+          cityName: item.name,
         })
       }
     >
@@ -72,21 +75,41 @@ export default function CitiesScreen({ navigation }: any) {
     </TouchableOpacity>
   );
 
+  if (!provinceSlug) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ fontSize: 18, color: 'red' }}>
+          ❌ Missing province slug. Please go back and try again.
+        </Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search city..."
-        value={searchText}
-        onChangeText={setSearchText}
-        placeholderTextColor="#777"
-      />
-      <FlatList
-        data={filteredCities}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-      />
+    <View style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>{'\u2190'} Back</Text>
+        </TouchableOpacity>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search city..."
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholderTextColor="#777"
+        />
+        <FlatList
+          data={filteredCities}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+        />
+      </View>
+      <Footer />
     </View>
   );
 }
@@ -95,6 +118,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: '#fff',
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginTop: 8,
+    marginBottom: 4,
+    alignSelf: 'flex-start',
+  },
+  backButtonText: {
+    fontSize: 17,
+    color: '#2563eb',
+    fontWeight: '600',
   },
   searchBar: {
     height: 48,

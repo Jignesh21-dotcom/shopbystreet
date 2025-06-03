@@ -9,11 +9,12 @@ import streets from '@/data/streets.json';
 export default function SubmitShopForm() {
   const [form, setForm] = useState({
     name: '',
+    address: '', // ✅ New field
     provinceSlug: '',
     citySlug: '',
     streetSlug: '',
     parking: 'Paid Parking Nearby',
-    wantsProducts: false, // Checkbox state
+    wantsProducts: false,
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -37,10 +38,11 @@ export default function SubmitShopForm() {
     const newShop = {
       name: form.name,
       slug: form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+      address: form.address, // ✅ Include address
       streetSlug: form.streetSlug,
       parking: form.parking,
       wantsProducts: form.wantsProducts,
-      paid: false, // Default false
+      paid: false,
     };
 
     try {
@@ -51,20 +53,21 @@ export default function SubmitShopForm() {
       });
 
       if (res.ok) {
-        // Send EmailJS alert
+        // ✅ Send EmailJS alert
         emailjs
           .send(
-            'service_ra938k5', // Your Service ID
-            'template_p1vwnzp', // Your Template ID
+            'service_ra938k5',
+            'template_p1vwnzp',
             {
               shop_name: form.name,
+              address: form.address,
               street_slug: form.streetSlug,
               city_slug: form.citySlug,
               province_slug: form.provinceSlug,
               parking: form.parking,
               wants_products: form.wantsProducts ? 'Yes - wants to add products ($49)' : 'No',
             },
-            'ddd-F-k7CZdBPSiOm' // Your Public Key
+            'ddd-F-k7CZdBPSiOm'
           )
           .then(() => {
             console.log('✅ Email sent');
@@ -104,6 +107,19 @@ export default function SubmitShopForm() {
               onChange={handleChange}
               required
               className="w-full border rounded px-3 py-2"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Full Address</label>
+            <input
+              type="text"
+              name="address"
+              value={form.address}
+              onChange={handleChange}
+              required
+              className="w-full border rounded px-3 py-2"
+              placeholder="e.g. 123 Queen St E, Toronto, ON"
             />
           </div>
 

@@ -8,6 +8,7 @@ import SEO from '@/app/components/SEO';
 export default function AddShop() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
+  const [addressLabel, setAddressLabel] = useState(''); // ✅ New field
   const [description, setDescription] = useState('');
   const [parking, setParking] = useState('');
   const [loading, setLoading] = useState(false);
@@ -82,7 +83,7 @@ export default function AddShop() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !slug || !selectedStreet) {
+    if (!name || !slug || !addressLabel || !selectedStreet) {
       alert('Please fill in all required fields.');
       return;
     }
@@ -96,7 +97,7 @@ export default function AddShop() {
         name,
         slug,
         streetSlug: streets.find((s) => s.id === selectedStreet)?.slug,
-        description,
+        description: addressLabel,
         parking,
         owner_id: userData.user.id,
       }]);
@@ -113,7 +114,6 @@ export default function AddShop() {
     }
   };
 
-  // SEO meta variables
   const title = 'Add Your Shop | Local Street Shop';
   const metaDescription = 'Shop owners can easily add their local business to Local Street Shop. Connect with nearby customers and grow your presence online.';
   const url = 'https://www.localstreetshop.com/shops/add';
@@ -135,11 +135,21 @@ export default function AddShop() {
               required
               className="p-3 rounded-lg border border-gray-300"
             />
+
             <input
               type="text"
               placeholder="Slug (e.g., joes-coffee)"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
+              required
+              className="p-3 rounded-lg border border-gray-300"
+            />
+
+            <input
+              type="text"
+              placeholder="Full Address (e.g., 123 Queen St E, Toronto)"
+              value={addressLabel}
+              onChange={(e) => setAddressLabel(e.target.value)}
               required
               className="p-3 rounded-lg border border-gray-300"
             />
@@ -205,6 +215,7 @@ export default function AddShop() {
               rows={3}
               className="p-3 rounded-lg border border-gray-300"
             />
+
             <input
               type="text"
               placeholder="Parking Info (optional)"

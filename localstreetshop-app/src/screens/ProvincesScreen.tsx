@@ -8,6 +8,7 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
+import Footer from '../components/Footer'; // <-- Import Footer
 
 const { width } = Dimensions.get('window');
 const numColumns = 2;
@@ -90,14 +91,24 @@ export default function ProvincesScreen({ navigation }: any) {
   );
 
   return (
-    <FlatList
-      data={provinces}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
-      numColumns={numColumns}
-      columnWrapperStyle={styles.row}
-      contentContainerStyle={styles.grid}
-    />
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.backButtonText}>{'\u2190'} Back</Text>
+      </TouchableOpacity>
+      <FlatList
+        data={provinces}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        numColumns={numColumns}
+        columnWrapperStyle={styles.row}
+        contentContainerStyle={styles.grid}
+      />
+      <Footer />
+    </View>
   );
 }
 
@@ -133,5 +144,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
     textAlign: 'center',
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginTop: 8,
+    marginBottom: 4,
+    alignSelf: 'flex-start',
+  },
+  backButtonText: {
+    fontSize: 17,
+    color: '#2563eb',
+    fontWeight: '600',
   },
 });

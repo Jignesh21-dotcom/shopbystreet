@@ -23,10 +23,25 @@ export default function ProductList() {
       const userId = userData?.user?.id;
       if (!userId) return;
 
+      // Fetch shops owned by the user
+      const { data: shops, error: shopError } = await supabase
+        .from('shops')
+        .select('id')
+        .eq('owner_id', userId);
+
+      if (shopError || !shops || shops.length === 0) {
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+
+      const shopIds = shops.map((s) => s.id);
+
+      // Fetch products for those shops
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('owner_id', userId);
+        .in('shop_id', shopIds);
 
       if (!error && data) {
         setProducts(data);
@@ -37,6 +52,18 @@ export default function ProductList() {
 
     fetchProducts();
   }, []);
+
+  const handleDelete = async (productId: string) => {
+    const confirmed = confirm('Are you sure you want to delete this product?');
+    if (!confirmed) return;
+
+    const { error } = await supabase.from('products').delete().eq('id', productId);
+    if (error) {
+      alert('❌ Failed to delete product');
+    } else {
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
+    }
+  };
 
   return (
     <>
@@ -51,7 +78,7 @@ export default function ProductList() {
           <h1 className="text-3xl font-bold text-blue-700 mb-4">📦 Your Products</h1>
 
           <p className="text-gray-700 mb-6">
-            Here you can view and manage all your listed products.
+            Here you can view, edit, or delete your listed products.
           </p>
 
           <div className="flex justify-end mb-4">
@@ -80,6 +107,7 @@ export default function ProductList() {
                     {product.name}
                   </h2>
                   <p className="text-sm text-gray-600 mb-2">${product.price.toFixed(2)}</p>
+
                   {product.image_url && (
                     <img
                       src={product.image_url}
@@ -87,9 +115,25 @@ export default function ProductList() {
                       className="w-full h-40 object-cover rounded"
                     />
                   )}
+
                   <p className="text-gray-600 text-sm mt-2">
                     {product.description?.slice(0, 80)}...
                   </p>
+
+                  <div className="flex gap-4 mt-4">
+                    <Link
+                      href={`/shop-owner/products/edit/${product.id}`}
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      ✏️ Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(product.id)}
+                      className="text-red-600 hover:underline text-sm"
+                    >
+                      🗑 Delete
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

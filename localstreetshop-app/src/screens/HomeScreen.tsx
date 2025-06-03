@@ -8,38 +8,42 @@ import {
   SafeAreaView,
   ImageBackground,
 } from 'react-native';
+import Footer from '../components/Footer'; // <-- Import Footer
 
 const { width } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }: any) {
   return (
-    <View style={styles.background}>
-      <ImageBackground
-        source={require('../../assets/images/home-bg-final.png')}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      >
-        <SafeAreaView style={styles.wrapper}>
-          <Text style={styles.title}>Welcome to Local Street Shop</Text>
-          <Text style={styles.subtitle}>
-            Discover authentic local businesses and explore real shops across Canadian streets.
-          </Text>
+    <View style={{ flex: 1 }}>
+      <View style={styles.background}>
+        <ImageBackground
+          source={require('../../assets/images/home-bg-final.png')}
+          style={styles.backgroundImage}
+          resizeMode="cover"
+        >
+          <SafeAreaView style={styles.wrapper}>
+            <Text style={styles.title}>Welcome to Local Street Shop</Text>
+            <Text style={styles.subtitle}>
+              Discover authentic local businesses and explore real shops across Canadian streets.
+            </Text>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('Provinces')}
-          >
-            <Text style={styles.buttonText}>Explore Canada</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('Provinces')}
+            >
+              <Text style={styles.buttonText}>Explore Canada</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate('Cities')}
-          >
-            <Text style={styles.buttonText}>Live Cities</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
-      </ImageBackground>
+            <TouchableOpacity
+              style={[styles.button, styles.secondaryButton]}
+              onPress={() => navigation.navigate('LiveCitiesScreen')}
+            >
+              <Text style={styles.buttonText}>Live Cities</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </ImageBackground>
+      </View>
+      <Footer />
     </View>
   );
 }
