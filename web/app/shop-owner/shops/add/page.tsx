@@ -8,7 +8,7 @@ import SEO from '@/app/components/SEO';
 export default function AddShop() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
-  const [addressLabel, setAddressLabel] = useState(''); // ✅ New field
+  const [addressLabel, setAddressLabel] = useState('');
   const [description, setDescription] = useState('');
   const [parking, setParking] = useState('');
   const [loading, setLoading] = useState(false);
@@ -96,7 +96,7 @@ export default function AddShop() {
       const { error } = await supabase.from('shops').insert([{
         name,
         slug,
-        streetSlug: streets.find((s) => s.id === selectedStreet)?.slug,
+        street_id: selectedStreet, // Use normalized street_id
         description: addressLabel,
         parking,
         owner_id: userData.user.id,

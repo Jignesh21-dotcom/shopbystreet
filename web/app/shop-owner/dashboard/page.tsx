@@ -20,7 +20,17 @@ export default function ShopOwnerDashboard() {
 
         const { data: shopData, error } = await supabase
           .from('shops')
-          .select('*')
+          .select(`
+            *,
+            street:street_id (
+              name,
+              slug,
+              city:city_id (
+                name,
+                slug
+              )
+            )
+          `)
           .eq('owner_id', data.user.id)
           .eq('approved', true)
           .maybeSingle();
@@ -29,7 +39,16 @@ export default function ShopOwnerDashboard() {
           console.error('Error fetching shop:', error.message);
         }
 
-        setShop(shopData);
+        // Normalize street and city to objects (not arrays)
+        let normalizedShop = shopData;
+        if (normalizedShop) {
+          let street = normalizedShop.street;
+          if (Array.isArray(street)) street = street[0] || null;
+          if (street && Array.isArray(street.city)) street.city = street.city[0] || null;
+          normalizedShop = { ...normalizedShop, street };
+        }
+
+        setShop(normalizedShop);
       } else {
         router.push('/login');
       }
@@ -115,7 +134,12 @@ export default function ShopOwnerDashboard() {
           ) : (
             <>
               <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-6 text-green-800">
-                ✅ <strong>Your Shop:</strong> {shop.name} (on {shop.streetSlug})
+                ✅ <strong>Your Shop:</strong> {shop.name}
+                {shop.street?.name && (
+                  <> (on {shop.street.name}
+                  {shop.street.city?.name ? `, ${shop.street.city.name}` : ''}
+                  )</>
+                )}
               </div>
 
               {shopStatus === 'pendingPayment' ? (

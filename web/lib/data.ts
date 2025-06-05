@@ -19,7 +19,7 @@ export async function getProvincesByCountrySlug(countrySlug: string) {
   // Now get provinces linked to that country
   const { data: provincesData, error: provincesError } = await supabase
     .from('provinces')
-    .select('name, slug')
+    .select('id, name, slug') // <-- include id
     .eq('country_id', countryId)
     .order('name');
 
@@ -50,7 +50,7 @@ export async function getCitiesByProvinceSlug(provinceSlug: string) {
   // Now get cities linked to that province
   const { data: citiesData, error: citiesError } = await supabase
     .from('cities')
-    .select('name, slug')
+    .select('id, name, slug') // <-- include id
     .eq('province_id', provinceId)
     .order('name');
 
@@ -81,7 +81,7 @@ export async function getStreetsByCitySlug(citySlug: string) {
   // Now get streets linked to that city
   const { data: streetsData, error: streetsError } = await supabase
     .from('streets')
-    .select('name, slug')
+    .select('id, name, slug') // <-- include id
     .eq('city_id', cityId)
     .order('name');
 
@@ -112,7 +112,7 @@ export async function getShopsByStreetSlug(streetSlug: string) {
   // Now get shops linked to that street
   const { data: shopsData, error: shopsError } = await supabase
     .from('shops')
-    .select('name, slug')
+    .select('id, name, slug') // <-- include id
     .eq('street_id', streetId)
     .order('name');
 

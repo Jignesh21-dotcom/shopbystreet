@@ -2,7 +2,6 @@ import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 import SEO from '@/app/components/SEO';
 
-
 type ShopPageProps = {
   params: Promise<{
     shop: string;
@@ -13,7 +12,7 @@ export default async function ShopProductsPage({ params }: ShopPageProps) {
   const resolvedParams = await params;
   const shopSlug = decodeURIComponent(resolvedParams.shop).toLowerCase();
 
-  // 1️⃣ Get shop info
+  // 1️⃣ Get shop info (with street/city join)
   const { data: shopData, error: shopError } = await supabase
     .from('shops')
     .select(`
@@ -33,11 +32,25 @@ export default async function ShopProductsPage({ params }: ShopPageProps) {
     return <div className="p-8 text-red-600">❌ Shop not found.</div>;
   }
 
-  const streetData = Array.isArray(shopData.street) ? shopData.street[0] : shopData.street || {};
-  const cityData = Array.isArray(streetData?.city) ? streetData.city[0] : streetData.city || {};
+// Normalize street and city to objects (not arrays)
+let streetDataRaw = shopData.street;
+let streetData: { slug?: string; city?: any } | undefined;
+if (Array.isArray(streetDataRaw)) {
+  streetData = streetDataRaw[0];
+} else {
+  streetData = streetDataRaw;
+}
 
-  const citySlug = cityData?.slug || '';
-  const streetSlug = streetData?.slug || '';
+let cityDataRaw = streetData?.city;
+let cityData: { slug?: string } | undefined;
+if (Array.isArray(cityDataRaw)) {
+  cityData = cityDataRaw[0];
+} else {
+  cityData = cityDataRaw;
+}
+
+const citySlug = cityData?.slug || '';
+const streetSlug = streetData?.slug || '';
 
   // 2️⃣ Get products
   const { data: products, error: productError } = await supabase
@@ -64,7 +77,7 @@ export default async function ShopProductsPage({ params }: ShopPageProps) {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <Link
-          href={`/cities/${citySlug}/${streetSlug}/${resolvedParams.shop}`}
+          href={`/cities/${citySlug}/${streetSlug}/${shopSlug}`}
           className="inline-block mb-6 text-sm text-blue-600 hover:underline"
         >
           ← Back to Shop

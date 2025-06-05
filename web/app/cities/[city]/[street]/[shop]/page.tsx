@@ -2,7 +2,6 @@ import ShopPageClient from './ShopPageClient';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
-
 type ShopPageProps = {
   params: any;
 };
@@ -12,40 +11,46 @@ export default async function ShopPage({ params }: ShopPageProps) {
   const rawStreet = decodeURIComponent(params.street).toLowerCase().trim();
   const rawShop = decodeURIComponent(params.shop).toLowerCase().trim();
 
-  // Step 1: Fetch the shop
+  // Step 1: Fetch the street (with city relation)
+  const { data: streetData, error: streetError } = await supabase
+    .from('streets')
+    .select(`
+      id,
+      slug,
+      city:city_id (
+        slug
+      )
+    `)
+    .eq('slug', rawStreet)
+    .single();
+
+  if (streetError || !streetData) {
+    console.error('❌ Street fetch error:', streetError);
+    return <div>🚫 Shop not found or mismatched street/city.</div>;
+  }
+
+  /// Normalize city to object (not array)
+let cityDataRaw = streetData.city;
+let cityData: { slug?: string } | undefined;
+if (Array.isArray(cityDataRaw)) {
+  cityData = cityDataRaw[0];
+} else {
+  cityData = cityDataRaw;
+}
+const dbCitySlug = cityData?.slug?.toLowerCase().trim() || '';
+const dbStreetSlug = streetData.slug?.toLowerCase().trim() || '';
+
+  // Step 2: Fetch the shop using street_id and slug
   const { data: shopData, error: shopError } = await supabase
     .from('shops')
-    .select('*')
+    .select('name, description, parking, image_url, story')
     .eq('slug', rawShop)
-    .eq('streetSlug', rawStreet)
+    .eq('street_id', streetData.id)
     .eq('approved', true)
     .single();
 
   if (shopError || !shopData) {
     console.error('❌ Shop fetch error:', shopError);
-    return <div>🚫 Shop not found or mismatched street/city.</div>;
-  }
-
-  // Step 2: Fetch the matching street
-  const { data: streetData, error: streetError } = await supabase
-    .from('streets')
-    .select('slug, city')
-    .eq('slug', rawStreet)
-    .single();
-
-  const dbStreetSlug = streetData?.slug?.toLowerCase().trim() || '';
-  const dbCitySlug = streetData?.city?.toLowerCase().trim() || '';
-
-  console.log('🛠️ Comparing shop location slugs:', {
-    dbStreetSlug,
-    dbCitySlug,
-    rawStreet,
-    rawCity,
-    matchStreet: dbStreetSlug === rawStreet,
-    matchCity: dbCitySlug === rawCity,
-  });
-
-  if (dbStreetSlug !== rawStreet || dbCitySlug !== rawCity) {
     return <div>🚫 Shop not found or mismatched street/city.</div>;
   }
 

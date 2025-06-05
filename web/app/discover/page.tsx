@@ -6,31 +6,59 @@ type Shop = {
   id: string;
   name: string;
   slug: string;
-  streetSlug: string;
-  citySlug?: string;
   parking?: string;
   address?: string;
   group?: string;
   featured?: boolean;
   discount?: string;
   tagline?: string;
+  street?: {
+    slug: string;
+    city?: {
+      slug: string;
+    };
+  } | null;
 };
 
 export default async function DiscoverPage() {
   const { data, error } = await supabaseServer
     .from('shops')
-    .select('*')
+    .select(`
+      id,
+      name,
+      slug,
+      parking,
+      address,
+      group,
+      featured,
+      discount,
+      tagline,
+      street:street_id (
+        slug,
+        city:city_id (
+          slug
+        )
+      )
+    `)
     .limit(100);
 
-  const shops = data as Shop[];
+  // Normalize street and city to objects (not arrays)
+  const rawShops = (data || []);
+  const shops: Shop[] = rawShops.map((shop: any) => {
+    let street = shop.street;
+    if (Array.isArray(street)) street = street[0] || null;
+    if (street && Array.isArray(street.city)) street.city = street.city[0] || null;
+    return { ...shop, street };
+  });
+
   if (error) {
     console.error('Failed to fetch shops:', error.message);
     return <div className="p-6 text-red-600">Error loading shops.</div>;
   }
 
-  const featured = shops.find((s) => s.featured);
-  const discounted = shops.find((s) => s.discount);
-  const gem = shops.find((s) => s.tagline);
+  const featured = shops.find((s) => s.featured && s.street && s.street.city);
+  const discounted = shops.find((s) => s.discount && s.street && s.street.city);
+  const gem = shops.find((s) => s.tagline && s.street && s.street.city);
 
   const title = 'Discover Local Gems | Local Street Shop';
   const description = 'Explore featured businesses, hidden gems, and local discounts across Canadian cities. Handpicked highlights from Local Street Shop.';
@@ -87,13 +115,18 @@ function Card({
   color: string;
   highlight: string;
 }) {
+  // Defensive: Only render if street/city slugs exist
+  const citySlug = shop.street?.city?.slug;
+  const streetSlug = shop.street?.slug;
+  if (!citySlug || !streetSlug) return null;
+
   return (
     <div className={`rounded-xl shadow-md p-6 ${color}`}>
       <h2 className="text-2xl font-bold mb-1">{title}</h2>
       <p className="text-gray-700 text-lg mb-3">{shop.name}</p>
       <p className="italic text-sm text-gray-600 mb-4">{highlight}</p>
       <Link
-        href={`/cities/toronto/${shop.streetSlug}/shops/${shop.slug}`}
+        href={`/cities/${citySlug}/${streetSlug}/${shop.slug}`}
         className="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
       >
         View Shop →

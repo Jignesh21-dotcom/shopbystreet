@@ -12,8 +12,8 @@ export async function GET() {
   // Fetch data from Supabase
   const [{ data: cities }, { data: streets }, { data: shops }] = await Promise.all([
     supabase.from('cities').select('id, slug'),
-    supabase.from('streets').select('slug, city_id'),
-    supabase.from('shops').select('slug, streetSlug'),
+    supabase.from('streets').select('id, slug, city_id'),
+    supabase.from('shops').select('slug, street_id'),
   ]);
 
   const urls: string[] = [];
@@ -42,7 +42,7 @@ export async function GET() {
   // Add shops (with street and city slugs)
   if (shops && streets && cities) {
     for (const shop of shops) {
-      const street = streets.find((s) => s.slug === shop.streetSlug);
+      const street = streets.find((s) => s.id === shop.street_id);
       const city = street && cities.find((c) => c.id === street.city_id);
       if (city && street) {
         urls.push(`/cities/${city.slug}/${street.slug}/${shop.slug}`);

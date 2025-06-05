@@ -2,7 +2,6 @@ import StreetClient from './StreetClient';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
-
 type StreetPageProps = {
   params: any;
 };
@@ -10,7 +9,7 @@ type StreetPageProps = {
 export default async function StreetPage({ params }: StreetPageProps) {
   const { city, street } = params;
 
-  // Fetch street data
+  // Fetch street data (with city relation)
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
     .select(`
@@ -43,11 +42,11 @@ export default async function StreetPage({ params }: StreetPageProps) {
 
   const provinceSlug = cityData?.province || 'ontario';
 
-  // ✅ Fetch shops using streetSlug
+  // ✅ Fetch shops using street_id (relational, robust)
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
     .select('id, name, slug, description, parking')
-    .eq('streetSlug', streetData.slug)
+    .eq('street_id', streetData.id)
     .order('sequence', { ascending: true });
 
   console.log('Fetched shops:', shops);

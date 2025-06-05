@@ -24,20 +24,39 @@ export default function ClaimShopPage() {
     fetchUser();
   }, [router]);
 
-  // ✅ Fetch shops matching search
+  // ✅ Fetch shops matching search (with street/city join)
   const handleSearch = async () => {
     if (search.trim() === '') return;
 
     const { data, error } = await supabase
       .from('shops')
-      .select('id, name, slug, streetSlug')
+      .select(`
+        id,
+        name,
+        slug,
+        street:street_id (
+          name,
+          slug,
+          city:city_id (
+            name,
+            slug
+          )
+        )
+      `)
       .ilike('name', `%${search}%`)
       .limit(10);
 
     if (error) {
       console.error('Search error:', error.message);
     } else {
-      setShops(data);
+      // Normalize street and city to objects (not arrays)
+      const normalized = (data || []).map((shop: any) => {
+        let street = shop.street;
+        if (Array.isArray(street)) street = street[0] || null;
+        if (street && Array.isArray(street.city)) street.city = street.city[0] || null;
+        return { ...shop, street };
+      });
+      setShops(normalized);
     }
   };
 
@@ -100,7 +119,10 @@ export default function ClaimShopPage() {
               {shops.map((shop) => (
                 <div key={shop.id} className="border border-gray-200 rounded-lg p-4 shadow-sm bg-gray-50">
                   <div className="font-semibold text-lg text-gray-800">{shop.name}</div>
-                  <div className="text-sm text-gray-600">Street: {shop.streetSlug}</div>
+                  <div className="text-sm text-gray-600">
+                    Street: {shop.street?.name || 'N/A'}
+                    {shop.street?.city?.name ? `, City: ${shop.street.city.name}` : ''}
+                  </div>
 
                   <textarea
                     className="mt-2 w-full p-2 border rounded"

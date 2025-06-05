@@ -7,10 +7,9 @@ import SEO from '@/app/components/SEO';
 type Shop = {
   id: string;
   name: string;
-  city?: string;
-  streetSlug?: string;
   description?: string;
   approved: boolean;
+  street: { name: string; slug: string; city?: { name: string } | null } | null;
 };
 
 export default function AdminShopModeration() {
@@ -21,18 +20,40 @@ export default function AdminShopModeration() {
     setLoading(true);
     const { data, error } = await supabase
       .from('shops')
-      .select('*')
+      .select(`
+        id,
+        name,
+        description,
+        approved,
+        street:street_id (
+          name,
+          slug,
+          city:city_id (
+            name
+          )
+        )
+      `)
       .eq('approved', false)
       .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Failed to fetch pending shops:', error.message);
+      setShops([]);
     } else {
-      setShops(data || []);
+      // Normalize street and city to objects (not arrays)
+      const normalized = (data || []).map((shop: any) => {
+        let street = shop.street;
+        if (Array.isArray(street)) street = street[0] || null;
+        if (street && Array.isArray(street.city)) street.city = street.city[0] || null;
+        return { ...shop, street };
+      });
+      setShops(normalized);
     }
 
     setLoading(false);
   };
+
+  // ...rest of your component remains unchanged...
 
   const approveShop = async (id: string) => {
     const { error } = await supabase
@@ -89,6 +110,11 @@ export default function AdminShopModeration() {
                 <h2 className="text-xl font-semibold text-gray-800">{shop.name}</h2>
                 <p className="text-gray-600 mb-2">
                   {shop.description || 'No description provided'}
+                </p>
+                <p className="text-sm text-gray-500 mb-2">
+                  {shop.street?.name
+                    ? `Street: ${shop.street.name}${shop.street.city?.name ? `, City: ${shop.street.city.name}` : ''}`
+                    : 'No street info'}
                 </p>
                 <div className="flex space-x-4">
                   <button
