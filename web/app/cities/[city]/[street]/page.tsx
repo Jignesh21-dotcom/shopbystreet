@@ -3,13 +3,23 @@ import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
 type StreetPageProps = {
-  params: any;
+  params: {
+    city?: string;
+    street?: string;
+  };
 };
 
 export default async function StreetPage({ params }: StreetPageProps) {
-  const { city, street } = params;
+  // Safely decode and normalize params
+  const city = decodeURIComponent(params?.city || '').toLowerCase().trim();
+  const street = decodeURIComponent(params?.street || '').toLowerCase().trim();
 
-  // Fetch street data (with city relation)
+  if (!city || !street) {
+    console.error('Missing city or street param:', { city, street });
+    return <div>Invalid URL.</div>;
+  }
+
+  // Fetch street data (with city relation, and province via join)
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
     .select(`
@@ -19,20 +29,23 @@ export default async function StreetPage({ params }: StreetPageProps) {
       city:city_id (
         name,
         slug,
-        province
+        province:province_id (
+          slug
+        )
       )
     `)
     .eq('slug', street)
     .single();
 
   if (streetError || !streetData) {
-    console.error(`Street not found: ${street}`);
+    console.error(`Street not found: ${street}`, streetError);
     return <div>Street not found.</div>;
   }
 
+  // Normalize city relation (handle array/object)
   const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
 
-  if (!cityData || cityData.slug.toLowerCase() !== city.toLowerCase()) {
+  if (!cityData || cityData.slug.toLowerCase() !== city) {
     console.error(
       `Validation failed: Street "${street}" does not belong to city "${city}".`,
       { streetCitySlug: cityData?.slug, citySlug: city }
@@ -40,9 +53,17 @@ export default async function StreetPage({ params }: StreetPageProps) {
     return <div>Street not found in this city.</div>;
   }
 
-  const provinceSlug = cityData?.province || 'ontario';
+ // Province slug from join, fallback to 'ontario'
+let provinceSlug = 'ontario';
+const provinceData: any = cityData?.province;
 
-  // ✅ Fetch shops using street_id (relational, robust)
+if (Array.isArray(provinceData)) {
+  provinceSlug = provinceData[0]?.slug || 'ontario';
+} else if (provinceData && typeof provinceData === 'object') {
+  provinceSlug = provinceData.slug || 'ontario';
+}
+
+  // Fetch shops using street_id (relational, robust)
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
     .select('id, name, slug, description, parking')
@@ -56,7 +77,7 @@ export default async function StreetPage({ params }: StreetPageProps) {
     return <div>No shops found for this street.</div>;
   }
 
-  // 🔍 SEO values
+  // SEO values
   const streetName = streetData.name;
   const cityName = cityData.name;
   const title = `${streetName} – Shops in ${cityName} | Local Street Shop`;
