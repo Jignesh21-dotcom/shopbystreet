@@ -9,7 +9,7 @@ type StreetPageProps = {
   };
 };
 
-export default async function StreetPage({ params }: StreetPageProps) {
+export default async function StreetPage({ params }: any) {
   // Safely decode and normalize params
   const city = decodeURIComponent(params?.city || '').toLowerCase().trim();
   const street = decodeURIComponent(params?.street || '').toLowerCase().trim();
