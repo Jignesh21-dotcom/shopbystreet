@@ -2,12 +2,10 @@ import CityClient from './CityClient';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
-
 type CityPageProps = {
-  params: any; // Temporarily use `any` to bypass type inference issues
+  params: any;
 };
 
-// ✅ Use `generateStaticParams` to handle dynamic routes
 export async function generateStaticParams() {
   const { data: cities, error } = await supabase
     .from('cities')
@@ -38,8 +36,9 @@ export default async function CityPage({ params }: CityPageProps) {
     return <div>City not found.</div>;
   }
 
+  // Use the view for count and fetching streets with shops
   const { count, error: countError } = await supabase
-    .from('streets')
+    .from('streets_with_shops')
     .select('*', { count: 'exact', head: true })
     .eq('city_id', cityData.id);
 
@@ -55,8 +54,8 @@ export default async function CityPage({ params }: CityPageProps) {
     const end = Math.min(start + CHUNK_SIZE - 1, count - 1);
     promises.push(
       supabase
-        .from('streets')
-        .select('id, name, slug, lat, lon, city')
+        .from('streets_with_shops')
+        .select('id, name, slug, lat, lon, city_id, shop_count')
         .eq('city_id', cityData.id)
         .order('name', { ascending: true })
         .range(start, end)
