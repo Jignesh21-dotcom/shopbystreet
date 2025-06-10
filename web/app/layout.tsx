@@ -20,6 +20,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {/* ✅ Google Ads Global Site Tag */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-964296211"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'AW-964296211');
+            `,
+          }}
+        />
+      </head>
       <body className={`${poppins.className} min-h-screen bg-gray-100 flex flex-col`}>
         <Header />
         <main className="flex-grow px-4">{children}</main>
