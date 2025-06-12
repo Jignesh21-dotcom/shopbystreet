@@ -5,7 +5,6 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-
 import HomeScreen from './src/screens/HomeScreen';
 import ProvincesScreen from './src/screens/ProvincesScreen';
 import CitiesScreen from './src/screens/CitiesScreen';
@@ -39,10 +38,10 @@ import SubmitStreetScreen from './src/screens/SubmitStreetScreen';
 export type RootStackParamList = {
   Drawer: undefined;
   Provinces: undefined;
-  Cities: { provinceSlug?: string };
-  StreetScreen: { cityId: string; cityName: string; provinceSlug: string };
-  ShopListScreen: { streetSlug: string; streetName: string };
-  ShopDetailScreen: { shopSlug: string };
+  Cities: { provinceId: string };
+  StreetScreen: { cityId: string };
+  ShopListScreen: { streetId: string };
+  ShopDetailScreen: { shopId: string };
   LiveCitiesScreen: undefined;
   LoginScreen: undefined;
   SignupScreen: undefined;

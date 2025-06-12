@@ -17,9 +17,9 @@ import Footer from '../components/Footer';
 export default function SubmitShopFormScreen() {
   const [form, setForm] = useState({
     name: '',
-    provinceSlug: '',
-    citySlug: '',
-    streetSlug: '',
+    provinceId: '',
+    cityId: '',
+    streetId: '',
     parking: 'Paid Parking Nearby',
     wantsProducts: false,
   });
@@ -35,42 +35,44 @@ export default function SubmitShopFormScreen() {
   }, []);
 
   useEffect(() => {
-    if (form.provinceSlug) {
-      setForm((prev) => ({ ...prev, citySlug: '', streetSlug: '' }));
+    if (form.provinceId) {
+      setForm((prev) => ({ ...prev, cityId: '', streetId: '' }));
       fetchCities();
     }
-  }, [form.provinceSlug]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.provinceId]);
 
   useEffect(() => {
-    if (form.citySlug) {
-      setForm((prev) => ({ ...prev, streetSlug: '' }));
+    if (form.cityId) {
+      setForm((prev) => ({ ...prev, streetId: '' }));
       fetchStreets();
     }
-  }, [form.citySlug]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.cityId]);
 
   const fetchInitialData = async () => {
-    const { data: provs } = await supabase.from('provinces').select();
+    const { data: provs } = await supabase.from('provinces').select('id, name');
     setProvinces(provs || []);
   };
 
   const fetchCities = async () => {
     const { data: citiesData } = await supabase
       .from('cities')
-      .select()
-      .eq('provinceSlug', form.provinceSlug);
+      .select('id, name')
+      .eq('province_id', form.provinceId);
     setCities(citiesData || []);
   };
 
   const fetchStreets = async () => {
     const { data: streetsData } = await supabase
       .from('streets')
-      .select()
-      .eq('citySlug', form.citySlug);
+      .select('id, name')
+      .eq('city_id', form.cityId);
     setStreets(streetsData || []);
   };
 
   const handleSubmit = async () => {
-    if (!form.name || !form.provinceSlug || !form.citySlug || !form.streetSlug) {
+    if (!form.name || !form.provinceId || !form.cityId || !form.streetId) {
       Alert.alert('Missing fields', 'Please fill all required fields.');
       return;
     }
@@ -80,7 +82,7 @@ export default function SubmitShopFormScreen() {
     const newShop = {
       name: form.name,
       slug: form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-      streetSlug: form.streetSlug,
+      street_id: form.streetId, // Use normalized street_id
       parking: form.parking,
       wantsProducts: form.wantsProducts,
       paid: false,
@@ -121,37 +123,37 @@ export default function SubmitShopFormScreen() {
         />
 
         <Picker
-          selectedValue={form.provinceSlug}
-          onValueChange={(value) => setForm({ ...form, provinceSlug: value })}
+          selectedValue={form.provinceId}
+          onValueChange={(value) => setForm({ ...form, provinceId: value })}
           style={styles.input}
         >
           <Picker.Item label="-- Select Province --" value="" />
           {provinces.map((prov) => (
-            <Picker.Item key={prov.slug} label={prov.name} value={prov.slug} />
+            <Picker.Item key={prov.id} label={prov.name} value={prov.id} />
           ))}
         </Picker>
 
         <Picker
-          selectedValue={form.citySlug}
-          enabled={!!form.provinceSlug}
-          onValueChange={(value) => setForm({ ...form, citySlug: value })}
+          selectedValue={form.cityId}
+          enabled={!!form.provinceId}
+          onValueChange={(value) => setForm({ ...form, cityId: value })}
           style={styles.input}
         >
           <Picker.Item label="-- Select City --" value="" />
           {cities.map((city) => (
-            <Picker.Item key={city.slug} label={city.name} value={city.slug} />
+            <Picker.Item key={city.id} label={city.name} value={city.id} />
           ))}
         </Picker>
 
         <Picker
-          selectedValue={form.streetSlug}
-          enabled={!!form.citySlug}
-          onValueChange={(value) => setForm({ ...form, streetSlug: value })}
+          selectedValue={form.streetId}
+          enabled={!!form.cityId}
+          onValueChange={(value) => setForm({ ...form, streetId: value })}
           style={styles.input}
         >
           <Picker.Item label="-- Select Street --" value="" />
           {streets.map((street) => (
-            <Picker.Item key={street.slug} label={street.name} value={street.slug} />
+            <Picker.Item key={street.id} label={street.name} value={street.id} />
           ))}
         </Picker>
 

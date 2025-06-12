@@ -36,21 +36,37 @@ export default function ClaimShopScreen() {
     fetchUser();
   }, []);
 
-  // ✅ Handle shop search
+  // ✅ Handle shop search (with street/city join)
   const handleSearch = async () => {
     if (!search.trim()) return;
     setLoading(true);
 
     const { data, error } = await supabase
       .from('shops')
-      .select('id, name, streetSlug')
+      .select(`
+        id,
+        name,
+        street:street_id (
+          name,
+          city:city_id (
+            name
+          )
+        )
+      `)
       .ilike('name', `%${search}%`)
       .limit(10);
 
     if (error) {
       Alert.alert('Search Failed', error.message);
     } else {
-      setShops(data || []);
+      // Normalize street and city to objects (not arrays)
+      const normalized = (data || []).map((shop: any) => {
+        let street = shop.street;
+        if (Array.isArray(street)) street = street[0] || null;
+        if (street && Array.isArray(street.city)) street.city = street.city[0] || null;
+        return { ...shop, street };
+      });
+      setShops(normalized);
     }
 
     setLoading(false);
@@ -106,7 +122,11 @@ export default function ClaimShopScreen() {
             {shops.map((shop) => (
               <View key={shop.id} style={styles.shopCard}>
                 <Text style={styles.shopName}>{shop.name}</Text>
-                <Text style={styles.streetSlug}>Street: {shop.streetSlug}</Text>
+                <Text style={styles.streetInfo}>
+                  {shop.street?.name
+                    ? `Street: ${shop.street.name}${shop.street.city?.name ? `, ${shop.street.city.name}` : ''}`
+                    : 'Street: N/A'}
+                </Text>
 
                 <TextInput
                   style={styles.messageBox}
@@ -174,7 +194,7 @@ const styles = StyleSheet.create({
     color: '#111827',
     marginBottom: 4,
   },
-  streetSlug: {
+  streetInfo: {
     fontSize: 13,
     color: '#6B7280',
     marginBottom: 8,

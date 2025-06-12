@@ -20,7 +20,7 @@ type Street = {
 };
 
 export default function StreetScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const route = useRoute();
   const { cityId, cityName } = route.params as { cityId: string; cityName: string };
 
@@ -86,7 +86,7 @@ export default function StreetScreen() {
 
   const handleStreetPress = (street: Street) => {
     navigation.navigate('ShopListScreen', {
-      streetSlug: street.slug,
+      streetId: street.id, // Use normalized street id
       streetName: street.display_name || street.name,
     });
   };

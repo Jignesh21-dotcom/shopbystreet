@@ -28,8 +28,8 @@ type ShopGroup = {
 export default function ShopListScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute();
-  const { streetSlug, streetName } = route.params as {
-    streetSlug: string;
+  const { streetId, streetName } = route.params as {
+    streetId: string;
     streetName: string;
   };
 
@@ -47,7 +47,7 @@ export default function ShopListScreen() {
     const { data, error } = await supabase
       .from('shops')
       .select('id, name, slug, description, parking')
-      .eq('streetSlug', streetSlug)
+      .eq('street_id', streetId) // Use normalized street_id
       .eq('approved', true);
 
     if (error) {
@@ -111,7 +111,7 @@ export default function ShopListScreen() {
 
   const handleShopPress = (shop: Shop) => {
     navigation.navigate('ShopDetailScreen', {
-      shopSlug: shop.slug,
+      shopId: shop.id, // Use shop.id for navigation
     });
   };
 

@@ -103,7 +103,7 @@ export default function AddShopScreen() {
       const { error } = await supabase.from('shops').insert([{
         name,
         slug,
-        streetSlug: streets.find((s) => s.id === selectedStreet)?.slug,
+        street_id: selectedStreet, // Use normalized street_id
         description,
         parking,
         owner_id: userData.user.id,
@@ -112,7 +112,7 @@ export default function AddShopScreen() {
       if (error) throw error;
 
       Alert.alert('Success', 'Shop added successfully!');
-      navigation.navigate('Dashboard' as never);
+      navigation.navigate('ShopOwnerDashboard' as never);
     } catch (err: any) {
       console.error(err);
       Alert.alert('Error', err.message || 'Something went wrong.');
