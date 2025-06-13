@@ -34,6 +34,10 @@ export default function SignUpClient() {
       setError(error.message);
     } else {
       setSuccess(true);
+      // Optionally clear fields
+      setEmail('');
+      setPassword('');
+      setUsername('');
     }
 
     setLoading(false);
@@ -44,7 +48,7 @@ export default function SignUpClient() {
       {success ? (
         <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md text-center text-green-700 space-y-4">
           <h1 className="text-3xl font-bold text-blue-700 mb-2">✅ Success!</h1>
-          <p>Please check your email to confirm your account.</p>
+          <p>Sign-up successful! Please check your email to confirm your account.</p>
           <p>
             Already confirmed?{' '}
             <Link href="/login" className="text-blue-600 underline hover:text-blue-800">
