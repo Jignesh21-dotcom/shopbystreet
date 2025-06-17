@@ -5,6 +5,9 @@ import Stripe from 'stripe';
 let stripe: Stripe | null = null;
 
 if (typeof process.env.STRIPE_SECRET_KEY === 'string') {
+  // 🔍 Add this line below to confirm raw key used by Vercel in production
+  console.log('🔎 RAW STRIPE KEY:', process.env.STRIPE_SECRET_KEY);
+
   console.log('✅ STRIPE_SECRET_KEY loaded in server environment');
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: '2025-04-30.basil',
@@ -29,7 +32,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    // ✅ Debug: Confirm env values are loaded correctly
+    // ✅ Confirm short version of key and site URL
     console.log('🔑 Using STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY?.slice(0, 10) + '...');
     console.log('🌍 Using NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
 
@@ -38,7 +41,7 @@ export async function POST(req: Request) {
       customer_email: email,
       line_items: [
         {
-          price: 'price_1RL9GyBZgvjk1IFc9eXHZ5Qy', // ✅ Replace with your live price ID
+          price: 'price_1RL9GyBZgvjk1IFc9eXHZ5Qy',
           quantity: 1,
         },
       ],
