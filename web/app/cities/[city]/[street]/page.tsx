@@ -2,6 +2,10 @@ import StreetClient from './StreetClient';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
+// Add normalization function here
+const normalizeSlug = (slug: string) =>
+  slug?.toLowerCase().replace(/\s+/g, '-').trim();
+
 type StreetPageProps = {
   params: {
     city?: string;
@@ -10,9 +14,9 @@ type StreetPageProps = {
 };
 
 export default async function StreetPage({ params }: any) {
-  // Safely decode and normalize params
-  const city = decodeURIComponent(params?.city || '').toLowerCase().trim();
-  const street = decodeURIComponent(params?.street || '').toLowerCase().trim();
+  // Use normalization for params
+  const city = normalizeSlug(decodeURIComponent(params?.city || ''));
+  const street = normalizeSlug(decodeURIComponent(params?.street || ''));
 
   if (!city || !street) {
     console.error('Missing city or street param:', { city, street });
@@ -45,7 +49,8 @@ export default async function StreetPage({ params }: any) {
   // Normalize city relation (handle array/object)
   const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
 
-  if (!cityData || cityData.slug.toLowerCase() !== city) {
+  // Use normalization for city slug comparison
+  if (!cityData || normalizeSlug(cityData.slug) !== city) {
     console.error(
       `Validation failed: Street "${street}" does not belong to city "${city}".`,
       { streetCitySlug: cityData?.slug, citySlug: city }
