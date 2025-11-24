@@ -58,7 +58,13 @@ export default function Header() {
 >
   🏙️ Live Cities
 </Link>
-
+{/* ⭐ NEW: Deals Link */}
+  <Link
+    href="/deals"
+    className="text-sm font-medium text-gray-700 hover:text-blue-600"
+  >
+    🔥 Deals
+  </Link>
 
         <Link href="/member" className="hover:text-blue-700 transition flex items-center space-x-1">
           <span role="img" aria-label="Member">👤</span>

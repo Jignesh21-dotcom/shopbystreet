@@ -31,7 +31,7 @@ export async function getProvincesByCountrySlug(countrySlug: string) {
   return provincesData;
 }
 
-// ✅ Cities by province slug (Supabase version)
+// ✅ Cities by province slug (Supabase version with pagination)
 export async function getCitiesByProvinceSlug(provinceSlug: string) {
   // First get the province ID
   const { data: provinceData, error: provinceError } = await supabase
@@ -47,19 +47,46 @@ export async function getCitiesByProvinceSlug(provinceSlug: string) {
 
   const provinceId = provinceData.id;
 
-  // Now get cities linked to that province
-  const { data: citiesData, error: citiesError } = await supabase
-    .from('cities')
-    .select('id, name, slug') // <-- include id
-    .eq('province_id', provinceId)
-    .order('name');
+  // Fetch all cities using pagination
+  let allCities: { id: string; name: string; slug: string }[] = [];
+  let from = 0;
+  const batchSize = 1000;
+  let hasMore = true;
 
-  if (citiesError) {
-    console.error('Error fetching cities:', citiesError);
-    return [];
+  console.log(`🔍 Fetching cities for province: ${provinceSlug} (ID: ${provinceId})`);
+
+  while (hasMore) {
+    console.log(`📦 Fetching batch from ${from} to ${from + batchSize - 1}`);
+    
+    const { data: citiesData, error: citiesError } = await supabase
+      .from('cities')
+      .select('id, name, slug')
+      .eq('province_id', provinceId)
+      .order('name')
+      .range(from, from + batchSize - 1);
+
+    if (citiesError) {
+      console.error('❌ Error fetching cities:', citiesError);
+      break;
+    }
+
+    if (citiesData && citiesData.length > 0) {
+      console.log(`✅ Fetched ${citiesData.length} cities in this batch`);
+      console.log(`   First city: ${citiesData[0].name}, Last city: ${citiesData[citiesData.length - 1].name}`);
+      allCities = [...allCities, ...citiesData];
+      from += batchSize;
+      
+      // If we got less than batchSize, we've reached the end
+      if (citiesData.length < batchSize) {
+        hasMore = false;
+      }
+    } else {
+      hasMore = false;
+    }
   }
 
-  return citiesData;
+  console.log(`🎉 Total cities fetched: ${allCities.length}`);
+  return allCities;
 }
 
 // ✅ Streets by city slug (Supabase version)

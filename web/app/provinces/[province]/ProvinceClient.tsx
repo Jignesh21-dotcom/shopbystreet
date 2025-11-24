@@ -50,17 +50,21 @@ export default function ProvinceClient({ province }: ProvinceClientProps) {
 
   useEffect(() => {
     const fetchCities = async () => {
+      console.log('🚀 Starting to fetch cities for province:', province);
       setLoading(true);
       setError(null);
 
       try {
         const data = await getCitiesByProvinceSlug(province);
+        console.log('📊 Received data:', data?.length || 0, 'cities');
         if (!data || data.length === 0) {
           setError('No cities found or an error occurred.');
         } else {
           setCities(data);
+          console.log('✨ Cities set in state:', data.length);
         }
       } catch (err) {
+        console.error('💥 Error in fetchCities:', err);
         setError('An unexpected error occurred.');
       }
 

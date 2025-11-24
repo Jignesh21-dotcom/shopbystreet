@@ -27,8 +27,10 @@ export async function generateStaticParams() {
   return provinces.map((province) => ({ province }));
 }
 
-export default function ProvincePage({ params }: ProvincePageProps) {
-  const { province } = params;
+export const dynamic = 'force-dynamic'; // Disable static generation
+
+export default async function ProvincePage({ params }: ProvincePageProps) {
+  const { province } = await params;
 
   const displayName = decodeURIComponent(province)
     .replace(/-/g, ' ')
