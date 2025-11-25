@@ -3,11 +3,11 @@ import { supabase } from "@/lib/supabaseClient";
 import DealsClient from "../components/deals/deals-client";
 
 type DealsPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     province?: string;
     city?: string;
     sort?: string;
-  };
+  }>;
 };
 
 export default async function DealsPage({ searchParams }: DealsPageProps) {
