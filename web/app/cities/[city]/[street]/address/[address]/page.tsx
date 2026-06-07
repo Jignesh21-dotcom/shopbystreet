@@ -14,9 +14,10 @@ const slugify = (text: string) =>
     .replace(/(^-|-$)+/g, '');
 
 export default async function AddressPage({ params }: any) {
-  const city = normalizeSlug(decodeURIComponent(params?.city || ''));
-  const street = normalizeSlug(decodeURIComponent(params?.street || ''));
-  const addressSlug = normalizeSlug(decodeURIComponent(params?.address || ''));
+  const awaitedParams = await params;
+  const city = normalizeSlug(decodeURIComponent(awaitedParams?.city || ''));
+  const street = normalizeSlug(decodeURIComponent(awaitedParams?.street || ''));
+  const addressSlug = normalizeSlug(decodeURIComponent(awaitedParams?.address || ''));
 
   if (!city || !street || !addressSlug) {
     return <div>Invalid address page.</div>;

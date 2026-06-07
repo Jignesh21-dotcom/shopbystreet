@@ -17,9 +17,10 @@ const slugify = (text: string) =>
     .replace(/(^-|-$)+/g, '');
 
 export default async function ShopPage({ params }: ShopPageProps) {
-  const rawCity = normalizeSlug(decodeURIComponent(params.city || ''));
-  const rawStreet = normalizeSlug(decodeURIComponent(params.street || ''));
-  const rawShop = normalizeSlug(decodeURIComponent(params.shop || ''));
+  const awaitedParams = await params;
+  const rawCity = normalizeSlug(decodeURIComponent(awaitedParams.city || ''));
+  const rawStreet = normalizeSlug(decodeURIComponent(awaitedParams.street || ''));
+  const rawShop = normalizeSlug(decodeURIComponent(awaitedParams.shop || ''));
 
   if (!rawCity || !rawStreet || !rawShop) {
     return <div>Invalid URL.</div>;

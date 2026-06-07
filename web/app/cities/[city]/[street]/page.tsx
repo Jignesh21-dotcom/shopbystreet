@@ -13,8 +13,9 @@ const slugify = (text: string) =>
     .replace(/(^-|-$)+/g, '');
 
 export default async function StreetPage({ params }: any) {
-  const city = normalizeSlug(decodeURIComponent(params?.city || ''));
-  const street = normalizeSlug(decodeURIComponent(params?.street || ''));
+  const awaitedParams = await params;
+  const city = normalizeSlug(decodeURIComponent(awaitedParams?.city || ''));
+  const street = normalizeSlug(decodeURIComponent(awaitedParams?.street || ''));
 
   if (!city || !street) {
     return <div>Invalid URL.</div>;
