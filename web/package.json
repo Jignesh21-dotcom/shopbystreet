@@ -21,7 +21,7 @@
     "emailjs-com": "^3.2.0",
     "json2csv": "^6.0.0-alpha.2",
     "leaflet": "^1.9.4",
-    "next": "^15.3.2",
+    "next": "15.3.8",
     "node-fetch": "^2.7.0",
     "openai": "^6.9.1",
     "react": "^19.0.0",
