@@ -185,7 +185,7 @@ export default function StreetClient({
                   href={`/cities/${city}/${street}/address/${slugify(group.address)}`}
                   className="text-sm bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-700 px-3 py-2 rounded-full transition"
                 >
-                  Stop {index + 1}
+                  {group.address}
                 </Link>
               ))}
             </div>

@@ -4,9 +4,10 @@ import Link from 'next/link';
 import SEO from '@/app/components/SEO';
 
 export default function HomePage() {
-  const title = 'Shop Street | Discover Local Businesses & Local Deals Across Canada';
+  const title =
+    'Local Street Shop | The Digital Main Street of Canada';
   const description =
-    'Explore authentic local shops and 50%+ local deals across Canadian cities and streets. Support small businesses and take advantage of Phase 1 free product listings for shop owners.';
+    'Walk real streets online, discover local businesses, and help bring Canadian main streets into the digital world.';
   const url = 'https://www.localstreetshop.com/';
 
   return (
@@ -19,92 +20,166 @@ export default function HomePage() {
           backgroundImage: `url('/background/shopbycity-clean.png')`,
         }}
       >
-        <div className="bg-black bg-opacity-60 min-h-screen w-full flex flex-col items-center justify-center px-4 py-20 text-center">
-          {/* HERO */}
-          <div className="space-y-8 max-w-3xl animate-fade-in">
-            <h1 className="text-5xl font-extrabold tracking-tight leading-tight opacity-0 animate-fade-in-up delay-100 drop-shadow-xl">
-              🛍️ Welcome to Local Street Shop
-            </h1>
+        <div className="bg-black bg-opacity-65 min-h-screen w-full px-4 py-20">
+          <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
+            {/* HERO */}
+            <section className="space-y-8 max-w-4xl animate-fade-in">
+              <p className="text-sm md:text-base uppercase tracking-[0.25em] text-blue-100 font-semibold opacity-0 animate-fade-in-up delay-100">
+                Local shopping, street by street
+              </p>
 
-            <p className="text-xl md:text-2xl font-light opacity-0 animate-fade-in-up delay-200">
-              Discover real local businesses on real streets across Canada. Browse cities, walk
-              their streets online, and find 50%+ local deals while supporting small businesses.
-            </p>
+              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight opacity-0 animate-fade-in-up delay-100 drop-shadow-xl">
+                The Digital Main Street of Canada
+              </h1>
 
-            {/* HERO BUTTONS */}
-            <div className="opacity-0 animate-fade-in-up delay-300 flex flex-col md:flex-row items-center justify-center gap-4">
-              <Link
-                href="/countries/canada"
-                className="inline-block bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
-              >
-                🌎 Explore Canada
-              </Link>
+              <p className="text-xl md:text-2xl font-light opacity-0 animate-fade-in-up delay-200 max-w-3xl mx-auto">
+                Walk real streets online, discover local businesses, and help
+                bring local shopping into the digital world.
+              </p>
 
-              <Link
-                href="/deals"
-                className="inline-block bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
-              >
-                🔥 View 50%+ Deals
-              </Link>
-            </div>
-          </div>
+              <div className="opacity-0 animate-fade-in-up delay-300 flex flex-col md:flex-row items-center justify-center gap-4">
+                <Link
+                  href="/countries/canada"
+                  className="inline-block bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
+                >
+                  🌎 Explore Streets
+                </Link>
 
-          {/* INFO / PHASE 1 + LIVE CITIES + SHOP OWNERS */}
-          <div className="bg-white bg-opacity-90 text-gray-900 rounded-xl p-6 mt-16 max-w-3xl text-left space-y-4 shadow-2xl animate-fade-in-up delay-500">
-            <h2 className="text-2xl font-bold">🚧 We’re Expanding Across Canada</h2>
-            <p>
-              Local Street Shop is in early launch mode. Cities across Canada already have shops
-              you can explore, and we’re adding more every week.
-            </p>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* For Shoppers */}
-              <div>
-                <p className="font-semibold mb-1">🧭 For Shoppers</p>
-                <ul className="list-disc ml-5 text-sm space-y-1">
-                  <li>
-                    Discover local shops by city and street.{' '}
-                    <Link
-                      href="/live-cities"
-                      className="text-blue-600 underline hover:text-blue-800"
-                    >
-                      🏙️ Browse Live Cities
-                    </Link>
-                  </li>
-                  <li>
-                    Hunt for big savings on our{' '}
-                    <Link
-                      href="/deals"
-                      className="text-blue-600 underline hover:text-blue-800"
-                    >
-                      🔥 50%+ Local Deals
-                    </Link>{' '}
-                    page.
-                  </li>
-                  <li>More cities coming soon: Montreal, Vancouver, Ottawa, and more.</li>
-                </ul>
-              </div>
-
-              {/* For Shop Owners – Phase 1 */}
-              <div>
-                <p className="font-semibold mb-1">🏪 For Shop Owners – Phase 1</p>
-                <p className="text-sm mb-1">
-                  We’re currently in <strong>Phase 1</strong>. During this limited-time launch
-                  phase, there is <strong>no fee</strong> to add products to your shop.
-                </p>
-                <p className="text-sm mb-2">
-                  After Phase 1 ends, product management will require a{' '}
-                  <strong>$99 one-time activation fee</strong>. Shops that join during Phase 1 keep
-                  product management <strong>free forever</strong>.
-                </p>
                 <Link
                   href="/shop-owner"
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-semibold shadow transition"
+                  className="inline-block bg-white hover:bg-blue-50 text-blue-700 px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
                 >
-                  🚀 Add or Claim Your Shop (Free in Phase 1)
+                  🏪 Claim Your Business
                 </Link>
               </div>
-            </div>
+            </section>
+
+            {/* MAIN MESSAGE */}
+            <section className="bg-white bg-opacity-95 text-gray-900 rounded-3xl p-6 md:p-8 mt-16 max-w-5xl text-left space-y-6 shadow-2xl animate-fade-in-up delay-500">
+              <div>
+                <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
+                  Built for local communities
+                </p>
+                <h2 className="text-3xl font-bold">
+                  We help people explore local streets before they visit.
+                </h2>
+                <p className="mt-3 text-gray-700">
+                  Local Street Shop turns real streets into online walking
+                  experiences so shoppers can discover businesses by city,
+                  street, address, and storefront.
+                </p>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div className="rounded-2xl bg-blue-50 p-5">
+                  <p className="font-bold text-blue-800 mb-3">
+                    🧭 For Shoppers
+                  </p>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li>✓ Walk real streets online</li>
+                    <li>✓ Discover businesses by city, street, and address</li>
+                    <li>✓ Explore shops before visiting in person</li>
+                    <li>✓ Support local businesses in your community</li>
+                  </ul>
+
+                  <Link
+                    href="/live-cities"
+                    className="inline-block mt-5 text-blue-700 font-semibold hover:underline"
+                  >
+                    Browse live cities →
+                  </Link>
+                </div>
+
+                <div className="rounded-2xl bg-purple-50 p-5">
+                  <p className="font-bold text-purple-800 mb-3">
+                    🏪 For Business Owners
+                  </p>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li>✓ Claim your business listing</li>
+                    <li>✓ Add products, hours, contact info, and photos</li>
+                    <li>✓ Show up on your street’s digital walk</li>
+                    <li>✓ Phase 1 owners keep product management free forever</li>
+                  </ul>
+
+                  <Link
+                    href="/shop-owner"
+                    className="inline-block mt-5 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-semibold shadow transition"
+                  >
+                    Add or Claim Your Shop →
+                  </Link>
+                </div>
+              </div>
+            </section>
+
+            {/* HOW IT WORKS */}
+            <section className="bg-white bg-opacity-95 text-gray-900 rounded-3xl p-6 md:p-8 mt-8 max-w-5xl w-full text-left shadow-2xl">
+              <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
+                How it works
+              </p>
+
+              <h2 className="text-3xl font-bold mb-6">
+                A new way to explore local business streets
+              </h2>
+
+              <div className="grid gap-4 md:grid-cols-5">
+                {[
+                  ['1', 'Choose a city'],
+                  ['2', 'Pick a street'],
+                  ['3', 'Walk address by address'],
+                  ['4', 'Discover businesses'],
+                  ['5', 'Shop local'],
+                ].map(([number, label]) => (
+                  <div
+                    key={number}
+                    className="rounded-2xl bg-gray-50 border border-gray-100 p-5 text-center"
+                  >
+                    <div className="mx-auto mb-3 w-10 h-10 rounded-full bg-blue-700 text-white flex items-center justify-center font-bold">
+                      {number}
+                    </div>
+                    <p className="font-semibold text-gray-800">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* BIA / COMMUNITY PARTNER SECTION */}
+            <section className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl p-6 md:p-8 mt-8 max-w-5xl w-full text-left shadow-2xl">
+              <div className="grid gap-6 md:grid-cols-2 md:items-center">
+                <div>
+                  <p className="text-sm uppercase tracking-widest text-blue-100 font-semibold mb-2">
+                    For BIAs and local business communities
+                  </p>
+
+                  <h2 className="text-3xl font-bold mb-3">
+                    Helping main streets go digital
+                  </h2>
+
+                  <p className="text-blue-100">
+                    Local Street Shop helps communities showcase their local
+                    businesses through a virtual street-walking experience. It
+                    gives shoppers a simple way to explore streets online and
+                    gives business owners a place to be discovered.
+                  </p>
+                </div>
+
+                <div className="bg-white/10 rounded-2xl p-5">
+                  <p className="font-bold mb-3">Community benefits</p>
+                  <ul className="space-y-2 text-sm text-blue-50">
+                    <li>✓ Showcase local businesses street by street</li>
+                    <li>✓ Support downtown and main street discovery</li>
+                    <li>✓ Help businesses become visible online</li>
+                    <li>✓ Create a modern local shopping experience</li>
+                  </ul>
+
+                  <Link
+                    href="/contact"
+                    className="inline-block mt-5 bg-white text-blue-700 px-5 py-2 rounded-full text-sm font-bold hover:bg-blue-50 transition"
+                  >
+                    Partner With Us →
+                  </Link>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
 
@@ -127,12 +202,15 @@ export default function HomePage() {
           .delay-100 {
             animation-delay: 0.1s;
           }
+
           .delay-200 {
             animation-delay: 0.2s;
           }
+
           .delay-300 {
             animation-delay: 0.3s;
           }
+
           .delay-500 {
             animation-delay: 0.5s;
           }
