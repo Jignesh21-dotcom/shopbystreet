@@ -9,117 +9,304 @@ type Shop = {
   slug: string;
   description?: string;
   parking?: string;
+  address?: string;
+  category?: string;
+  phone?: string;
+  street_number?: number;
+};
+
+type AddressGroup = {
+  address: string;
+  streetNumber: number;
+  shops: Shop[];
 };
 
 type StreetClientProps = {
   province: string;
   city: string;
   street: string;
-  shops: Shop[];
+  streetName?: string;
+  isKitchenerDemo?: boolean;
+  shops?: Shop[];
 };
 
-export default function StreetClient({ province, city, street, shops }: StreetClientProps) {
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+
+export default function StreetClient({
+  province,
+  city,
+  street,
+  streetName,
+  isKitchenerDemo = false,
+  shops = [],
+}: StreetClientProps) {
   const [search, setSearch] = useState('');
 
-  // Helper function to extract the base address number from the description
-  const getBaseAddress = (description: string | undefined) => {
-    if (!description) return Infinity; // Push shops without a description to the end
-    const match = description.match(/^(\d+)/); // Match the first number in the description
-    return match ? parseInt(match[1], 10) : Infinity;
-  };
+  const displayStreetName = streetName || street.replace(/-/g, ' ');
 
-  // Helper function to extract the plaza/mall name from the description
-  const getPlazaName = (description?: string) => {
-    if (!description) return 'Other';
-    const match = description.match(/(.+?\b(Plaza|Mall|Centre|Center)\b.*?)/i);
-    if (match) return match[1].trim();
-    const base = description
-      .replace(/(Unit|Suite|#)\s*\d+/i, '') // Remove unit/suite numbers
-      .replace(/,.*$/, '') // Remove everything after a comma
-      .trim();
-    return base || 'Other';
-  };
-
-  // Enhanced filtering logic to search by name or street number
   const filteredShops = shops
     .filter((shop) => {
-      const nameMatch = shop.name.toLowerCase().includes(search.toLowerCase());
-      const addressMatch = shop.description
-        ? shop.description.toLowerCase().includes(search.toLowerCase())
-        : false;
-      return nameMatch || addressMatch;
+      const query = search.toLowerCase();
+
+      return (
+        shop.name.toLowerCase().includes(query) ||
+        shop.address?.toLowerCase().includes(query) ||
+        shop.category?.toLowerCase().includes(query) ||
+        shop.phone?.toLowerCase().includes(query)
+      );
     })
-    .sort((a, b) => getBaseAddress(a.description) - getBaseAddress(b.description));
+    .sort((a, b) => (a.street_number || 0) - (b.street_number || 0));
 
-  // Step 2: Build display blocks preserving order
-  const displayBlocks: { plaza: string; items: Shop[] }[] = [];
+  const addressGroups: AddressGroup[] = Object.values(
+    filteredShops.reduce((acc: Record<string, AddressGroup>, shop) => {
+      const address = shop.address || `Address #${shop.street_number || '?'}`;
+      const streetNumber = shop.street_number || 999999;
 
-  for (const shop of filteredShops) {
-    const plaza = getPlazaName(shop.description);
-    const lastBlock = displayBlocks[displayBlocks.length - 1];
+      if (!acc[address]) {
+        acc[address] = {
+          address,
+          streetNumber,
+          shops: [],
+        };
+      }
 
-    if (!lastBlock || lastBlock.plaza !== plaza) {
-      displayBlocks.push({ plaza, items: [shop] });
-    } else {
-      lastBlock.items.push(shop);
-    }
-  }
+      acc[address].shops.push(shop);
+      return acc;
+    }, {})
+  ).sort((a, b) => a.streetNumber - b.streetNumber);
+
+  const firstStop = addressGroups[0];
+  const firstStopHref = firstStop
+    ? `/cities/${city}/${street}/address/${slugify(firstStop.address)}`
+    : '#';
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50 flex flex-col items-center">
-      {/* Back to City Link */}
-      <Link
-        href={`/cities/${city}`} // Corrected to point to the city route
-        className="self-start mb-6 text-blue-700 hover:underline"
-      >
-        ← Back to City
-      </Link>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <Link
+          href={`/cities/${city}`}
+          className="inline-block mb-6 text-blue-700 hover:text-blue-900 hover:underline"
+        >
+          ← Back to {city}
+        </Link>
 
-      {/* Street Title */}
-      <h1 className="text-4xl font-bold text-blue-700 mb-8 capitalize">
-        🏙️ Shops on {street}
-      </h1>
+        <section className="bg-white rounded-3xl shadow-lg overflow-hidden mb-10">
+          <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-10">
+            <p className="text-sm uppercase tracking-widest opacity-90 mb-3">
+              {isKitchenerDemo
+                ? 'Downtown Kitchener Virtual Street Walk'
+                : 'Local Street Shop'}
+            </p>
 
-      {/* Search Bar */}
-      <input
-        type="text"
-        placeholder="Search for a shop or street number..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-8 p-3 w-full max-w-md rounded-lg border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 capitalize">
+              Walk {displayStreetName}
+            </h1>
 
-      {/* Shops List */}
-      {displayBlocks.length > 0 ? (
-        <div className="w-full max-w-6xl space-y-10">
-          {displayBlocks.map((block, i) => (
-            <div key={`${block.plaza}-${i}`}>
-              <h2 className="text-2xl font-semibold text-blue-800 mb-4">{block.plaza}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {block.items.map((shop) => (
-                  <Link
-                    key={shop.id}
-                    href={`/cities/${city}/${street}/${shop.slug}`}
-                    className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between"
-                  >
-                    <h3 className="text-xl font-semibold text-blue-700 mb-2">{shop.name}</h3>
-                    <p className="text-gray-600 flex-1">
-                      {shop.description || 'No address available.'}
-                    </p>
-                    {shop.parking && (
-                      <p className="text-sm text-gray-500 mt-4">
-                        🚗 Parking: {shop.parking}
-                      </p>
-                    )}
-                  </Link>
-                ))}
+            <p className="text-lg md:text-xl text-blue-100 max-w-3xl mb-8">
+              Explore businesses stop by stop in address order, like walking
+              down the street in real life.
+            </p>
+
+            {firstStop && (
+              <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                <Link
+                  href={firstStopHref}
+                  className="inline-flex items-center justify-center bg-white text-blue-700 px-7 py-4 rounded-2xl font-bold shadow-md hover:bg-blue-50 transition"
+                >
+                  🚶 Start Walk
+                </Link>
+
+                <p className="text-blue-100">
+                  First stop: <span className="font-semibold">{firstStop.address}</span>
+                </p>
               </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-white">
+            <div className="rounded-2xl bg-blue-50 p-5">
+              <p className="text-3xl font-bold text-blue-700">{shops.length}</p>
+              <p className="text-gray-600">Businesses</p>
             </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-600 text-lg">No shops found on this street.</p>
-      )}
+
+            <div className="rounded-2xl bg-green-50 p-5">
+              <p className="text-3xl font-bold text-green-700">
+                {addressGroups.length}
+              </p>
+              <p className="text-gray-600">Street Stops</p>
+            </div>
+
+            <div className="rounded-2xl bg-purple-50 p-5">
+              <p className="text-3xl font-bold text-purple-700">
+                {addressGroups.length > 0 ? 'Ready' : 'Empty'}
+              </p>
+              <p className="text-gray-600">Walk Mode</p>
+            </div>
+          </div>
+        </section>
+
+        {addressGroups.length > 0 && (
+          <section className="bg-white rounded-3xl shadow-md p-6 mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+              <div>
+                <p className="text-sm font-bold text-blue-600 uppercase tracking-widest">
+                  Virtual Walk Preview
+                </p>
+                <h2 className="text-2xl font-bold text-gray-900 mt-1">
+                  {addressGroups.length} stops on {displayStreetName}
+                </h2>
+                <p className="text-gray-600 mt-2">
+                  Start at the first address, then move forward using Previous
+                  Stop and Next Stop.
+                </p>
+              </div>
+
+              <Link
+                href={firstStopHref}
+                className="bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-800 transition text-center"
+              >
+                Start Walking →
+              </Link>
+            </div>
+
+            <div className="mt-6 h-3 bg-blue-100 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-600 rounded-full w-full" />
+            </div>
+
+            <div className="flex flex-wrap gap-2 mt-4">
+              {addressGroups.map((group, index) => (
+                <Link
+                  key={`preview-${group.address}`}
+                  href={`/cities/${city}/${street}/address/${slugify(group.address)}`}
+                  className="text-sm bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-700 px-3 py-2 rounded-full transition"
+                >
+                  Stop {index + 1}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <input
+          type="text"
+          placeholder="Search by business, address, category, or phone..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="mb-8 p-4 w-full max-w-xl rounded-xl border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
+        />
+
+        {addressGroups.length > 0 ? (
+          <div className="space-y-8 w-full">
+            {addressGroups.map((group, index) => {
+              const addressHref = `/cities/${city}/${street}/address/${slugify(
+                group.address
+              )}`;
+
+              return (
+                <section
+                  key={`list-${group.address}`}
+                  className="bg-white rounded-3xl shadow-md p-6"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5 border-b pb-4">
+                    <div>
+                      <p className="text-sm font-bold text-blue-600">
+                        Stop {index + 1} of {addressGroups.length}
+                      </p>
+
+                      <Link
+                        href={addressHref}
+                        className="inline-block text-2xl font-bold text-blue-800 hover:text-blue-600 hover:underline"
+                      >
+                        📍 {group.address}
+                      </Link>
+
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {Object.entries(
+                          group.shops.reduce((acc: Record<string, number>, shop) => {
+                            const category = shop.category || 'Other';
+                            acc[category] = (acc[category] || 0) + 1;
+                            return acc;
+                          }, {})
+                        ).map(([category, count]) => (
+                          <span
+                            key={category}
+                            className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold"
+                          >
+                            {category} ({count})
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <span className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold text-center">
+                        {group.shops.length}{' '}
+                        {group.shops.length === 1 ? 'business' : 'businesses'}
+                      </span>
+
+                      <Link
+                        href={addressHref}
+                        className="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800 transition text-center"
+                      >
+                        Continue Walk →
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {group.shops.map((shop) => (
+                      <Link
+                        key={shop.id}
+                        href={`/cities/${city}/${street}/${shop.slug}`}
+                        className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-lg transition p-5"
+                      >
+                        <h3 className="text-xl font-bold text-blue-700">
+                          {shop.name}
+                        </h3>
+
+                        {shop.category && (
+                          <p className="text-sm text-purple-600 font-medium mt-1">
+                            {shop.category}
+                          </p>
+                        )}
+
+                        {shop.phone && (
+                          <p className="text-gray-600 mt-3">📞 {shop.phone}</p>
+                        )}
+
+                        {!isKitchenerDemo && (
+                          <>
+                            <p className="text-gray-600 mt-3">
+                              {shop.description || 'No address available.'}
+                            </p>
+
+                            {shop.parking && (
+                              <p className="text-sm text-gray-500 mt-4">
+                                🚗 Parking: {shop.parking}
+                              </p>
+                            )}
+                          </>
+                        )}
+
+                        <p className="mt-4 text-blue-700 font-semibold">
+                          View business →
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-gray-600 text-lg">No businesses found.</p>
+        )}
+      </div>
     </div>
   );
 }

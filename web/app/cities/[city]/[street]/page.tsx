@@ -2,28 +2,80 @@ import StreetClient from './StreetClient';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
-// Add normalization function here
 const normalizeSlug = (slug: string) =>
   slug?.toLowerCase().replace(/\s+/g, '-').trim();
 
-type StreetPageProps = {
-  params: {
-    city?: string;
-    street?: string;
-  };
-};
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
 
 export default async function StreetPage({ params }: any) {
-  // Use normalization for params
   const city = normalizeSlug(decodeURIComponent(params?.city || ''));
   const street = normalizeSlug(decodeURIComponent(params?.street || ''));
 
   if (!city || !street) {
-    console.error('Missing city or street param:', { city, street });
     return <div>Invalid URL.</div>;
   }
 
-  // Fetch street data (with city relation, and province via join)
+  const isKitchenerDemo = city === 'kitchener';
+
+  if (isKitchenerDemo) {
+    const { data: businesses, error } = await supabase
+      .from('downtown_kitchener_businesses')
+      .select(
+        'id, business_name, category, phone, address, street_name, street_number'
+      )
+      .order('street_number', { ascending: true });
+
+    if (error || !businesses) {
+      console.error('Failed to load Downtown Kitchener businesses:', error);
+      return <div>No businesses found for this street.</div>;
+    }
+
+    const streetBusinesses = businesses.filter(
+      (biz) => biz.street_name && slugify(biz.street_name) === street
+    );
+
+    if (streetBusinesses.length === 0) {
+      return <div>No businesses found for this street.</div>;
+    }
+
+    const streetName = streetBusinesses[0].street_name;
+
+    const shops = streetBusinesses.map((biz) => ({
+      id: biz.id,
+      name: biz.business_name,
+      slug: slugify(biz.business_name),
+      description: biz.category,
+      parking: biz.phone || '',
+      address: biz.address,
+      category: biz.category,
+      phone: biz.phone,
+      street_number: biz.street_number,
+    }));
+
+    return (
+      <>
+        <SEO
+          title={`${streetName} – Downtown Kitchener Businesses | Local Street Shop`}
+          description={`Walk ${streetName} in Downtown Kitchener and discover local businesses in address order.`}
+          url={`https://www.localstreetshop.com/cities/kitchener/${street}`}
+        />
+        <StreetClient
+          province="ontario"
+          city="kitchener"
+          street={street}
+          streetName={streetName}
+          shops={shops}
+          isKitchenerDemo={true}
+        />
+      </>
+    );
+  }
+
   const { data: streetData, error: streetError } = await supabase
     .from('streets')
     .select(`
@@ -46,56 +98,51 @@ export default async function StreetPage({ params }: any) {
     return <div>Street not found.</div>;
   }
 
-  // Normalize city relation (handle array/object)
-  const cityData = Array.isArray(streetData.city) ? streetData.city[0] : streetData.city;
+  const cityData = Array.isArray(streetData.city)
+    ? streetData.city[0]
+    : streetData.city;
 
-  // Use normalization for city slug comparison
   if (!cityData || normalizeSlug(cityData.slug) !== city) {
-    console.error(
-      `Validation failed: Street "${street}" does not belong to city "${city}".`,
-      { streetCitySlug: cityData?.slug, citySlug: city }
-    );
     return <div>Street not found in this city.</div>;
   }
 
- // Province slug from join, fallback to 'ontario'
-let provinceSlug = 'ontario';
-const provinceData: any = cityData?.province;
+  let provinceSlug = 'ontario';
+  const provinceData: any = cityData?.province;
 
-if (Array.isArray(provinceData)) {
-  provinceSlug = provinceData[0]?.slug || 'ontario';
-} else if (provinceData && typeof provinceData === 'object') {
-  provinceSlug = provinceData.slug || 'ontario';
-}
+  if (Array.isArray(provinceData)) {
+    provinceSlug = provinceData[0]?.slug || 'ontario';
+  } else if (provinceData && typeof provinceData === 'object') {
+    provinceSlug = provinceData.slug || 'ontario';
+  }
 
-  // Fetch shops using street_id (relational, robust)
   const { data: shops, error: shopsError } = await supabase
     .from('shops')
-    .select('id, name, slug, description, parking')
+    .select(
+      'id, name, slug, description, parking, address, category, phone, street_number'
+    )
     .eq('street_id', streetData.id)
-    .order('sequence', { ascending: true });
-
-  console.log('Fetched shops:', shops);
+    .order('street_number', { ascending: true });
 
   if (shopsError || !shops) {
-    console.error(`Failed to load shops for street: ${street}`, shopsError);
+    console.error('Failed to load shops:', shopsError);
     return <div>No shops found for this street.</div>;
   }
 
-  // SEO values
   const streetName = streetData.name;
   const cityName = cityData.name;
-  const title = `${streetName} – Shops in ${cityName} | Local Street Shop`;
-  const description = `Discover local businesses on ${streetName} in ${cityName}, ${provinceSlug}. Explore stores, products, and support your local economy.`;
-  const url = `https://www.localstreetshop.com/cities/${city}/${street}`;
 
   return (
     <>
-      <SEO title={title} description={description} url={url} />
+      <SEO
+        title={`${streetName} – Shops in ${cityName} | Local Street Shop`}
+        description={`Walk ${streetName} in ${cityName}, ${provinceSlug}, and discover local businesses in address order.`}
+        url={`https://www.localstreetshop.com/cities/${city}/${street}`}
+      />
       <StreetClient
         province={provinceSlug}
         city={cityData.slug}
         street={streetData.slug}
+        streetName={streetName}
         shops={shops}
       />
     </>
