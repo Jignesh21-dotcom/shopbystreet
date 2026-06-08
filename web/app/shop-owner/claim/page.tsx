@@ -14,7 +14,6 @@ type ClaimResult = {
   streetName?: string;
   streetSlug?: string;
   address?: string;
-  source: 'shops' | 'kitchener_demo';
 };
 
 const slugify = (text: string) =>
@@ -37,8 +36,12 @@ export default function ClaimShopPage() {
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
-      if (data?.user) setUser(data.user);
-      else router.push('/login');
+
+      if (data?.user) {
+        setUser(data.user);
+      } else {
+        router.push('/login');
+      }
     };
 
     fetchUser();
@@ -53,7 +56,7 @@ export default function ClaimShopPage() {
     setSearched(true);
     setShops([]);
 
-    const { data: normalShops, error: normalError } = await supabase
+    let query = supabase
       .from('shops')
       .select(`
         id,
@@ -69,18 +72,29 @@ export default function ClaimShopPage() {
           )
         )
       `)
-      .ilike('name', `%${shopQuery}%`)
       .order('name', { ascending: true })
-      .limit(200);
+      .limit(300);
 
-    if (normalError) {
-      console.error('Normal shop search error:', normalError.message);
+    if (shopQuery) {
+      query = query.ilike('name', `%${shopQuery}%`);
     }
 
-    const normalizedNormal: ClaimResult[] = (normalShops || [])
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Shop search error:', error.message);
+      alert(`Search failed: ${error.message}`);
+      return;
+    }
+
+    const normalized: ClaimResult[] = (data || [])
       .map((shop: any) => {
         let street = shop.street;
-        if (Array.isArray(street)) street = street[0] || null;
+
+        if (Array.isArray(street)) {
+          street = street[0] || null;
+        }
+
         if (street && Array.isArray(street.city)) {
           street.city = street.city[0] || null;
         }
@@ -94,50 +108,19 @@ export default function ClaimShopPage() {
           streetSlug: street?.slug,
           cityName: street?.city?.name,
           citySlug: street?.city?.slug,
-          source: 'shops' as const,
         };
       })
       .filter((shop) => {
         if (!cityQuery) return true;
-        return shop.cityName?.toLowerCase().includes(cityQuery);
+
+        return (
+          shop.cityName?.toLowerCase().includes(cityQuery) ||
+          shop.citySlug?.toLowerCase().includes(cityQuery)
+        );
       });
 
-    let demoResults: ClaimResult[] = [];
-
-    if (!cityQuery || 'kitchener'.includes(cityQuery)) {
-      const { data: demoShops, error: demoError } = await supabase
-        .from('downtown_kitchener_businesses')
-        .select('id, business_name, address, street_name')
-        .ilike('business_name', `%${shopQuery}%`)
-        .order('business_name', { ascending: true })
-        .limit(200);
-
-      if (demoError) {
-        console.error('Kitchener demo search error:', demoError.message);
-      }
-
-      demoResults = (demoShops || []).map((biz: any) => ({
-        id: biz.id,
-        name: biz.business_name,
-        slug: slugify(biz.business_name),
-        address: biz.address,
-        streetName: biz.street_name,
-        streetSlug: slugify(biz.street_name || ''),
-        cityName: 'Kitchener',
-        citySlug: 'kitchener',
-        source: 'kitchener_demo',
-      }));
-    }
-
-    const combined = [...demoResults, ...normalizedNormal];
-
     const unique = Array.from(
-      new Map(
-        combined.map((shop) => [
-          `${shop.source}-${shop.id}-${shop.name}`,
-          shop,
-        ])
-      ).values()
+      new Map(normalized.map((shop) => [shop.id, shop])).values()
     );
 
     setShops(unique);
@@ -145,13 +128,6 @@ export default function ClaimShopPage() {
 
   const handleClaim = async (shop: ClaimResult) => {
     if (!user) return;
-
-    if (shop.source === 'kitchener_demo') {
-      alert(
-        'This Kitchener listing is part of the demo database. Please contact admin to claim this business for now.'
-      );
-      return;
-    }
 
     setSubmittingId(shop.id);
 
@@ -164,8 +140,8 @@ export default function ClaimShopPage() {
     ]);
 
     if (error) {
-      alert('❌ Failed to submit claim. You may have already submitted one.');
-      console.error(error.message);
+      alert(`❌ ${error.message}`);
+      console.error(error);
     } else {
       alert('✅ Claim request submitted! We’ll review it shortly.');
       setMessages((prev) => ({ ...prev, [shop.id]: '' }));
@@ -199,6 +175,9 @@ export default function ClaimShopPage() {
               placeholder="Shop name, e.g. Coffee"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSearch();
+              }}
               className="md:col-span-1 px-4 py-3 border border-gray-300 rounded-xl"
             />
 
@@ -207,6 +186,9 @@ export default function ClaimShopPage() {
               placeholder="City, e.g. Kitchener"
               value={citySearch}
               onChange={(e) => setCitySearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSearch();
+              }}
               className="md:col-span-1 px-4 py-3 border border-gray-300 rounded-xl"
             />
 
@@ -228,12 +210,22 @@ export default function ClaimShopPage() {
             <div className="space-y-4">
               {shops.map((shop) => (
                 <div
-                  key={`${shop.source}-${shop.id}`}
+                  key={shop.id}
                   className="border border-gray-200 rounded-2xl p-5 shadow-sm bg-gray-50"
                 >
-                  <div className="font-bold text-xl text-gray-900">
-                    {shop.name}
-                  </div>
+                  {shop.citySlug && shop.streetSlug ? (
+                    <a
+                      href={`/cities/${shop.citySlug}/${shop.streetSlug}/${shop.slug}`}
+                      target="_blank"
+                      className="font-bold text-xl text-gray-900 hover:text-blue-700 hover:underline"
+                    >
+                      {shop.name}
+                    </a>
+                  ) : (
+                    <div className="font-bold text-xl text-gray-900">
+                      {shop.name}
+                    </div>
+                  )}
 
                   <div className="text-sm text-gray-600 mt-1">
                     {shop.streetName && <>Street: {shop.streetName}</>}
@@ -249,14 +241,6 @@ export default function ClaimShopPage() {
                     >
                       View listing →
                     </a>
-                  )}
-
-                  {shop.source === 'kitchener_demo' && (
-                    <p className="mt-3 text-sm text-orange-700 bg-orange-50 border border-orange-200 rounded-xl p-3">
-                      This is currently part of the Downtown Kitchener demo
-                      database. Claiming can be enabled after we move this
-                      listing into the main shops table.
-                    </p>
                   )}
 
                   <textarea
