@@ -63,6 +63,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
         story: '',
         hours: '',
         contact: '',
+        owner_id: null,
       }));
 
     business = streetBusinesses.find((biz) => biz.slug === rawShop);
@@ -109,7 +110,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
     const { data: shops, error: shopsError } = await supabase
       .from('shops')
       .select(
-        'id, name, slug, description, parking, image_url, story, hours, contact, address, category, phone, street_number'
+        'id, name, slug, owner_id, description, parking, image_url, story, hours, contact, address, category, phone, street_number'
       )
       .eq('street_id', streetData.id)
       .eq('approved', true)
@@ -134,6 +135,8 @@ export default async function ShopPage({ params }: ShopPageProps) {
     return <div>Business not found.</div>;
   }
 
+  const isClaimed = Boolean(business.owner_id);
+
   const nearbyBusinesses = streetBusinesses.filter(
     (biz) =>
       biz.address &&
@@ -150,7 +153,11 @@ export default async function ShopPage({ params }: ShopPageProps) {
     ? `/cities/${rawCity}/${rawStreet}/address/${slugify(business.address)}`
     : `/cities/${rawCity}/${rawStreet}`;
 
-  const mapQuery = `${business.name}, ${business.address || streetName}, ${cityName}, ${provinceSlug}`;
+  const claimHref = `/shop-owner/claim`;
+
+  const mapQuery = `${business.name}, ${
+    business.address || streetName
+  }, ${cityName}, ${provinceSlug}`;
 
   const title = `${business.name} – ${streetName}, ${cityName} | Local Street Shop`;
   const description = business.description
@@ -235,8 +242,40 @@ export default async function ShopPage({ params }: ShopPageProps) {
                     🚶 View this street stop
                   </Link>
                 )}
+
+                {!isClaimed && (
+                  <Link
+                    href={claimHref}
+                    className="bg-yellow-400 text-gray-900 px-5 py-3 rounded-xl font-bold hover:bg-yellow-500 transition"
+                  >
+                    🏪 Claim This Business
+                  </Link>
+                )}
               </div>
             </div>
+
+            {!isClaimed && (
+              <div className="bg-yellow-50 border-b border-yellow-100 px-8 py-5">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <p className="font-bold text-yellow-800">
+                      Own this business?
+                    </p>
+                    <p className="text-sm text-gray-700 mt-1">
+                      Claim this listing to add products, photos, hours, contact
+                      details, and improve your visibility on Local Street Shop.
+                    </p>
+                  </div>
+
+                  <Link
+                    href={claimHref}
+                    className="inline-block bg-yellow-400 text-gray-900 px-5 py-3 rounded-xl font-bold hover:bg-yellow-500 transition text-center"
+                  >
+                    Claim This Business →
+                  </Link>
+                </div>
+              </div>
+            )}
 
             <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="rounded-2xl bg-blue-50 p-6">
@@ -307,7 +346,9 @@ export default async function ShopPage({ params }: ShopPageProps) {
 
                   <p className="text-gray-700 mt-2">
                     <strong>Contact:</strong>{' '}
-                    {business.contact || business.phone || 'Contact not available'}
+                    {business.contact ||
+                      business.phone ||
+                      'Contact not available'}
                   </p>
                 </div>
               </div>
