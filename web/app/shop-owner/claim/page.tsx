@@ -16,6 +16,12 @@ type ClaimResult = {
   address?: string;
 };
 
+type ExistingClaim = {
+  id: string;
+  shop_id: string;
+  status: 'pending' | 'approved' | 'rejected';
+};
+
 const slugify = (text: string) =>
   text
     .toLowerCase()
@@ -28,23 +34,45 @@ export default function ClaimShopPage() {
   const [search, setSearch] = useState('');
   const [citySearch, setCitySearch] = useState('');
   const [shops, setShops] = useState<ClaimResult[]>([]);
+  const [existingClaims, setExistingClaims] = useState<Record<string, ExistingClaim>>({});
   const [messages, setMessages] = useState<Record<string, string>>({});
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserAndClaims = async () => {
       const { data } = await supabase.auth.getUser();
 
-      if (data?.user) {
-        setUser(data.user);
-      } else {
+      if (!data?.user) {
         router.push('/login');
+        return;
       }
+
+      setUser(data.user);
+
+      const { data: claims, error } = await supabase
+        .from('shop_claims')
+        .select('id, shop_id, status')
+        .eq('user_id', data.user.id);
+
+      if (error) {
+        console.error('Failed to fetch user claims:', error.message);
+        return;
+      }
+
+      const claimMap = (claims || []).reduce(
+        (acc: Record<string, ExistingClaim>, claim: ExistingClaim) => {
+          acc[claim.shop_id] = claim;
+          return acc;
+        },
+        {}
+      );
+
+      setExistingClaims(claimMap);
     };
 
-    fetchUser();
+    fetchUserAndClaims();
   }, [router]);
 
   const handleSearch = async () => {
@@ -129,25 +157,49 @@ export default function ClaimShopPage() {
   const handleClaim = async (shop: ClaimResult) => {
     if (!user) return;
 
+    if (existingClaims[shop.id]) return;
+
     setSubmittingId(shop.id);
 
-    const { error } = await supabase.from('shop_claims').insert([
-      {
-        shop_id: shop.id,
-        user_id: user.id,
-        message: messages[shop.id] || '',
-      },
-    ]);
+    const { data, error } = await supabase
+      .from('shop_claims')
+      .insert([
+        {
+          shop_id: shop.id,
+          user_id: user.id,
+          message: messages[shop.id] || '',
+          status: 'pending',
+        },
+      ])
+      .select('id, shop_id, status')
+      .single();
 
     if (error) {
       alert(`❌ ${error.message}`);
       console.error(error);
-    } else {
+    } else if (data) {
       alert('✅ Claim request submitted! We’ll review it shortly.');
+
+      setExistingClaims((prev) => ({
+        ...prev,
+        [shop.id]: data as ExistingClaim,
+      }));
+
       setMessages((prev) => ({ ...prev, [shop.id]: '' }));
     }
 
     setSubmittingId(null);
+  };
+
+  const getClaimButtonText = (shopId: string) => {
+    const claim = existingClaims[shopId];
+
+    if (!claim) return '📩 Request Access';
+
+    if (claim.status === 'approved') return '✅ Claim Approved';
+    if (claim.status === 'rejected') return '❌ Claim Rejected';
+
+    return '✅ Claim Submitted';
   };
 
   return (
@@ -208,64 +260,86 @@ export default function ClaimShopPage() {
 
           {shops.length > 0 ? (
             <div className="space-y-4">
-              {shops.map((shop) => (
-                <div
-                  key={shop.id}
-                  className="border border-gray-200 rounded-2xl p-5 shadow-sm bg-gray-50"
-                >
-                  {shop.citySlug && shop.streetSlug ? (
-                    <a
-                      href={`/cities/${shop.citySlug}/${shop.streetSlug}/${shop.slug}`}
-                      target="_blank"
-                      className="font-bold text-xl text-gray-900 hover:text-blue-700 hover:underline"
-                    >
-                      {shop.name}
-                    </a>
-                  ) : (
-                    <div className="font-bold text-xl text-gray-900">
-                      {shop.name}
-                    </div>
-                  )}
+              {shops.map((shop) => {
+                const claim = existingClaims[shop.id];
+                const alreadyClaimed = Boolean(claim);
 
-                  <div className="text-sm text-gray-600 mt-1">
-                    {shop.streetName && <>Street: {shop.streetName}</>}
-                    {shop.cityName && <> | City: {shop.cityName}</>}
-                    {shop.address && <> | Address: {shop.address}</>}
-                  </div>
-
-                  {shop.citySlug && shop.streetSlug && (
-                    <a
-                      href={`/cities/${shop.citySlug}/${shop.streetSlug}/${shop.slug}`}
-                      target="_blank"
-                      className="inline-block mt-3 text-blue-700 font-semibold hover:underline"
-                    >
-                      View listing →
-                    </a>
-                  )}
-
-                  <textarea
-                    className="mt-4 w-full p-3 border rounded-xl"
-                    placeholder="Add a message for the admin (optional)"
-                    value={messages[shop.id] || ''}
-                    onChange={(e) =>
-                      setMessages((prev) => ({
-                        ...prev,
-                        [shop.id]: e.target.value,
-                      }))
-                    }
-                  />
-
-                  <button
-                    onClick={() => handleClaim(shop)}
-                    disabled={submittingId === shop.id}
-                    className="mt-3 inline-block bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-medium disabled:opacity-50"
+                return (
+                  <div
+                    key={shop.id}
+                    className="border border-gray-200 rounded-2xl p-5 shadow-sm bg-gray-50"
                   >
-                    {submittingId === shop.id
-                      ? 'Submitting...'
-                      : '📩 Request Access'}
-                  </button>
-                </div>
-              ))}
+                    {shop.citySlug && shop.streetSlug ? (
+                      <a
+                        href={`/cities/${shop.citySlug}/${shop.streetSlug}/${shop.slug}`}
+                        target="_blank"
+                        className="font-bold text-xl text-gray-900 hover:text-blue-700 hover:underline"
+                      >
+                        {shop.name}
+                      </a>
+                    ) : (
+                      <div className="font-bold text-xl text-gray-900">
+                        {shop.name}
+                      </div>
+                    )}
+
+                    <div className="text-sm text-gray-600 mt-1">
+                      {shop.streetName && <>Street: {shop.streetName}</>}
+                      {shop.cityName && <> | City: {shop.cityName}</>}
+                      {shop.address && <> | Address: {shop.address}</>}
+                    </div>
+
+                    {shop.citySlug && shop.streetSlug && (
+                      <a
+                        href={`/cities/${shop.citySlug}/${shop.streetSlug}/${shop.slug}`}
+                        target="_blank"
+                        className="inline-block mt-3 text-blue-700 font-semibold hover:underline"
+                      >
+                        View listing →
+                      </a>
+                    )}
+
+                    {!alreadyClaimed && (
+                      <textarea
+                        className="mt-4 w-full p-3 border rounded-xl"
+                        placeholder="Add a message for the admin (optional)"
+                        value={messages[shop.id] || ''}
+                        onChange={(e) =>
+                          setMessages((prev) => ({
+                            ...prev,
+                            [shop.id]: e.target.value,
+                          }))
+                        }
+                      />
+                    )}
+
+                    {claim && (
+                      <div className="mt-4 rounded-xl bg-green-50 border border-green-200 p-3 text-sm text-green-700">
+                        {claim.status === 'pending' &&
+                          'Your claim request has been submitted and is waiting for review.'}
+                        {claim.status === 'approved' &&
+                          'Your claim has been approved. You can now manage this business from your shop owner dashboard.'}
+                        {claim.status === 'rejected' &&
+                          'Your claim was not approved. Please contact support if you believe this is a mistake.'}
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => handleClaim(shop)}
+                      disabled={submittingId === shop.id || alreadyClaimed}
+                      className={`mt-3 inline-block px-5 py-3 rounded-xl font-medium disabled:opacity-70 ${
+                        alreadyClaimed
+                          ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
+                          : 'bg-green-600 hover:bg-green-700 text-white'
+                      }`}
+                    >
+                      {submittingId === shop.id
+                        ? 'Submitting...'
+                        : getClaimButtonText(shop.id)}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           ) : searched ? (
             <div className="text-gray-600 bg-gray-50 rounded-xl p-5">
