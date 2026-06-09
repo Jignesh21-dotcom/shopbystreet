@@ -92,35 +92,82 @@ export default function ShopOwnerDashboard() {
               Loading your shops...
             </div>
           ) : shops.length === 0 ? (
-            <div className="bg-yellow-100 border border-yellow-300 p-4 rounded-lg text-yellow-800">
-              🚨 You have not added or claimed a shop yet.
+            <>
+              <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 p-5 rounded-xl mb-6">
+                <h2 className="text-lg font-bold text-blue-800 mb-2">
+                  🚀 Founding Business Program
+                </h2>
 
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Link
-                  href="/shop-owner/claim"
-                  className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full font-semibold transition"
-                >
-                  🔍 Claim Existing Shop
-                </Link>
+                <p className="text-sm text-gray-700 mb-2">
+                  LocalStreetShop is building a new way for customers to shop local online.
+                </p>
 
-                <Link
-                  href="/shop-owner/shops/add"
-                  className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-semibold transition"
-                >
-                  ➕ Add New Shop
-                </Link>
+                <p className="text-sm text-gray-700 mb-2">
+                  During Phase 1, businesses can claim their shop, update their business
+                  information, and add products completely free.
+                </p>
+
+                <p className="text-sm text-gray-700 mb-2">
+                  Our vision is to allow customers to browse local streets, discover products
+                  from nearby businesses, and purchase online directly from local shops —
+                  without business owners needing to build their own website.
+                </p>
+
+                <p className="text-sm font-semibold text-green-700">
+                  🎉 Businesses that join during Phase 1 will receive special Founding
+                  Business benefits as the platform grows.
+                </p>
               </div>
 
-              <p className="mt-3 text-sm text-gray-600">
-                If your shop is already listed, claim it. If not, add it as a new shop.
-              </p>
-            </div>
+              <div className="bg-yellow-100 border border-yellow-300 p-4 rounded-lg text-yellow-800">
+                🚨 You have not added or claimed a shop yet.
+
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Link
+                    href="/shop-owner/claim"
+                    className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full font-semibold transition"
+                  >
+                    🔍 Claim Existing Shop
+                  </Link>
+
+                  <Link
+                    href="/shop-owner/shops/add"
+                    className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-semibold transition"
+                  >
+                    ➕ Add New Shop
+                  </Link>
+                </div>
+
+                <p className="mt-3 text-sm text-gray-600">
+                  If your shop is already listed, claim it. If not, add it as a new shop.
+                </p>
+              </div>
+            </>
           ) : (
             <>
-              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-6 text-blue-900">
-                <p className="font-semibold mb-1">Phase 1 – Free Product Listings</p>
-                <p className="text-sm">
-                  During Phase 1, adding and managing products is free for approved shop owners.
+              <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 p-5 rounded-xl mb-6">
+                <h2 className="text-lg font-bold text-blue-800 mb-2">
+                  🚀 Founding Business Program
+                </h2>
+
+                <p className="text-sm text-gray-700 mb-2">
+                  LocalStreetShop is building a new way for customers to shop local online.
+                </p>
+
+                <p className="text-sm text-gray-700 mb-2">
+                  During Phase 1, businesses can claim their shop, update their business
+                  information, and add products completely free.
+                </p>
+
+                <p className="text-sm text-gray-700 mb-2">
+                  Our vision is to allow customers to browse local streets, discover products
+                  from nearby businesses, and purchase online directly from local shops —
+                  without business owners needing to build their own website.
+                </p>
+
+                <p className="text-sm font-semibold text-green-700">
+                  🎉 Businesses that join during Phase 1 will receive special Founding
+                  Business benefits as the platform grows.
                 </p>
               </div>
 
@@ -150,6 +197,13 @@ export default function ShopOwnerDashboard() {
                       </p>
 
                       <div className="flex flex-wrap gap-3 mt-4">
+                        <Link
+                          href={`/shop-owner/shops/${shop.id}`}
+                          className="rounded-full bg-yellow-500 px-5 py-2 text-sm font-semibold text-white hover:bg-yellow-600"
+                        >
+                          ✏️ Manage Shop
+                        </Link>
+
                         <Link
                           href="/shop-owner/products/add"
                           className="rounded-full bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700"

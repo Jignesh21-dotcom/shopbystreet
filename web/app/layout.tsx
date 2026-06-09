@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${poppins.className} min-h-screen bg-gray-100 flex flex-col`}>
+      <body className={`${poppins.className} min-h-screen bg-gray-100 flex flex-col`} suppressHydrationWarning>
         {/* ✅ Google Tag Manager Noscript */}
         <noscript>
           <iframe
