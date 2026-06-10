@@ -23,8 +23,6 @@ export default async function AddressPage({ params }: any) {
     return <div>Invalid address page.</div>;
   }
 
-  const isKitchenerDemo = city === 'kitchener';
-
   let addressBusinesses: any[] = [];
   let streetBusinesses: any[] = [];
   let address = '';
@@ -32,107 +30,76 @@ export default async function AddressPage({ params }: any) {
   let cityName = city;
   let provinceSlug = 'ontario';
 
-  if (isKitchenerDemo) {
-    const { data: businesses, error } = await supabase
-      .from('downtown_kitchener_businesses')
-      .select(
-        'id, business_name, category, phone, address, street_name, street_number'
-      )
-      .order('street_number', { ascending: true });
-
-    if (error || !businesses) {
-      return <div>Address not found.</div>;
-    }
-
-    streetBusinesses = businesses
-      .filter((biz) => biz.street_name && slugify(biz.street_name) === street)
-      .map((biz) => ({
-        id: biz.id,
-        name: biz.business_name,
-        slug: slugify(biz.business_name),
-        category: biz.category,
-        phone: biz.phone,
-        address: biz.address,
-        street_name: biz.street_name,
-        street_number: biz.street_number,
-      }));
-
-    addressBusinesses = streetBusinesses.filter(
-      (biz) => biz.address && slugify(biz.address) === addressSlug
-    );
-
-    streetName = addressBusinesses[0]?.street_name || '';
-    cityName = 'Kitchener';
-  } else {
-    const { data: streetData, error: streetError } = await supabase
-      .from('streets')
-      .select(`
-        id,
+  const { data: streetData, error: streetError } = await supabase
+    .from('streets')
+    .select(`
+      id,
+      name,
+      slug,
+      city:city_id (
         name,
         slug,
-        city:city_id (
-          name,
-          slug,
-          province:province_id (
-            slug
-          )
+        province:province_id (
+          slug
         )
-      `)
-      .eq('slug', street)
-      .single();
-
-    if (streetError || !streetData) {
-      return <div>Street not found.</div>;
-    }
-
-    const cityData = Array.isArray(streetData.city)
-      ? streetData.city[0]
-      : streetData.city;
-
-    if (!cityData || normalizeSlug(cityData.slug) !== city) {
-      return <div>Street not found in this city.</div>;
-    }
-
-    const provinceData: any = cityData?.province;
-
-    if (Array.isArray(provinceData)) {
-      provinceSlug = provinceData[0]?.slug || 'ontario';
-    } else if (provinceData && typeof provinceData === 'object') {
-      provinceSlug = provinceData.slug || 'ontario';
-    }
-
-    const { data: shops, error: shopsError } = await supabase
-      .from('shops')
-      .select(
-        'id, name, slug, description, parking, address, category, phone, street_number'
       )
-      .eq('street_id', streetData.id)
-      .order('street_number', { ascending: true });
+    `)
+    .eq('slug', street)
+    .single();
 
-    if (shopsError || !shops) {
-      return <div>No businesses found for this address.</div>;
-    }
-
-    streetBusinesses = shops.map((shop) => ({
-      id: shop.id,
-      name: shop.name,
-      slug: shop.slug,
-      description: shop.description,
-      parking: shop.parking,
-      category: shop.category,
-      phone: shop.phone,
-      address: shop.address,
-      street_name: streetData.name,
-      street_number: shop.street_number,
-    }));
-
-    addressBusinesses = streetBusinesses.filter(
-      (shop) => shop.address && slugify(shop.address) === addressSlug
-    );
-
-    streetName = streetData.name;
-    cityName = cityData.name;
+  if (streetError || !streetData) {
+    return <div>Street not found.</div>;
   }
+
+  const cityData = Array.isArray(streetData.city)
+    ? streetData.city[0]
+    : streetData.city;
+
+  if (!cityData || normalizeSlug(cityData.slug) !== city) {
+    return <div>Street not found in this city.</div>;
+  }
+
+  const provinceData: any = cityData?.province;
+
+  if (Array.isArray(provinceData)) {
+    provinceSlug = provinceData[0]?.slug || 'ontario';
+  } else if (provinceData && typeof provinceData === 'object') {
+    provinceSlug = provinceData.slug || 'ontario';
+  }
+
+  const { data: shops, error: shopsError } = await supabase
+    .from('shops')
+    .select(
+      'id, name, slug, description, parking, address, category, phone, street_number, image_url'
+    )
+    .eq('street_id', streetData.id)
+    .eq('approved', true)
+    .order('street_number', { ascending: true });
+
+  if (shopsError || !shops) {
+    return <div>No businesses found for this address.</div>;
+  }
+
+  streetBusinesses = shops.map((shop) => ({
+    id: shop.id,
+    name: shop.name,
+    slug: shop.slug,
+    description: shop.description,
+    parking: shop.parking,
+    category: shop.category,
+    phone: shop.phone,
+    address: shop.address,
+    street_name: streetData.name,
+    street_number: shop.street_number,
+    image_url: shop.image_url,
+  }));
+
+  addressBusinesses = streetBusinesses.filter(
+    (shop) => shop.address && slugify(shop.address) === addressSlug
+  );
+
+  streetName = streetData.name;
+  cityName = cityData.name;
 
   if (addressBusinesses.length === 0) {
     return <div>No businesses found at this address.</div>;
@@ -205,19 +172,19 @@ export default async function AddressPage({ params }: any) {
           </Link>
 
           <section className="bg-white rounded-3xl shadow-lg overflow-hidden mb-8">
-            <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-10">
+            <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-8">
               <p className="text-sm uppercase tracking-widest opacity-90 mb-3">
                 Virtual Street Walk
               </p>
 
-              <h1 className="text-4xl md:text-5xl font-bold">📍 {address}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold">📍 {address}</h1>
 
-              <p className="mt-4 text-xl text-blue-100">
+              <p className="mt-3 text-lg text-blue-100">
                 Stop {currentStopIndex + 1} of {addressStops.length} on{' '}
                 {streetName}
               </p>
 
-              <div className="mt-6">
+              <div className="mt-5">
                 <div className="flex justify-between text-sm text-blue-100 mb-2">
                   <span>Walk progress</span>
                   <span>{progressPercent}%</span>
@@ -230,19 +197,56 @@ export default async function AddressPage({ params }: any) {
                   />
                 </div>
               </div>
+            </div>
 
-              <div className="flex flex-wrap gap-2 mt-5">
-                {Object.entries(categoryCounts).map(([category, count]) => (
-                  <span
-                    key={category}
-                    className="bg-white/15 text-white px-3 py-1 rounded-full text-sm font-semibold"
+            <div className="p-6 bg-white">
+              <h2 className="text-2xl font-bold text-blue-800 mb-5">
+                Businesses at this stop
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {addressBusinesses.map((biz) => (
+                  <Link
+                    key={biz.id}
+                    href={`/cities/${city}/${street}/${biz.slug}`}
+                    className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-lg transition overflow-hidden"
                   >
-                    {category} ({count})
-                  </span>
+                    {biz.image_url ? (
+                      <img
+                        src={biz.image_url}
+                        alt={`${biz.name} storefront`}
+                        className="h-64 w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-64 w-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center text-gray-500 text-sm font-semibold">
+                        🏪 Storefront photo coming soon
+                      </div>
+                    )}
+
+                    <div className="p-5">
+                      <h3 className="text-2xl font-bold text-blue-700">
+                        {biz.name}
+                      </h3>
+
+                      {biz.category && (
+                        <p className="text-sm text-purple-600 font-medium mt-1">
+                          {biz.category}
+                        </p>
+                      )}
+
+                      {biz.phone && (
+                        <p className="text-gray-600 mt-3">📞 {biz.phone}</p>
+                      )}
+
+                      <p className="mt-4 text-blue-700 font-semibold">
+                        View business →
+                      </p>
+                    </div>
+                  </Link>
                 ))}
               </div>
 
-              <div className="mt-7">
+              <div className="mt-6">
                 <AutoWalkControls
                   nextStopHref={nextStopHref}
                   streetHref={streetHref}
@@ -251,7 +255,7 @@ export default async function AddressPage({ params }: any) {
               </div>
             </div>
 
-            <div className="p-6 border-b bg-white">
+            <div className="p-6 border-t bg-white">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {previousStop ? (
                   <Link
@@ -302,13 +306,13 @@ export default async function AddressPage({ params }: any) {
               </div>
             </div>
 
-            <div className="p-6 border-b bg-gray-50">
+            <div className="p-6 border-t bg-gray-50">
               <p className="text-sm font-bold text-gray-600 mb-3">
                 Jump to any stop
               </p>
 
               <div className="flex flex-wrap gap-2">
-                {addressStops.map((stop: any, index: number) => {
+                {addressStops.map((stop: any) => {
                   const active = slugify(stop.address) === addressSlug;
 
                   return (
@@ -327,40 +331,6 @@ export default async function AddressPage({ params }: any) {
                     </Link>
                   );
                 })}
-              </div>
-            </div>
-
-            <div className="p-8">
-              <h2 className="text-2xl font-bold text-blue-800 mb-5">
-                Businesses at this address
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {addressBusinesses.map((biz) => (
-                  <Link
-                    key={biz.id}
-                    href={`/cities/${city}/${street}/${biz.slug}`}
-                    className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-lg transition p-5"
-                  >
-                    <h3 className="text-xl font-bold text-blue-700">
-                      {biz.name}
-                    </h3>
-
-                    {biz.category && (
-                      <p className="text-sm text-purple-600 font-medium mt-1">
-                        {biz.category}
-                      </p>
-                    )}
-
-                    {biz.phone && (
-                      <p className="text-gray-600 mt-3">📞 {biz.phone}</p>
-                    )}
-
-                    <p className="mt-4 text-blue-700 font-semibold">
-                      View business →
-                    </p>
-                  </Link>
-                ))}
               </div>
             </div>
           </section>
@@ -418,36 +388,6 @@ export default async function AddressPage({ params }: any) {
             >
               Open in Google Maps
             </a>
-          </section>
-
-          <section className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl shadow-md p-8">
-            {nextStop ? (
-              <>
-                <p className="text-blue-100 mb-2">Ready for the next stop?</p>
-                <h2 className="text-2xl font-bold mb-5">
-                  Continue walking {streetName}
-                </h2>
-
-                <AutoWalkControls
-                  nextStopHref={nextStopHref}
-                  streetHref={streetHref}
-                  isLastStop={false}
-                />
-              </>
-            ) : (
-              <>
-                <p className="text-blue-100 mb-2">You reached the end.</p>
-                <h2 className="text-2xl font-bold mb-5">
-                  Street walk complete
-                </h2>
-
-                <AutoWalkControls
-                  nextStopHref={null}
-                  streetHref={streetHref}
-                  isLastStop={true}
-                />
-              </>
-            )}
           </section>
         </div>
       </main>

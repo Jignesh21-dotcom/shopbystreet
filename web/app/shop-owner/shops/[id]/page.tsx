@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
@@ -18,6 +19,7 @@ type ShopForm = {
   hours: string;
   parking: string;
   story: string;
+  image_url: string;
 };
 
 export default function ManageShopPage() {
@@ -39,10 +41,12 @@ export default function ManageShopPage() {
     hours: '',
     parking: '',
     story: '',
+    image_url: '',
   });
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const fetchShop = async () => {
@@ -71,6 +75,7 @@ export default function ManageShopPage() {
           hours,
           parking,
           story,
+          image_url,
           owner_id,
           approved,
           address,
@@ -127,6 +132,7 @@ export default function ManageShopPage() {
         hours: normalizedShop.hours || '',
         parking: normalizedShop.parking || '',
         story: normalizedShop.story || '',
+        image_url: normalizedShop.image_url || '',
       });
 
       setLoading(false);
@@ -146,14 +152,65 @@ export default function ManageShopPage() {
 
   const cleanUrl = (value: string) => {
     const trimmed = value.trim();
-
     if (!trimmed) return '';
-
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
       return trimmed;
     }
-
     return `https://${trimmed}`;
+  };
+
+  const uploadStorefrontImage = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+
+    if (!file || !shop?.id || !user?.id) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file.');
+      return;
+    }
+
+    setUploading(true);
+
+    const fileExt = file.name.split('.').pop();
+    const filePath = `${user.id}/${shop.id}/storefront-${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('shop-images')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      alert(`Image upload failed: ${uploadError.message}`);
+      setUploading(false);
+      return;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from('shop-images')
+      .getPublicUrl(filePath);
+
+    const imageUrl = publicUrlData.publicUrl;
+
+    const { error: updateError } = await supabase
+      .from('shops')
+      .update({ image_url: imageUrl })
+      .eq('id', shop.id)
+      .eq('owner_id', user.id);
+
+    setUploading(false);
+
+    if (updateError) {
+      alert(`Image uploaded, but failed to save shop image: ${updateError.message}`);
+      return;
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      image_url: imageUrl,
+    }));
+
+    alert('✅ Storefront photo uploaded successfully.');
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -177,6 +234,7 @@ export default function ManageShopPage() {
         hours: form.hours.trim(),
         parking: form.parking.trim(),
         story: form.story.trim(),
+        image_url: form.image_url.trim(),
       })
       .eq('id', shop.id)
       .eq('owner_id', user.id);
@@ -188,7 +246,7 @@ export default function ManageShopPage() {
       return;
     }
 
-    alert('✅ Shop updated successfully.');
+    router.push('/shop-owner/dashboard');
   };
 
   const city = shop?.street?.city;
@@ -257,6 +315,46 @@ export default function ManageShopPage() {
             </div>
 
             <form onSubmit={handleSave} className="space-y-5">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  🏪 Storefront Photo
+                </label>
+
+                {form.image_url ? (
+                  <div className="mb-3 overflow-hidden rounded-xl border bg-white">
+                    <Image
+                      src={form.image_url}
+                      alt={form.name || 'Storefront photo'}
+                      width={900}
+                      height={450}
+                      className="h-64 w-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-3 rounded-xl border border-dashed border-gray-300 bg-white p-6 text-center text-gray-500">
+                    No storefront photo uploaded yet.
+                  </div>
+                )}
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={uploadStorefrontImage}
+                  disabled={uploading}
+                  className="w-full rounded-lg border bg-white px-4 py-3"
+                />
+
+                <p className="mt-2 text-xs text-gray-500">
+                  Upload a clear photo of your storefront, sign, or entrance. This will be used for Walk the Street and your public shop page.
+                </p>
+
+                {uploading && (
+                  <p className="mt-2 text-sm font-semibold text-blue-700">
+                    Uploading photo...
+                  </p>
+                )}
+              </div>
+
               <div>
                 <label className="block font-semibold text-gray-700 mb-1">
                   Shop Name
@@ -412,7 +510,7 @@ export default function ManageShopPage() {
               <div className="flex flex-wrap gap-3 pt-4">
                 <button
                   type="submit"
-                  disabled={saving}
+                  disabled={saving || uploading}
                   className="rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : '💾 Save Changes'}

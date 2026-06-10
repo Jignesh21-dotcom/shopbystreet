@@ -26,110 +26,71 @@ export default async function ShopPage({ params }: ShopPageProps) {
     return <div>Invalid URL.</div>;
   }
 
-  const isKitchenerDemo = rawCity === 'kitchener';
-
   let business: any = null;
   let streetBusinesses: any[] = [];
   let streetName = '';
   let cityName = rawCity;
   let provinceSlug = 'ontario';
 
-  if (isKitchenerDemo) {
-    const { data: businesses, error } = await supabase
-      .from('downtown_kitchener_businesses')
-      .select(
-        'id, business_name, category, phone, address, street_name, street_number'
-      )
-      .order('street_number', { ascending: true });
-
-    if (error || !businesses) {
-      return <div>Business not found.</div>;
-    }
-
-    streetBusinesses = businesses
-      .filter((biz) => biz.street_name && slugify(biz.street_name) === rawStreet)
-      .map((biz) => ({
-        id: biz.id,
-        name: biz.business_name,
-        slug: slugify(biz.business_name),
-        category: biz.category,
-        phone: biz.phone,
-        address: biz.address,
-        street_name: biz.street_name,
-        street_number: biz.street_number,
-        description: '',
-        parking: '',
-        image_url: '',
-        story: '',
-        hours: '',
-        contact: '',
-        owner_id: null,
-      }));
-
-    business = streetBusinesses.find((biz) => biz.slug === rawShop);
-    streetName = business?.street_name || '';
-    cityName = 'Kitchener';
-  } else {
-    const { data: streetData, error: streetError } = await supabase
-      .from('streets')
-      .select(`
-        id,
+  const { data: streetData, error: streetError } = await supabase
+    .from('streets')
+    .select(`
+      id,
+      name,
+      slug,
+      city:city_id (
         name,
         slug,
-        city:city_id (
-          name,
-          slug,
-          province:province_id (
-            slug
-          )
+        province:province_id (
+          slug
         )
-      `)
-      .eq('slug', rawStreet)
-      .single();
-
-    if (streetError || !streetData) {
-      return <div>🚫 Shop not found or mismatched street/city.</div>;
-    }
-
-    const cityData = Array.isArray(streetData.city)
-      ? streetData.city[0]
-      : streetData.city;
-
-    if (!cityData || normalizeSlug(cityData.slug) !== rawCity) {
-      return <div>🚫 Shop not found or mismatched street/city.</div>;
-    }
-
-    const provinceData: any = cityData?.province;
-
-    if (Array.isArray(provinceData)) {
-      provinceSlug = provinceData[0]?.slug || 'ontario';
-    } else if (provinceData && typeof provinceData === 'object') {
-      provinceSlug = provinceData.slug || 'ontario';
-    }
-
-    const { data: shops, error: shopsError } = await supabase
-      .from('shops')
-      .select(
-        'id, name, slug, owner_id, description, parking, image_url, story, hours, contact, address, category, phone, street_number'
       )
-      .eq('street_id', streetData.id)
-      .eq('approved', true)
-      .order('street_number', { ascending: true });
+    `)
+    .eq('slug', rawStreet)
+    .single();
 
-    if (shopsError || !shops) {
-      return <div>🚫 Shop not found or mismatched street/city.</div>;
-    }
-
-    streetBusinesses = shops.map((shop) => ({
-      ...shop,
-      street_name: streetData.name,
-    }));
-
-    business = streetBusinesses.find((shop) => shop.slug === rawShop);
-
-    streetName = streetData.name;
-    cityName = cityData.name;
+  if (streetError || !streetData) {
+    return <div>🚫 Shop not found or mismatched street/city.</div>;
   }
+
+  const cityData = Array.isArray(streetData.city)
+    ? streetData.city[0]
+    : streetData.city;
+
+  if (!cityData || normalizeSlug(cityData.slug) !== rawCity) {
+    return <div>🚫 Shop not found or mismatched street/city.</div>;
+  }
+
+  const provinceData: any = cityData?.province;
+
+  if (Array.isArray(provinceData)) {
+    provinceSlug = provinceData[0]?.slug || 'ontario';
+  } else if (provinceData && typeof provinceData === 'object') {
+    provinceSlug = provinceData.slug || 'ontario';
+  }
+
+  const { data: shops, error: shopsError } = await supabase
+    .from('shops')
+    .select(
+      'id, name, slug, owner_id, description, parking, image_url, story, hours, contact, address, category, phone, street_number, email, website, instagram, facebook'
+    )
+    .eq('street_id', streetData.id)
+    .eq('approved', true)
+    .order('street_number', { ascending: true });
+
+  if (shopsError || !shops) {
+    return <div>🚫 Shop not found or mismatched street/city.</div>;
+  }
+
+  streetBusinesses = shops.map((shop) => ({
+    ...shop,
+    street_name: streetData.name,
+  }));
+
+  business = streetBusinesses.find((shop) => shop.slug === rawShop);
+
+  streetName = streetData.name;
+  cityName = cityData.name;
 
   if (!business) {
     return <div>Business not found.</div>;
@@ -160,9 +121,11 @@ export default async function ShopPage({ params }: ShopPageProps) {
   }, ${cityName}, ${provinceSlug}`;
 
   const title = `${business.name} – ${streetName}, ${cityName} | Local Street Shop`;
+
   const description = business.description
     ? `${business.name} - ${business.description}`
     : `View ${business.name} on ${streetName} in ${cityName}.`;
+
   const url = `https://www.localstreetshop.com/cities/${rawCity}/${rawStreet}/${rawShop}`;
 
   return (
@@ -178,39 +141,17 @@ export default async function ShopPage({ params }: ShopPageProps) {
             ← Back to street
           </Link>
 
-          <nav className="mb-6 text-sm text-gray-600">
-            <Link
-              href={`/cities/${rawCity}`}
-              className="hover:text-blue-700 hover:underline capitalize"
-            >
-              {cityName}
-            </Link>
-            <span className="mx-2">›</span>
-
-            <Link
-              href={`/cities/${rawCity}/${rawStreet}`}
-              className="hover:text-blue-700 hover:underline"
-            >
-              {streetName}
-            </Link>
-
-            {business.address && (
-              <>
-                <span className="mx-2">›</span>
-                <Link
-                  href={addressHref}
-                  className="hover:text-blue-700 hover:underline"
-                >
-                  {business.address}
-                </Link>
-              </>
+          <section className="bg-white rounded-3xl shadow-lg overflow-hidden">
+            {business.image_url && (
+              <div className="w-full bg-gray-100">
+                <img
+                  src={business.image_url}
+                  alt={`${business.name} storefront`}
+                  className="h-80 w-full object-cover"
+                />
+              </div>
             )}
 
-            <span className="mx-2">›</span>
-            <span className="font-semibold text-gray-800">{business.name}</span>
-          </nav>
-
-          <section className="bg-white rounded-3xl shadow-lg overflow-hidden">
             <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-10">
               <p className="text-sm uppercase tracking-widest opacity-90 mb-3">
                 Local Business
@@ -254,117 +195,153 @@ export default async function ShopPage({ params }: ShopPageProps) {
               </div>
             </div>
 
-            {!isClaimed && (
-              <div className="bg-yellow-50 border-b border-yellow-100 px-8 py-5">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <p className="font-bold text-yellow-800">
-                      Own this business?
-                    </p>
-                    <p className="text-sm text-gray-700 mt-1">
-                      Claim this listing to add products, photos, hours, contact
-                      details, and improve your visibility on Local Street Shop.
-                    </p>
-                  </div>
-
-                  <Link
-                    href={claimHref}
-                    className="inline-block bg-yellow-400 text-gray-900 px-5 py-3 rounded-xl font-bold hover:bg-yellow-500 transition text-center"
-                  >
-                    Claim This Business →
-                  </Link>
-                </div>
-              </div>
-            )}
-
             <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-2xl bg-blue-50 p-6">
-                <p className="text-sm font-bold text-blue-700 mb-2">Address</p>
-                <p className="text-gray-700">
-                  {business.address || business.description || 'Not available'}
-                </p>
-              </div>
+              <InfoCard title="Address" color="blue">
+                {business.address || 'Not available'}
+              </InfoCard>
 
-              <div className="rounded-2xl bg-purple-50 p-6">
-                <p className="text-sm font-bold text-purple-700 mb-2">Phone</p>
-
+              <InfoCard title="Phone" color="purple">
                 {business.phone || business.contact ? (
                   <a
                     href={`tel:${business.phone || business.contact}`}
-                    className="text-gray-700 hover:text-blue-700 hover:underline"
+                    className="hover:text-blue-700 hover:underline"
                   >
                     {business.phone || business.contact}
                   </a>
                 ) : (
-                  <p className="text-gray-700">Not available</p>
+                  'Not available'
+                )}
+              </InfoCard>
+
+              <InfoCard title="Category" color="green">
+                {business.category || 'Not available'}
+              </InfoCard>
+
+              <InfoCard title="Parking" color="yellow">
+                {business.parking || 'Not available'}
+              </InfoCard>
+            </div>
+
+            {(business.description || business.story) && (
+              <div className="px-8 pb-8 space-y-6">
+                {business.description && (
+                  <div className="rounded-2xl bg-gray-50 p-6">
+                    <p className="text-sm font-bold text-gray-700 mb-2">
+                      Description
+                    </p>
+                    <p className="text-gray-600 whitespace-pre-line">
+                      {business.description}
+                    </p>
+                  </div>
+                )}
+
+                {business.story && (
+                  <div className="rounded-2xl bg-orange-50 p-6">
+                    <p className="text-sm font-bold text-orange-700 mb-2">
+                      Our Story
+                    </p>
+                    <p className="text-gray-700 whitespace-pre-line">
+                      {business.story}
+                    </p>
+                  </div>
                 )}
               </div>
+            )}
 
-              <div className="rounded-2xl bg-green-50 p-6">
-                <p className="text-sm font-bold text-green-700 mb-2">
-                  Category
-                </p>
-                <p className="text-gray-700">
-                  {business.category || 'Not available'}
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-yellow-50 p-6">
-                <p className="text-sm font-bold text-yellow-700 mb-2">
-                  Parking
-                </p>
-                <p className="text-gray-700">
-                  {business.parking || 'Not available'}
-                </p>
-              </div>
-            </div>
-
-            <div className="px-8 pb-8">
-              <div className="rounded-2xl bg-gray-50 p-6">
-                <p className="text-sm font-bold text-gray-700 mb-2">
-                  Description
-                </p>
-                <p className="text-gray-600">
-                  {business.story ||
-                    business.description ||
-                    'Business description will be added soon.'}
-                </p>
-              </div>
-            </div>
-
-            {(business.hours || business.contact) && (
+            {(business.hours ||
+              business.email ||
+              business.website ||
+              business.instagram ||
+              business.facebook) && (
               <div className="px-8 pb-8">
                 <div className="rounded-2xl bg-gray-50 p-6">
                   <p className="text-sm font-bold text-gray-700 mb-4">
                     Contact & Hours
                   </p>
 
-                  <p className="text-gray-700">
-                    <strong>Hours:</strong>{' '}
-                    {business.hours || 'Hours not available'}
-                  </p>
+                  {business.hours && (
+                    <p className="text-gray-700 whitespace-pre-line mb-3">
+                      <strong>Hours:</strong>
+                      <br />
+                      {business.hours}
+                    </p>
+                  )}
 
-                  <p className="text-gray-700 mt-2">
-                    <strong>Contact:</strong>{' '}
-                    {business.contact ||
-                      business.phone ||
-                      'Contact not available'}
-                  </p>
+                  {business.email && (
+                    <p className="text-gray-700 mt-2">
+                      <strong>Email:</strong>{' '}
+                      <a
+                        href={`mailto:${business.email}`}
+                        className="text-blue-700 hover:underline"
+                      >
+                        {business.email}
+                      </a>
+                    </p>
+                  )}
+
+                  {business.website && (
+                    <p className="text-gray-700 mt-2">
+                      <strong>Website:</strong>{' '}
+                      <a
+                        href={business.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-700 hover:underline"
+                      >
+                        Visit Website
+                      </a>
+                    </p>
+                  )}
+
+                  {business.instagram && (
+                    <p className="text-gray-700 mt-2">
+                      <strong>Instagram:</strong>{' '}
+                      <a
+                        href={business.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-700 hover:underline"
+                      >
+                        View Instagram
+                      </a>
+                    </p>
+                  )}
+
+                  {business.facebook && (
+                    <p className="text-gray-700 mt-2">
+                      <strong>Facebook:</strong>{' '}
+                      <a
+                        href={business.facebook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-700 hover:underline"
+                      >
+                        View Facebook
+                      </a>
+                    </p>
+                  )}
                 </div>
               </div>
             )}
 
-            {business.image_url && (
-              <div className="px-8 pb-8">
-                <img
-                  src={business.image_url}
-                  alt={business.name}
-                  className="w-full rounded-2xl shadow-md"
-                />
+            {!isClaimed && (
+              <div className="bg-yellow-50 border-y border-yellow-100 px-8 py-5">
+                <p className="font-bold text-yellow-800">Own this business?</p>
+                <p className="text-sm text-gray-700 mt-1">
+                  Claim this listing to add products, photos, hours, contact
+                  details, and improve your visibility on Local Street Shop.
+                </p>
+
+                <Link
+                  href={claimHref}
+                  className="inline-block mt-4 bg-yellow-400 text-gray-900 px-5 py-3 rounded-xl font-bold hover:bg-yellow-500 transition"
+                >
+                  Claim This Business →
+                </Link>
               </div>
             )}
 
-            <div className="px-8 pb-8">
+            <div className="px-8 py-8">
               <div className="rounded-2xl bg-gray-50 p-6">
                 <p className="text-sm font-bold text-gray-700 mb-4">
                   Map & Directions
@@ -408,21 +385,31 @@ export default async function ShopPage({ params }: ShopPageProps) {
                   <Link
                     key={nearby.id}
                     href={`/cities/${rawCity}/${rawStreet}/${nearby.slug}`}
-                    className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition p-5"
+                    className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition overflow-hidden"
                   >
-                    <h3 className="text-lg font-bold text-blue-700">
-                      {nearby.name}
-                    </h3>
-
-                    {nearby.category && (
-                      <p className="text-sm text-purple-600 mt-1">
-                        {nearby.category}
-                      </p>
+                    {nearby.image_url && (
+                      <img
+                        src={nearby.image_url}
+                        alt={nearby.name}
+                        className="h-36 w-full object-cover"
+                      />
                     )}
 
-                    {nearby.phone && (
-                      <p className="text-gray-600 mt-3">📞 {nearby.phone}</p>
-                    )}
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-blue-700">
+                        {nearby.name}
+                      </h3>
+
+                      {nearby.category && (
+                        <p className="text-sm text-purple-600 mt-1">
+                          {nearby.category}
+                        </p>
+                      )}
+
+                      {nearby.phone && (
+                        <p className="text-gray-600 mt-3">📞 {nearby.phone}</p>
+                      )}
+                    </div>
                   </Link>
                 ))}
               </div>
@@ -439,21 +426,31 @@ export default async function ShopPage({ params }: ShopPageProps) {
                 <Link
                   key={biz.id}
                   href={`/cities/${rawCity}/${rawStreet}/${biz.slug}`}
-                  className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition p-5"
+                  className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition overflow-hidden"
                 >
-                  <h3 className="font-bold text-blue-700">{biz.name}</h3>
-
-                  {biz.address && (
-                    <p className="text-sm text-gray-600 mt-1">
-                      📍 {biz.address}
-                    </p>
+                  {biz.image_url && (
+                    <img
+                      src={biz.image_url}
+                      alt={biz.name}
+                      className="h-36 w-full object-cover"
+                    />
                   )}
 
-                  {biz.category && (
-                    <p className="text-sm text-purple-600 mt-2">
-                      {biz.category}
-                    </p>
-                  )}
+                  <div className="p-5">
+                    <h3 className="font-bold text-blue-700">{biz.name}</h3>
+
+                    {biz.address && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        📍 {biz.address}
+                      </p>
+                    )}
+
+                    {biz.category && (
+                      <p className="text-sm text-purple-600 mt-2">
+                        {biz.category}
+                      </p>
+                    )}
+                  </div>
                 </Link>
               ))}
             </div>
@@ -461,5 +458,31 @@ export default async function ShopPage({ params }: ShopPageProps) {
         </div>
       </main>
     </>
+  );
+}
+
+function InfoCard({
+  title,
+  color,
+  children,
+}: {
+  title: string;
+  color: 'blue' | 'purple' | 'green' | 'yellow';
+  children: React.ReactNode;
+}) {
+  const colorClasses = {
+    blue: 'bg-blue-50 text-blue-700',
+    purple: 'bg-purple-50 text-purple-700',
+    green: 'bg-green-50 text-green-700',
+    yellow: 'bg-yellow-50 text-yellow-700',
+  };
+
+  return (
+    <div className={`rounded-2xl p-6 ${colorClasses[color].split(' ')[0]}`}>
+      <p className={`text-sm font-bold mb-2 ${colorClasses[color].split(' ')[1]}`}>
+        {title}
+      </p>
+      <div className="text-gray-700">{children}</div>
+    </div>
   );
 }

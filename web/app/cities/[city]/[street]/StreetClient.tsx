@@ -13,6 +13,7 @@ type Shop = {
   category?: string;
   phone?: string;
   street_number?: number;
+  image_url?: string;
 };
 
 type AddressGroup = {
@@ -122,7 +123,8 @@ export default function StreetClient({
                 </Link>
 
                 <p className="text-blue-100">
-                  First stop: <span className="font-semibold">{firstStop.address}</span>
+                  First stop:{' '}
+                  <span className="font-semibold">{firstStop.address}</span>
                 </p>
               </div>
             )}
@@ -179,7 +181,7 @@ export default function StreetClient({
             </div>
 
             <div className="flex flex-wrap gap-2 mt-4">
-              {addressGroups.map((group, index) => (
+              {addressGroups.map((group) => (
                 <Link
                   key={`preview-${group.address}`}
                   href={`/cities/${city}/${street}/address/${slugify(group.address)}`}
@@ -263,39 +265,53 @@ export default function StreetClient({
                       <Link
                         key={shop.id}
                         href={`/cities/${city}/${street}/${shop.slug}`}
-                        className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-lg transition p-5"
+                        className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-lg transition overflow-hidden"
                       >
-                        <h3 className="text-xl font-bold text-blue-700">
-                          {shop.name}
-                        </h3>
-
-                        {shop.category && (
-                          <p className="text-sm text-purple-600 font-medium mt-1">
-                            {shop.category}
-                          </p>
+                        {shop.image_url ? (
+                          <img
+                            src={shop.image_url}
+                            alt={`${shop.name} storefront`}
+                            className="h-44 w-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-44 w-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center text-gray-500 text-sm font-semibold">
+                            🏪 Storefront photo coming soon
+                          </div>
                         )}
 
-                        {shop.phone && (
-                          <p className="text-gray-600 mt-3">📞 {shop.phone}</p>
-                        )}
+                        <div className="p-5">
+                          <h3 className="text-xl font-bold text-blue-700">
+                            {shop.name}
+                          </h3>
 
-                        {!isKitchenerDemo && (
-                          <>
-                            <p className="text-gray-600 mt-3">
-                              {shop.description || 'No address available.'}
+                          {shop.category && (
+                            <p className="text-sm text-purple-600 font-medium mt-1">
+                              {shop.category}
                             </p>
+                          )}
 
-                            {shop.parking && (
-                              <p className="text-sm text-gray-500 mt-4">
-                                🚗 Parking: {shop.parking}
+                          {shop.phone && (
+                            <p className="text-gray-600 mt-3">📞 {shop.phone}</p>
+                          )}
+
+                          {!isKitchenerDemo && (
+                            <>
+                              <p className="text-gray-600 mt-3">
+                                {shop.description || shop.address || 'No address available.'}
                               </p>
-                            )}
-                          </>
-                        )}
 
-                        <p className="mt-4 text-blue-700 font-semibold">
-                          View business →
-                        </p>
+                              {shop.parking && (
+                                <p className="text-sm text-gray-500 mt-4">
+                                  🚗 Parking: {shop.parking}
+                                </p>
+                              )}
+                            </>
+                          )}
+
+                          <p className="mt-4 text-blue-700 font-semibold">
+                            View business →
+                          </p>
+                        </div>
                       </Link>
                     ))}
                   </div>
