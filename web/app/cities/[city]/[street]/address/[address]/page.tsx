@@ -145,15 +145,6 @@ export default async function AddressPage({ params }: any) {
       ? Math.round(((currentStopIndex + 1) / addressStops.length) * 100)
       : 0;
 
-  const categoryCounts = addressBusinesses.reduce(
-    (acc: Record<string, number>, biz) => {
-      const category = biz.category || 'Other';
-      acc[category] = (acc[category] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
-
   const title = `${address} – Businesses on ${streetName}, ${cityName} | Local Street Shop`;
   const description = `Explore businesses located at ${address} on ${streetName} in ${cityName}.`;
   const url = `https://www.localstreetshop.com/cities/${city}/${street}/address/${addressSlug}`;
@@ -196,6 +187,14 @@ export default async function AddressPage({ params }: any) {
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
+              </div>
+
+              <div className="mt-6">
+                <AutoWalkControls
+                  nextStopHref={nextStopHref}
+                  streetHref={streetHref}
+                  isLastStop={!nextStop}
+                />
               </div>
             </div>
 
@@ -244,14 +243,6 @@ export default async function AddressPage({ params }: any) {
                     </div>
                   </Link>
                 ))}
-              </div>
-
-              <div className="mt-6">
-                <AutoWalkControls
-                  nextStopHref={nextStopHref}
-                  streetHref={streetHref}
-                  isLastStop={!nextStop}
-                />
               </div>
             </div>
 
