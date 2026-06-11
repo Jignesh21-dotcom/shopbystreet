@@ -1,6 +1,6 @@
 import StreetClient from './StreetClient';
-import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
+import { getStreetBySlug, getShopsByStreetId } from '@/lib/cacheHelpers';
 
 export const revalidate = 600;
 
@@ -16,22 +16,7 @@ export default async function StreetPage({ params }: any) {
     return <div>Invalid URL.</div>;
   }
 
-  const { data: streetData, error: streetError } = await supabase
-    .from('streets')
-    .select(`
-      id,
-      name,
-      slug,
-      city:city_id (
-        name,
-        slug,
-        province:province_id (
-          slug
-        )
-      )
-    `)
-    .eq('slug', street)
-    .single();
+  const { data: streetData, error: streetError } = await getStreetBySlug(street);
 
   if (streetError || !streetData) {
     console.error(`Street not found: ${street}`, streetError);
@@ -55,14 +40,7 @@ export default async function StreetPage({ params }: any) {
     provinceSlug = provinceData.slug || 'ontario';
   }
 
-  const { data: shops, error: shopsError } = await supabase
-    .from('shops')
-    .select(
-      'id, name, slug, description, parking, address, category, phone, street_number, image_url'
-    )
-    .eq('street_id', streetData.id)
-    .eq('approved', true)
-    .order('street_number', { ascending: true });
+  const { data: shops, error: shopsError } = await getShopsByStreetId(streetData.id);
 
   if (shopsError || !shops) {
     console.error('Failed to load shops:', shopsError);

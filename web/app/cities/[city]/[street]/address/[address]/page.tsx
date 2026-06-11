@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 import AutoWalkControls from './AutoWalkControls';
+import { getStreetBySlug, getShopsForAddressPage } from '@/lib/cacheHelpers';
 
 export const revalidate = 600;
 
@@ -32,22 +32,7 @@ export default async function AddressPage({ params }: any) {
   let cityName = city;
   let provinceSlug = 'ontario';
 
-  const { data: streetData, error: streetError } = await supabase
-    .from('streets')
-    .select(`
-      id,
-      name,
-      slug,
-      city:city_id (
-        name,
-        slug,
-        province:province_id (
-          slug
-        )
-      )
-    `)
-    .eq('slug', street)
-    .single();
+  const { data: streetData, error: streetError } = await getStreetBySlug(street);
 
   if (streetError || !streetData) {
     return <div>Street not found.</div>;
@@ -69,14 +54,7 @@ export default async function AddressPage({ params }: any) {
     provinceSlug = provinceData.slug || 'ontario';
   }
 
-  const { data: shops, error: shopsError } = await supabase
-    .from('shops')
-    .select(
-      'id, name, slug, description, parking, address, category, phone, street_number, image_url'
-    )
-    .eq('street_id', streetData.id)
-    .eq('approved', true)
-    .order('street_number', { ascending: true });
+  const { data: shops, error: shopsError } = await getShopsForAddressPage(streetData.id);
 
   if (shopsError || !shops) {
     return <div>No businesses found for this address.</div>;

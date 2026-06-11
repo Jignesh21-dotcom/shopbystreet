@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
+import { getStreetBySlug, getShopsDetailByStreetId } from '@/lib/cacheHelpers';
 
 export const revalidate = 600;
 
@@ -34,22 +34,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
   let cityName = rawCity;
   let provinceSlug = 'ontario';
 
-  const { data: streetData, error: streetError } = await supabase
-    .from('streets')
-    .select(`
-      id,
-      name,
-      slug,
-      city:city_id (
-        name,
-        slug,
-        province:province_id (
-          slug
-        )
-      )
-    `)
-    .eq('slug', rawStreet)
-    .single();
+  const { data: streetData, error: streetError } = await getStreetBySlug(rawStreet);
 
   if (streetError || !streetData) {
     return <div>🚫 Shop not found or mismatched street/city.</div>;
@@ -71,14 +56,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
     provinceSlug = provinceData.slug || 'ontario';
   }
 
-  const { data: shops, error: shopsError } = await supabase
-    .from('shops')
-    .select(
-      'id, name, slug, owner_id, description, parking, image_url, story, hours, contact, address, category, phone, street_number, email, website, instagram, facebook'
-    )
-    .eq('street_id', streetData.id)
-    .eq('approved', true)
-    .order('street_number', { ascending: true });
+  const { data: shops, error: shopsError } = await getShopsDetailByStreetId(streetData.id);
 
   if (shopsError || !shops) {
     return <div>🚫 Shop not found or mismatched street/city.</div>;
