@@ -62,12 +62,12 @@ export default async function ShopPage({ params }: ShopPageProps) {
     return <div>🚫 Shop not found or mismatched street/city.</div>;
   }
 
-  streetBusinesses = shops.map((shop) => ({
+  streetBusinesses = shops.map((shop: any) => ({
     ...shop,
     street_name: streetData.name,
   }));
 
-  business = streetBusinesses.find((shop) => shop.slug === rawShop);
+  business = streetBusinesses.find((shop: any) => shop.slug === rawShop);
 
   streetName = streetData.name;
   cityName = cityData.name;
@@ -79,7 +79,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
   const isClaimed = Boolean(business.owner_id);
 
   const nearbyBusinesses = streetBusinesses.filter(
-    (biz) =>
+    (biz: any) =>
       biz.address &&
       business.address &&
       biz.address === business.address &&
@@ -87,7 +87,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
   );
 
   const otherStreetBusinesses = streetBusinesses
-    .filter((biz) => biz.id !== business.id)
+    .filter((biz: any) => biz.id !== business.id)
     .slice(0, 8);
 
   const addressHref = business.address

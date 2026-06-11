@@ -60,7 +60,7 @@ export default async function AddressPage({ params }: any) {
     return <div>No businesses found for this address.</div>;
   }
 
-  streetBusinesses = shops.map((shop) => ({
+  streetBusinesses = shops.map((shop: any) => ({
     id: shop.id,
     name: shop.name,
     slug: shop.slug,
@@ -75,7 +75,7 @@ export default async function AddressPage({ params }: any) {
   }));
 
   addressBusinesses = streetBusinesses.filter(
-    (shop) => shop.address && slugify(shop.address) === addressSlug
+    (shop: any) => shop.address && slugify(shop.address) === addressSlug
   );
 
   streetName = streetData.name;
@@ -88,7 +88,7 @@ export default async function AddressPage({ params }: any) {
   address = addressBusinesses[0].address;
 
   const addressStops = Object.values(
-    streetBusinesses.reduce((acc: Record<string, any>, biz) => {
+    streetBusinesses.reduce((acc: Record<string, any>, biz: any) => {
       if (!biz.address) return acc;
 
       if (!acc[biz.address]) {
