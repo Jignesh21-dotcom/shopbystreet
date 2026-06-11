@@ -1,12 +1,29 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
+export const revalidate = 600;
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY! // Ensure this is safe on server only
 );
 
+const SITEMAP_TTL_MS = 10 * 60 * 1000;
+
+let cachedXml: string | null = null;
+let cachedAt = 0;
+
 export async function GET() {
+  const now = Date.now();
+  if (cachedXml && now - cachedAt < SITEMAP_TTL_MS) {
+    return new NextResponse(cachedXml, {
+      headers: {
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=3600',
+      },
+    });
+  }
+
   const baseUrl = 'https://www.localstreetshop.com';
 
   // Fetch data from Supabase
@@ -65,9 +82,13 @@ ${urls
   .join('\n')}
 </urlset>`;
 
+  cachedXml = xml;
+  cachedAt = now;
+
   return new NextResponse(xml, {
     headers: {
       'Content-Type': 'application/xml',
+      'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=3600',
     },
   });
 }

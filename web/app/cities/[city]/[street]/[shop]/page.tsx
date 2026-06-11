@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
+export const revalidate = 600;
+
 type ShopPageProps = {
   params: any;
 };

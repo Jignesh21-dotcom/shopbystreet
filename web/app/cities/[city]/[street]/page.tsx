@@ -2,6 +2,8 @@ import StreetClient from './StreetClient';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
+export const revalidate = 600;
+
 const normalizeSlug = (slug: string) =>
   slug?.toLowerCase().replace(/\s+/g, '-').trim();
 
