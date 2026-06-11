@@ -40,7 +40,7 @@ export default function ProductList() {
       // Fetch products for those shops
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select('id, name, price, description, image_url, shop_id')
         .in('shop_id', shopIds);
 
       if (!error && data) {

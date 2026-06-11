@@ -35,7 +35,7 @@ export default function ShopDetailScreen() {
   const fetchShop = async () => {
     const { data, error } = await supabase
       .from('shops')
-      .select('*')
+      .select('id, name, slug, description, parking, address, lat, lng, contact, hours')
       .eq('slug', shopSlug)
       .maybeSingle();
 

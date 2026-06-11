@@ -1,82 +1,141 @@
-import { unstable_cache } from 'next/cache';
 import { supabase } from '@/lib/supabaseClient';
 
-/**
- * Cache street data by slug for 10 minutes (600 seconds)
- */
-export const getStreetBySlug = unstable_cache(
-  async (streetSlug: string) => {
-    return supabase
-      .from('streets')
-      .select(`
-        id,
+const TTL_MS = 10 * 60 * 1000;
+
+type CacheEntry<T> = {
+  value: T;
+  expiresAt: number;
+};
+
+const streetCache = new Map<string, CacheEntry<any>>();
+const shopsByStreetCache = new Map<string, CacheEntry<any>>();
+const shopsDetailByStreetCache = new Map<string, CacheEntry<any>>();
+const shopsForAddressCache = new Map<string, CacheEntry<any>>();
+
+const streetInflight = new Map<string, Promise<any>>();
+const shopsByStreetInflight = new Map<string, Promise<any>>();
+const shopsDetailByStreetInflight = new Map<string, Promise<any>>();
+const shopsForAddressInflight = new Map<string, Promise<any>>();
+
+function getFreshCachedValue<T>(cache: Map<string, CacheEntry<T>>, key: string): T | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() >= entry.expiresAt) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.value;
+}
+
+function setCachedValue<T>(cache: Map<string, CacheEntry<T>>, key: string, value: T): T {
+  cache.set(key, { value, expiresAt: Date.now() + TTL_MS });
+  return value;
+}
+
+export async function getStreetBySlug(streetSlug: string) {
+  const cacheKey = streetSlug.toLowerCase();
+  const cached = getFreshCachedValue(streetCache, cacheKey);
+  if (cached) return cached;
+
+  const pending = streetInflight.get(cacheKey);
+  if (pending) return pending;
+
+  const request = supabase
+    .from('streets')
+    .select(`
+      id,
+      name,
+      slug,
+      city:city_id (
         name,
         slug,
-        city:city_id (
-          name,
-          slug,
-          province:province_id (
-            slug
-          )
+        province:province_id (
+          slug
         )
-      `)
-      .eq('slug', streetSlug)
-      .single();
-  },
-  ['street-by-slug'],
-  { revalidate: 600 }
-);
-
-/**
- * Cache shops by street_id for 10 minutes (600 seconds)
- */
-export const getShopsByStreetId = unstable_cache(
-  async (streetId: string) => {
-    return supabase
-      .from('shops')
-      .select(
-        'id, name, slug, description, parking, address, category, phone, street_number, image_url'
       )
-      .eq('street_id', streetId)
-      .eq('approved', true)
-      .order('street_number', { ascending: true });
-  },
-  ['shops-by-street-id'],
-  { revalidate: 600 }
-);
+    `)
+    .eq('slug', streetSlug)
+    .single()
+    .then((result) => setCachedValue(streetCache, cacheKey, result))
+    .finally(() => {
+      streetInflight.delete(cacheKey);
+    });
 
-/**
- * Cache shops with full details by street_id for 10 minutes
- */
-export const getShopsDetailByStreetId = unstable_cache(
-  async (streetId: string) => {
-    return supabase
-      .from('shops')
-      .select(
-        'id, name, slug, owner_id, description, parking, image_url, story, hours, contact, address, category, phone, street_number, email, website, instagram, facebook'
-      )
-      .eq('street_id', streetId)
-      .eq('approved', true)
-      .order('street_number', { ascending: true });
-  },
-  ['shops-detail-by-street-id'],
-  { revalidate: 600 }
-);
+  streetInflight.set(cacheKey, request);
+  return request;
+}
 
-/**
- * Cache shops for address page by street_id for 10 minutes
- */
-export const getShopsForAddressPage = unstable_cache(
-  async (streetId: string) => {
-    return supabase
-      .from('shops')
-      .select(
-        'id, name, slug, description, parking, address, category, phone, street_number, image_url'
-      )
-      .eq('street_id', streetId)
-      .eq('approved', true)
-      .order('street_number', { ascending: true });
-  },
-  ['shops-address-page'],
-  { revalidate: 600 }
-);
+export async function getShopsByStreetId(streetId: string) {
+  const cacheKey = streetId;
+  const cached = getFreshCachedValue(shopsByStreetCache, cacheKey);
+  if (cached) return cached;
+
+  const pending = shopsByStreetInflight.get(cacheKey);
+  if (pending) return pending;
+
+  const request = supabase
+    .from('shops')
+    .select(
+      'id, name, slug, description, parking, address, category, phone, street_number, image_url'
+    )
+    .eq('street_id', streetId)
+    .eq('approved', true)
+    .order('street_number', { ascending: true })
+    .then((result) => setCachedValue(shopsByStreetCache, cacheKey, result))
+    .finally(() => {
+      shopsByStreetInflight.delete(cacheKey);
+    });
+
+  shopsByStreetInflight.set(cacheKey, request);
+  return request;
+}
+
+export async function getShopsDetailByStreetId(streetId: string) {
+  const cacheKey = streetId;
+  const cached = getFreshCachedValue(shopsDetailByStreetCache, cacheKey);
+  if (cached) return cached;
+
+  const pending = shopsDetailByStreetInflight.get(cacheKey);
+  if (pending) return pending;
+
+  const request = supabase
+    .from('shops')
+    .select(
+      'id, name, slug, owner_id, description, parking, image_url, story, hours, contact, address, category, phone, street_number, email, website, instagram, facebook'
+    )
+    .eq('street_id', streetId)
+    .eq('approved', true)
+    .order('street_number', { ascending: true })
+    .then((result) => setCachedValue(shopsDetailByStreetCache, cacheKey, result))
+    .finally(() => {
+      shopsDetailByStreetInflight.delete(cacheKey);
+    });
+
+  shopsDetailByStreetInflight.set(cacheKey, request);
+  return request;
+}
+
+export async function getShopsForAddressPage(streetId: string) {
+  const cacheKey = streetId;
+  const cached = getFreshCachedValue(shopsForAddressCache, cacheKey);
+  if (cached) return cached;
+
+  const pending = shopsForAddressInflight.get(cacheKey);
+  if (pending) return pending;
+
+  const request = supabase
+    .from('shops')
+    .select(
+      'id, name, slug, description, parking, address, category, phone, street_number, image_url'
+    )
+    .eq('street_id', streetId)
+    .eq('approved', true)
+    .order('street_number', { ascending: true })
+    .then((result) => setCachedValue(shopsForAddressCache, cacheKey, result))
+    .finally(() => {
+      shopsForAddressInflight.delete(cacheKey);
+    });
+
+  shopsForAddressInflight.set(cacheKey, request);
+  return request;
+}

@@ -19,7 +19,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
   // Base query: only active 50%+ deals
   let query = supabase
     .from("deal_products_view")
-    .select("*")
+    .select("product_id, product_name, original_price, sale_price, discount_percent, is_demo, is_active, image_url, shop_id, shop_name, shop_slug, shop_number, shop_group_name, street_id, street_name, street_slug, city_id, city_name, city_slug, province_id, province_name")
     .gte("discount_percent", 50)
     .eq("is_active", true);
 

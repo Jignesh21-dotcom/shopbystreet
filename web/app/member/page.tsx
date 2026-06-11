@@ -94,7 +94,7 @@ export default function MemberPage() {
       const fetchStreets = async () => {
         const { count, error: countError } = await supabase
           .from('streets')
-          .select('*', { count: 'exact', head: true })
+          .select('id', { count: 'exact', head: true })
           .eq('city_id', selectedCity);
 
         if (countError || count === null) {
@@ -130,7 +130,7 @@ export default function MemberPage() {
       const fetchShops = async () => {
         const { count, error: countError } = await supabase
           .from('shops')
-          .select('*', { count: 'exact', head: true })
+          .select('id', { count: 'exact', head: true })
           .eq('street_id', selectedStreet);
 
         if (countError || count === null) {

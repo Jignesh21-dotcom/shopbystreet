@@ -33,7 +33,7 @@ export default function ProductListScreen() {
 
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select('id, name, price, description, image_url, owner_id')
         .eq('owner_id', userId);
 
       if (!error && data) {

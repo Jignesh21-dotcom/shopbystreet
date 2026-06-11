@@ -18,7 +18,7 @@ export default function SubmitStreetScreen() {
 
   useEffect(() => {
     const fetchProvinces = async () => {
-      const { data, error } = await supabase.from('provinces').select('*');
+      const { data, error } = await supabase.from('provinces').select('name, slug');
       if (!error) setProvinces(data || []);
     };
     fetchProvinces();
@@ -29,7 +29,7 @@ export default function SubmitStreetScreen() {
       const fetchCities = async () => {
         const { data, error } = await supabase
           .from('cities')
-          .select('*')
+          .select('name, slug')
           .eq('province_slug', form.provinceSlug);
         if (!error) setCities(data || []);
       };

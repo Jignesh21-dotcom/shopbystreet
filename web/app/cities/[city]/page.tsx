@@ -38,7 +38,7 @@ export default async function CityPage({ params }: CityPageProps) {
 
   const { count, error: countError } = await supabase
     .from('streets_with_shops')
-    .select('*', { count: 'exact', head: true })
+    .select('id', { count: 'exact', head: true })
     .eq('city_id', cityData.id);
 
   if (countError || count === null) {
