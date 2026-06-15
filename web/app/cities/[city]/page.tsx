@@ -6,6 +6,9 @@ type CityPageProps = {
   params: any;
 };
 
+export const revalidate = 600;
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const { data: cities, error } = await supabase.from('cities').select('slug');
 
