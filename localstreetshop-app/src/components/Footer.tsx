@@ -10,7 +10,7 @@ export default function Footer() {
   return (
     <View style={[styles.container, { paddingBottom: 16 + insets.bottom }]}>
       <Text style={styles.copyright}>
-        © 2025 <Text style={styles.bold}>ShopByStreet™</Text>. All rights reserved.
+        © 2025 <Text style={styles.bold}>LocalStreetShop™</Text>. All rights reserved.
       </Text>
       <View style={styles.linksRow}>
         <TouchableOpacity

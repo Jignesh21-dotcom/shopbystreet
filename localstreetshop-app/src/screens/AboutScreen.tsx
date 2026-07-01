@@ -21,7 +21,7 @@ export default function AboutScreen() {
       {/* ✅ Content Section */}
       <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 20, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 6, marginBottom: 24 }}>
         <Text style={{ fontSize: 16, marginBottom: 16 }}>
-          At <Text style={{ fontWeight: 'bold', color: '#CA8A04' }}>Shop Street</Text>, we believe that{' '}
+          At <Text style={{ fontWeight: 'bold', color: '#CA8A04' }}>LocalStreetShop</Text>, we believe that{' '}
           <Text style={{ fontWeight: 'bold' }}>local businesses are the heart and soul of every community.</Text>
         </Text>
 
@@ -35,7 +35,7 @@ export default function AboutScreen() {
         </Text>
 
         <Text style={{ fontSize: 16, marginBottom: 16 }}>
-          <Text style={{ fontWeight: 'bold', color: '#CA8A04' }}>Shop Street</Text> allows people to explore their cities street by street, discovering real stores in their own neighborhoods—from the corner bakery to hidden gem boutiques.
+          <Text style={{ fontWeight: 'bold', color: '#CA8A04' }}>LocalStreetShop</Text> allows people to explore their cities street by street, discovering real stores in their own neighborhoods—from the corner bakery to hidden gem boutiques.
         </Text>
 
         <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#CA8A04', marginTop: 16, marginBottom: 12 }}>Why It Matters:</Text>

@@ -9,7 +9,7 @@ export default function PrivacyPolicyScreen() {
       <Text style={styles.title}>Privacy Policy</Text>
 
       <Text style={styles.paragraph}>
-        At <Text style={styles.bold}>ShopByStreet</Text>, we value your privacy. This Privacy Policy explains how we collect, use, and protect your personal information.
+        At <Text style={styles.bold}>LocalStreetShop</Text>, we value your privacy. This Privacy Policy explains how we collect, use, and protect your personal information.
       </Text>
 
       <Text style={styles.sectionTitle}>1. Information We Collect</Text>

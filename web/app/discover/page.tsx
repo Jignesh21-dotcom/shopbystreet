@@ -8,7 +8,6 @@ type Shop = {
   slug: string;
   parking?: string;
   address?: string;
-  group?: string;
   featured?: boolean;
   discount?: string;
   tagline?: string;
@@ -29,7 +28,6 @@ export default async function DiscoverPage() {
       slug,
       parking,
       address,
-      group,
       featured,
       discount,
       tagline,

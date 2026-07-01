@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
@@ -9,7 +8,6 @@ import SEO from '@/app/components/SEO';
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isSignUp, setIsSignUp] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [email, setEmail] = useState('');
@@ -28,12 +26,14 @@ export default function LoginPage() {
   }, [router]);
 
   useEffect(() => {
-    const mode = searchParams.get('mode');
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode');
     if (mode === 'signup') {
       setIsSignUp(true);
       setShowReset(false);
     }
-  }, [searchParams]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

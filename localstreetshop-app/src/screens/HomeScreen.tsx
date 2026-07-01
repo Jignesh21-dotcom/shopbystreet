@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation }: any) {
           resizeMode="cover"
         >
           <SafeAreaView style={styles.wrapper}>
-            <Text style={styles.title}>Welcome to Local Street Shop</Text>
+            <Text style={styles.title}>Welcome to LocalStreetShop</Text>
             <Text style={styles.subtitle}>
               Discover authentic local businesses and explore real shops across Canadian streets.
             </Text>

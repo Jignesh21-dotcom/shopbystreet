@@ -28,7 +28,7 @@ export default function ShopOwnerScreen() {
       <View style={styles.container}>
         <Text style={styles.header}>🏪 Shop Owner Area</Text>
         <Text style={styles.description}>
-          Welcome to the ShopStreet Shop Owner section!
+          Welcome to the LocalStreetShop Shop Owner section!
           List your shop, manage your products, and reach new customers across Canada.
         </Text>
 
