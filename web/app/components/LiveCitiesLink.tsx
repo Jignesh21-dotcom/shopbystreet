@@ -34,7 +34,7 @@ export default function LiveCitiesLink() {
         {cities.map((city) => (
           <li key={city.slug}>
             <Link
-              href={`/cities/${city.slug}`}
+              href={`/cities/${encodeURIComponent(city.slug)}`}
               className="text-blue-600 underline hover:text-blue-800"
             >
               {city.name}

@@ -72,7 +72,7 @@ export default function ShopOwnerDashboard() {
   return (
     <>
       <SEO
-        title="Shop Owner Dashboard | Local Street Shop"
+        title="Shop Owner Dashboard | LocalStreetShop"
         description="Manage your local business listing and products."
         url="https://www.localstreetshop.com/shop-owner/dashboard"
       />

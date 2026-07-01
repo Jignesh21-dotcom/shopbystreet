@@ -147,7 +147,7 @@ export default function ProvinceClient({ province }: ProvinceClientProps) {
             {filteredCities.map((city) => (
               <Link
                 key={city.slug}
-                href={`/cities/${city.slug}`}
+                href={`/cities/${encodeURIComponent(city.slug)}`}
                 className="group bg-white p-6 rounded-2xl shadow-md hover:shadow-2xl hover:scale-105 hover:border-blue-400 border border-transparent transform transition-all duration-300 text-center flex items-center justify-center"
               >
                 <h2 className="text-2xl font-semibold text-blue-700 group-hover:text-blue-900 flex items-center justify-center">

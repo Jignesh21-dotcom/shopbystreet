@@ -211,7 +211,7 @@ export default function AdminClaimsPage() {
   return (
     <>
       <SEO
-        title="Admin: Shop Claims | Local Street Shop"
+        title="Admin: Shop Claims | LocalStreetShop"
         description="Review and approve shop ownership claims."
         url="https://www.localstreetshop.com/admin/claims"
         noindex

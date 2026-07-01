@@ -125,7 +125,7 @@ export default async function AddressPage({ params }: any) {
       ? Math.round(((currentStopIndex + 1) / addressStops.length) * 100)
       : 0;
 
-  const title = `${address} – Businesses on ${streetName}, ${cityName} | Local Street Shop`;
+  const title = `${address} – Businesses on ${streetName}, ${cityName} | LocalStreetShop`;
   const description = `Explore businesses located at ${address} on ${streetName} in ${cityName}.`;
   const url = `https://www.localstreetshop.com/cities/${city}/${street}/address/${addressSlug}`;
 

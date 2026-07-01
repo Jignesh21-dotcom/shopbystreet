@@ -70,7 +70,7 @@ export default function CityClient({
         <section className="bg-white rounded-3xl shadow-lg overflow-hidden mb-10">
           <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-10">
             <p className="text-sm uppercase tracking-widest opacity-90 mb-3">
-              {isKitchenerDemo ? 'Downtown Kitchener Demo' : 'Local Street Shop'}
+              {isKitchenerDemo ? 'Downtown Kitchener Demo' : 'LocalStreetShop'}
             </p>
 
             <h1 className="text-4xl md:text-5xl font-bold mb-4">

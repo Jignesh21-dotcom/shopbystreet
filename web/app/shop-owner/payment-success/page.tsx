@@ -24,7 +24,7 @@ export default function PaymentSuccess() {
   return (
     <>
       <SEO
-        title="Payment Success | Shop Street"
+        title="Payment Success | LocalStreetShop"
         description="Your payment was successful. Your shop is being activated and you'll be redirected shortly."
         url="https://www.localstreetshop.com/shop-owner/payment-success"
       />

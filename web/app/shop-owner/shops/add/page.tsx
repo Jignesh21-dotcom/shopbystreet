@@ -114,8 +114,8 @@ export default function AddShop() {
     }
   };
 
-  const title = 'Add Your Shop | Local Street Shop';
-  const metaDescription = 'Shop owners can easily add their local business to Local Street Shop. Connect with nearby customers and grow your presence online.';
+  const title = 'Add Your Shop | LocalStreetShop';
+  const metaDescription = 'Shop owners can easily add their local business to LocalStreetShop. Connect with nearby customers and grow your presence online.';
   const url = 'https://www.localstreetshop.com/shops/add';
 
   return (

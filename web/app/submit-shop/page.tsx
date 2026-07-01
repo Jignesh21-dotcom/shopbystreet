@@ -17,8 +17,8 @@ export default function SubmitShopPage() {
   return (
     <>
       <SEO
-        title="Submit Your Shop | Local Street Shop"
-        description="Add your local business to Local Street Shop and help customers find you online. Choose your street and start listing today!"
+        title="Submit Your Shop | LocalStreetShop"
+        description="Add your local business to LocalStreetShop and help customers find you online. Choose your street and start listing today!"
         url="https://www.localstreetshop.com/submit-shop"
       />
 

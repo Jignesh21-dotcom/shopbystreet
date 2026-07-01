@@ -101,7 +101,7 @@ export default function StreetClient({
             <p className="text-sm uppercase tracking-widest opacity-90 mb-3">
               {isKitchenerDemo
                 ? 'Downtown Kitchener Virtual Street Walk'
-                : 'Local Street Shop'}
+                : 'LocalStreetShop'}
             </p>
 
             <h1 className="text-4xl md:text-5xl font-bold mb-4 capitalize">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
@@ -18,6 +19,7 @@ export default function AdminShopModeration() {
 
   const fetchShops = async () => {
     setLoading(true);
+
     const { data, error } = await supabase
       .from('shops')
       .select(`
@@ -40,20 +42,20 @@ export default function AdminShopModeration() {
       console.error('Failed to fetch pending shops:', error.message);
       setShops([]);
     } else {
-      // Normalize street and city to objects (not arrays)
       const normalized = (data || []).map((shop: any) => {
         let street = shop.street;
         if (Array.isArray(street)) street = street[0] || null;
-        if (street && Array.isArray(street.city)) street.city = street.city[0] || null;
+        if (street && Array.isArray(street.city)) {
+          street.city = street.city[0] || null;
+        }
         return { ...shop, street };
       });
+
       setShops(normalized);
     }
 
     setLoading(false);
   };
-
-  // ...rest of your component remains unchanged...
 
   const approveShop = async (id: string) => {
     const { error } = await supabase
@@ -69,8 +71,8 @@ export default function AdminShopModeration() {
   };
 
   const deleteShop = async (id: string) => {
-    const confirm = window.confirm('Are you sure you want to delete this shop?');
-    if (!confirm) return;
+    const confirmed = window.confirm('Are you sure you want to delete this shop?');
+    if (!confirmed) return;
 
     const { error } = await supabase.from('shops').delete().eq('id', id);
 
@@ -88,52 +90,97 @@ export default function AdminShopModeration() {
   return (
     <>
       <SEO
-        title="Admin: Pending Shop Moderation | Shop Street"
+        title="Admin: Pending Shop Moderation | LocalStreetShop"
         description="Review and moderate shops submitted by users before they go live."
-        url="https://www.localstreetshop.com/admin/shop"
+        url="https://www.localstreetshop.com/admin/shops"
         noindex
       />
-      <main className="min-h-screen p-6 bg-gray-50">
-        <h1 className="text-3xl font-bold mb-6 text-blue-700">🛠️ Admin: Pending Shops</h1>
 
-        {loading ? (
-          <p>Loading pending shops...</p>
-        ) : shops.length === 0 ? (
-          <p className="text-green-600 font-semibold">✅ No pending shops to review!</p>
-        ) : (
-          <ul className="space-y-6">
-            {shops.map((shop) => (
-              <li
-                key={shop.id}
-                className="bg-white p-4 rounded-lg shadow border border-gray-200"
-              >
-                <h2 className="text-xl font-semibold text-gray-800">{shop.name}</h2>
-                <p className="text-gray-600 mb-2">
-                  {shop.description || 'No description provided'}
-                </p>
-                <p className="text-sm text-gray-500 mb-2">
-                  {shop.street?.name
-                    ? `Street: ${shop.street.name}${shop.street.city?.name ? `, City: ${shop.street.city.name}` : ''}`
-                    : 'No street info'}
-                </p>
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => approveShop(shop.id)}
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-                  >
-                    ✅ Approve
-                  </button>
-                  <button
-                    onClick={() => deleteShop(shop.id)}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-                  >
-                    ❌ Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+      <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
+        <div className="max-w-5xl mx-auto">
+          <Link
+            href="/admin"
+            className="inline-block mb-8 text-sm font-semibold text-blue-700 hover:text-blue-900 transition"
+          >
+            ← Back to Admin
+          </Link>
+
+          <section className="text-center mb-8">
+            <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
+              LocalStreetShop Admin
+            </p>
+
+            <h1 className="text-3xl md:text-4xl font-extrabold mb-3">
+              Pending Shop Moderation
+            </h1>
+
+            <p className="text-gray-600">
+              Review newly submitted shops before they appear publicly.
+            </p>
+          </section>
+
+          {loading ? (
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 text-center text-gray-600">
+              Loading pending shops...
+            </div>
+          ) : shops.length === 0 ? (
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 text-center">
+              <h2 className="text-xl font-bold text-green-700 mb-2">
+                No pending shops
+              </h2>
+              <p className="text-gray-600">
+                There are no shop submissions waiting for review right now.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {shops.map((shop) => (
+                <section
+                  key={shop.id}
+                  className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6"
+                >
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
+                    <div>
+                      <h2 className="text-2xl font-bold text-blue-700">
+                        {shop.name}
+                      </h2>
+
+                      <p className="text-gray-600 mt-2">
+                        {shop.description || 'No description provided.'}
+                      </p>
+
+                      <p className="text-sm text-gray-500 mt-3">
+                        {shop.street?.name
+                          ? `Street: ${shop.street.name}${
+                              shop.street.city?.name
+                                ? `, City: ${shop.street.city.name}`
+                                : ''
+                            }`
+                          : 'No street information available.'}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row md:flex-col gap-3 min-w-[160px]">
+                      <button
+                        onClick={() => approveShop(shop.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-full font-semibold transition"
+                      >
+                        Approve
+                      </button>
+
+                      <button
+                        onClick={() => deleteShop(shop.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-full font-semibold transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </>
   );

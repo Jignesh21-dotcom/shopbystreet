@@ -62,9 +62,9 @@ const streetSlug = streetData?.slug || '';
     return <div className="p-8 text-red-600">❌ Failed to fetch products.</div>;
   }
 
-  const title = `Products from ${shopData.name} | Local Street Shop`;
+  const title = `Products from ${shopData.name} | LocalStreetShop`;
   const description = products.length
-    ? `Browse all products from ${shopData.name} on Local Street Shop.`
+    ? `Browse all products from ${shopData.name} on LocalStreetShop.`
     : `No products listed yet by ${shopData.name}. Check back soon!`;
 
   return (

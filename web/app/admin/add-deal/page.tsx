@@ -215,123 +215,145 @@ export default function AddDealPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-semibold mb-2">Add Deal</h1>
-      <p className="text-sm text-gray-600 mb-6">
-        Create a new product with original and sale price. If the discount is 50% or
-        more, it will automatically appear on the <strong>/deals</strong> page.
-      </p>
+  <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
+    <div className="max-w-3xl mx-auto">
+      <button
+        onClick={() => router.back()}
+        className="mb-8 text-sm font-semibold text-blue-700 hover:text-blue-900 transition"
+      >
+        ← Back
+      </button>
+
+      <section className="text-center mb-8">
+        <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
+          LocalStreetShop Admin
+        </p>
+
+        <h1 className="text-3xl md:text-4xl font-extrabold mb-3">
+          Add Deal Product
+        </h1>
+
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Create a product deal with original and sale pricing. Deals with 50%
+          or more discount will appear on the public Deals page.
+        </p>
+      </section>
 
       {errorMsg && (
-        <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
           {errorMsg}
         </div>
       )}
 
       {successMsg && (
-        <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-700">
+        <div className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
           {successMsg}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Province */}
-        <div className="grid gap-2">
-          <label className="text-sm font-medium">Province</label>
-          <select
-            className="border rounded-md px-3 py-2 text-sm"
-            value={provinceId}
-            onChange={(e) => {
-              setProvinceId(e.target.value);
-              setCityId("");
-              setShopId("");
-              setShops([]);
-            }}
-          >
-            <option value="">Select province</option>
-            {provinces.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 md:p-8 space-y-5"
+      >
+        <div className="grid gap-5 md:grid-cols-3">
+          <div>
+            <label className="block text-sm font-semibold mb-1">Province</label>
+            <select
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white"
+              value={provinceId}
+              onChange={(e) => {
+                setProvinceId(e.target.value);
+                setCityId("");
+                setShopId("");
+                setShops([]);
+              }}
+            >
+              <option value="">Select province</option>
+              {provinces.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-1">City</label>
+            <select
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white disabled:bg-gray-100"
+              value={cityId}
+              onChange={(e) => {
+                setCityId(e.target.value);
+                setShopId("");
+              }}
+              disabled={!provinceId}
+            >
+              <option value="">
+                {provinceId ? "Select city" : "Select province first"}
               </option>
-            ))}
-          </select>
+              {filteredCities.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-1">Shop</label>
+            <select
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white disabled:bg-gray-100"
+              value={shopId}
+              onChange={(e) => setShopId(e.target.value)}
+              disabled={!cityId}
+            >
+              <option value="">{cityId ? "Select shop" : "Select city first"}</option>
+              {shops.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                  {s.sequence != null ? ` (${s.sequence})` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* City */}
-        <div className="grid gap-2">
-          <label className="text-sm font-medium">City</label>
-          <select
-            className="border rounded-md px-3 py-2 text-sm"
-            value={cityId}
-            onChange={(e) => {
-              setCityId(e.target.value);
-              setShopId("");
-            }}
-            disabled={!provinceId}
-          >
-            <option value="">{provinceId ? "Select city" : "Select province first"}</option>
-            {filteredCities.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Shop */}
-        <div className="grid gap-2">
-          <label className="text-sm font-medium">Shop</label>
-          <select
-            className="border rounded-md px-3 py-2 text-sm"
-            value={shopId}
-            onChange={(e) => setShopId(e.target.value)}
-            disabled={!cityId}
-          >
-            <option value="">
-              {cityId ? "Select shop" : "Select city first"}
-            </option>
-            {shops.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-                {s.sequence != null ? ` (${s.sequence})` : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <hr className="my-4" />
-
-        {/* Product name */}
-        <div className="grid gap-2">
-          <label className="text-sm font-medium">Product / Deal Title</label>
+        <div className="border-t border-gray-100 pt-5">
+          <label className="block text-sm font-semibold mb-1">
+            Product / Deal Title
+          </label>
           <input
             type="text"
-            className="border rounded-md px-3 py-2 text-sm"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
             placeholder="e.g. Haircut & Beard Trim Package"
           />
         </div>
 
-        {/* Prices */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Original Price</label>
+        <div className="grid gap-5 md:grid-cols-2">
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Original Price
+            </label>
             <input
               type="number"
               step="0.01"
-              className="border rounded-md px-3 py-2 text-sm"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
               value={originalPrice}
               onChange={(e) => setOriginalPrice(e.target.value)}
               placeholder="e.g. 80"
             />
           </div>
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Sale Price</label>
+
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Sale Price
+            </label>
             <input
               type="number"
               step="0.01"
-              className="border rounded-md px-3 py-2 text-sm"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
               value={salePrice}
               onChange={(e) => setSalePrice(e.target.value)}
               placeholder="e.g. 35"
@@ -339,23 +361,25 @@ export default function AddDealPage() {
           </div>
         </div>
 
-        {/* Image URL */}
-        <div className="grid gap-2">
-          <label className="text-sm font-medium">Image URL (optional)</label>
+        <div>
+          <label className="block text-sm font-semibold mb-1">
+            Image URL optional
+          </label>
           <input
             type="text"
-            className="border rounded-md px-3 py-2 text-sm"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="https://..."
           />
         </div>
 
-        {/* Description */}
-        <div className="grid gap-2">
-          <label className="text-sm font-medium">Description (optional)</label>
+        <div>
+          <label className="block text-sm font-semibold mb-1">
+            Description optional
+          </label>
           <textarea
-            className="border rounded-md px-3 py-2 text-sm"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -363,8 +387,7 @@ export default function AddDealPage() {
           />
         </div>
 
-        {/* Demo flag */}
-        <div className="flex items-center gap-2 pt-2">
+        <label className="flex items-center gap-3 bg-gray-50 rounded-xl border border-gray-100 p-4">
           <input
             id="isDemo"
             type="checkbox"
@@ -372,21 +395,20 @@ export default function AddDealPage() {
             checked={isDemo}
             onChange={(e) => setIsDemo(e.target.checked)}
           />
-          <label htmlFor="isDemo" className="text-sm">
-            Mark as demo deal (for seeding the site)
-          </label>
-        </div>
+          <span className="text-sm text-gray-700">
+            Mark as demo deal for seeding the site
+          </span>
+        </label>
 
-        <div className="pt-4">
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-            disabled={loading}
-          >
-            {loading ? "Saving…" : "Add Deal"}
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="w-full rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 shadow transition"
+          disabled={loading}
+        >
+          {loading ? "Saving…" : "Add Deal"}
+        </button>
       </form>
     </div>
-  );
+  </main>
+);
 }

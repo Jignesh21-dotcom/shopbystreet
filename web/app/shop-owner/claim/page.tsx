@@ -205,8 +205,8 @@ export default function ClaimShopPage() {
   return (
     <>
       <SEO
-        title="Claim Your Shop | Shop Street"
-        description="Are you the owner of a shop listed on Shop Street? Submit a claim request to manage your listing and showcase your business."
+        title="Claim Your Shop | LocalStreetShop"
+        description="Are you the owner of a shop listed on LocalStreetShop? Submit a claim request to manage your listing and showcase your business."
         url="https://www.localstreetshop.com/shop-owner/claim"
       />
 

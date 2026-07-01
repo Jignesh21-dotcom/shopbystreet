@@ -61,7 +61,7 @@ export default function SignUpClient() {
         <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
           <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">🔐 Sign Up</h1>
           <p className="text-gray-600 text-center mb-6">
-            Join ShopStreet as a member or shop owner.
+            Join LocalStreetShop as a member or shop owner.
           </p>
 
           <form onSubmit={handleSignUp} className="flex flex-col space-y-4">

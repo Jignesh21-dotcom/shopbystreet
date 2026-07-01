@@ -6,7 +6,7 @@ export default function Orders() {
   return (
     <>
       <SEO
-        title="Orders | Shop Owner | Shop Street"
+        title="Orders | Shop Owner | LocalStreetShop"
         description="View and manage all customer orders for your shop. Stay on top of your sales and order history."
         url="https://www.localstreetshop.com/shop-owner/orders"
       />

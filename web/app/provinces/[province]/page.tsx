@@ -36,7 +36,7 @@ export default async function ProvincePage({ params }: ProvincePageProps) {
     .replace(/-/g, ' ')
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
-  const title = `Explore Cities in ${displayName} | Local Street Shop`;
+  const title = `Explore Cities in ${displayName} | LocalStreetShop`;
   const description = `Browse cities in ${displayName} and discover local businesses street by street.`;
   const url = `https://www.localstreetshop.com/provinces/${province}`;
 

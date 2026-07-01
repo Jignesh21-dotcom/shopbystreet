@@ -53,7 +53,7 @@ export default async function StreetPage({ params }: any) {
   return (
     <>
       <SEO
-        title={`${streetName} – Shops in ${cityName} | Local Street Shop`}
+        title={`${streetName} – Shops in ${cityName} | LocalStreetShop`}
         description={`Walk ${streetName} in ${cityName}, ${provinceSlug}, and discover local businesses in address order.`}
         url={`https://www.localstreetshop.com/cities/${city}/${street}`}
       />

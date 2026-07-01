@@ -5,8 +5,9 @@ import { Poppins } from 'next/font/google';
 import Script from 'next/script'; // ✅ Required for GTM
 
 export const metadata = {
-  title: 'Shop Street',
-  description: 'Discover shops on every street!',
+  title: "LocalStreetShop",
+  description:
+    "The Digital Main Street of Canada. Discover local shops, support small businesses, explore cities, streets, and communities across Canada.",
 };
 
 const poppins = Poppins({
@@ -43,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </noscript>
 
         <Header />
-        <main className="flex-grow px-4">{children}</main>
+        <main className="flex-grow">{children}</main>
         <Footer />
       </body>
     </html>

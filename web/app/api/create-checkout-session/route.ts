@@ -1,20 +1,15 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// ✅ Initialize Stripe only at runtime
-let stripe: Stripe | null = null;
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const foundingBusinessPriceId = process.env.STRIPE_FOUNDING_BUSINESS_PRICE_ID;
 
-if (typeof process.env.STRIPE_SECRET_KEY === 'string') {
-  // 🔍 Add this line below to confirm raw key used by Vercel in production
-  console.log('🔎 RAW STRIPE KEY:', process.env.STRIPE_SECRET_KEY);
-
-  console.log('✅ STRIPE_SECRET_KEY loaded in server environment');
-  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2025-04-30.basil',
-  });
-} else {
-  console.error('❌ STRIPE_SECRET_KEY is missing or invalid');
-}
+const stripe = stripeSecretKey
+  ? new Stripe(stripeSecretKey, {
+      apiVersion: '2025-04-30.basil',
+    })
+  : null;
 
 export async function POST(req: Request) {
   if (!stripe) {
@@ -24,39 +19,50 @@ export async function POST(req: Request) {
     );
   }
 
+  if (!siteUrl) {
+    return NextResponse.json(
+      { error: 'Site URL is not configured' },
+      { status: 500 }
+    );
+  }
+
+  if (!foundingBusinessPriceId) {
+    return NextResponse.json(
+      { error: 'Stripe founding business price ID is missing' },
+      { status: 500 }
+    );
+  }
+
   try {
     const { email } = await req.json();
 
     if (!email) {
-      console.warn('⚠️ Email is missing in request body');
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Email is required' },
+        { status: 400 }
+      );
     }
-
-    // ✅ Confirm short version of key and site URL
-    console.log('🔑 Using STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY?.slice(0, 10) + '...');
-    console.log('🌍 Using NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       customer_email: email,
       line_items: [
         {
-          price: 'price_1RL9GyBZgvjk1IFc9eXHZ5Qy',
+          price: foundingBusinessPriceId,
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/shop-owner/payment-success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/shop-owner`,
+      success_url: `${siteUrl}/shop-owner/payment-success`,
+      cancel_url: `${siteUrl}/shop-owner`,
     });
-
-    console.log('✅ Stripe session created:', session.id);
 
     return NextResponse.json({ url: session.url });
   } catch (err: any) {
-    console.error('❌ Stripe session creation error:', err);
+    console.error('Stripe session creation error:', err.message);
+
     return NextResponse.json(
-      { error: 'Failed to create Stripe session', details: err.message || 'Unknown error' },
+      { error: 'Failed to create Stripe session' },
       { status: 500 }
     );
   }

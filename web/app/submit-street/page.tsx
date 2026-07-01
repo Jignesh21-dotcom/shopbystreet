@@ -55,7 +55,7 @@ export default function SubmitStreetPage() {
   return (
     <>
       <SEO
-        title="Suggest a New Street | Local Street Shop"
+        title="Suggest a New Street | LocalStreetShop"
         description="Help us expand! Suggest a new street for your city and get your local shops featured."
         url="https://www.localstreetshop.com/submit-street"
       />

@@ -9,8 +9,8 @@ export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const title = 'Your Profile | Local Street Shop';
-  const description = 'View your account info, username, and logout securely from your Local Street Shop profile page.';
+  const title = 'Your Profile | LocalStreetShop';
+  const description = 'View your account info, username, and logout securely from your LocalStreetShop profile page.';
   const url = 'https://www.localstreetshop.com/profile';
 
   useEffect(() => {

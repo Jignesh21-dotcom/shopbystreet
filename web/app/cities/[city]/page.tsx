@@ -7,7 +7,14 @@ type CityPageProps = {
 };
 
 export const revalidate = 600;
+export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
+
+const normalizeSlug = (value: string) =>
+  decodeURIComponent(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-');
 
 export async function generateStaticParams() {
   const { data: cities, error } = await supabase.from('cities').select('slug');
@@ -24,13 +31,21 @@ export async function generateStaticParams() {
 
 export default async function CityPage({ params }: CityPageProps) {
   const resolvedParams = await params;
-  const city = resolvedParams.city;
+  const cityParam = Array.isArray(resolvedParams?.city)
+    ? resolvedParams.city.join('/')
+    : resolvedParams?.city || '';
+
+  const city = normalizeSlug(cityParam);
+
+  if (!city) {
+    return <div>City not found.</div>;
+  }
 
   const { data: cityData, error: cityError } = await supabase
     .from('cities')
     .select('id, name, slug')
-    .eq('slug', city.toLowerCase())
-    .single();
+    .eq('slug', city)
+    .maybeSingle();
 
   if (cityError || !cityData) {
     console.error(`City not found: ${city}`);
@@ -68,7 +83,7 @@ export default async function CityPage({ params }: CityPageProps) {
   const results = await Promise.all(promises);
   streets = results.flatMap((result) => result.data ?? []);
 
-  const title = `Explore Streets in ${cityData.name} | Local Street Shop`;
+  const title = `Explore Streets in ${cityData.name} | LocalStreetShop`;
   const description = `Browse streets in ${cityData.name}, Ontario. Discover local businesses, shop small, and explore neighborhoods.`;
   const url = `https://www.localstreetshop.com/cities/${cityData.slug}`;
 

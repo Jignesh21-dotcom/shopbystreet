@@ -100,7 +100,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
     business.address || streetName
   }, ${cityName}, ${provinceSlug}`;
 
-  const title = `${business.name} – ${streetName}, ${cityName} | Local Street Shop`;
+  const title = `${business.name} – ${streetName}, ${cityName} | LocalStreetShop`;
 
   const description = business.description
     ? `${business.name} - ${business.description}`
@@ -309,7 +309,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
                 <p className="font-bold text-yellow-800">Own this business?</p>
                 <p className="text-sm text-gray-700 mt-1">
                   Claim this listing to add products, photos, hours, contact
-                  details, and improve your visibility on Local Street Shop.
+                  details, and improve your visibility on LocalStreetShop.
                 </p>
 
                 <Link

@@ -52,13 +52,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jignesh21-dotcom/shopbystreet.git"
+    "url": "git+https://github.com/Jignesh21-dotcom/localstreetshop.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Jignesh21-dotcom/shopbystreet/issues"
+    "url": "https://github.com/Jignesh21-dotcom/localstreetshop/issues"
   },
-  "homepage": "https://github.com/Jignesh21-dotcom/shopbystreet#readme"
+  "homepage": "https://github.com/Jignesh21-dotcom/localstreetshop#readme"
 }

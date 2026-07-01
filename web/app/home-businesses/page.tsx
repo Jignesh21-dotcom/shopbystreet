@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
@@ -10,10 +9,11 @@ export default function HomeBusinessesPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const { data, error } = await supabase.from('home_businesses').insert([
+    const { error } = await supabase.from('home_businesses').insert([
       {
         name: formData.get('name'),
         city: formData.get('city'),
@@ -31,67 +31,146 @@ export default function HomeBusinessesPage() {
     }
   };
 
-  const title = 'Home & Online Businesses | Support Local Entrepreneurs';
-  const description = 'Submit and discover local home-based or online businesses in Canada. Help small entrepreneurs gain visibility and grow their side hustles.';
-  const url = 'https://www.localstreetshop.com/home-biz';
+  const title = 'Home & Online Businesses | LocalStreetShop';
+  const description =
+    'Submit your home-based or online business to LocalStreetShop and help local entrepreneurs get discovered across Canada.';
+  const url = 'https://www.localstreetshop.com/home-businesses';
 
   return (
     <>
       <SEO title={title} description={description} url={url} />
 
-      <main className="min-h-screen px-6 py-12 bg-gradient-to-br from-blue-50 to-white text-gray-800 text-center">
-        <h1 className="text-4xl font-bold text-blue-800 mb-6">🏠 Local Home & Online Businesses</h1>
+      <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
+        <div className="max-w-5xl mx-auto">
+          <section className="text-center mb-10">
+            <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
+              LocalStreetShop for Home Businesses
+            </p>
 
-        <p className="text-lg max-w-3xl mx-auto mb-10">
-          Not every great business has a storefront — some of the best are run from home or fully online!  
-          We're here to support local entrepreneurs, side hustlers, and community makers by giving them a space to be discovered.
-        </p>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+              🏠 Local Home & Online Businesses
+            </h1>
 
-        <h2 className="text-2xl font-semibold text-blue-700 mb-4">Add Your Home Business</h2>
+            <p className="text-gray-600 max-w-3xl mx-auto text-lg">
+              Not every great business has a storefront. LocalStreetShop helps
+              home-based entrepreneurs, online businesses, side hustlers, and
+              local makers get discovered.
+            </p>
+          </section>
 
-        {!submitted ? (
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white shadow-md rounded-lg p-6 max-w-xl mx-auto text-left space-y-4"
-          >
-            <div>
-              <label className="block font-medium">Business Name</label>
-              <input name="name" type="text" required className="w-full border rounded px-3 py-2" />
+          <section className="grid gap-5 md:grid-cols-3 mb-10">
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+              <h2 className="font-bold text-blue-800 mb-2">🏡 Work From Home</h2>
+              <p className="text-sm text-gray-700">
+                Share your local home-based business with people in your city.
+              </p>
             </div>
 
-            <div>
-              <label className="block font-medium">City</label>
-              <input name="city" type="text" required className="w-full border rounded px-3 py-2" />
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+              <h2 className="font-bold text-green-800 mb-2">🧵 Local Makers</h2>
+              <p className="text-sm text-gray-700">
+                Promote handmade products, creative services, and community
+                businesses.
+              </p>
             </div>
 
-            <div>
-              <label className="block font-medium">Description</label>
-              <textarea name="description" rows={3} required className="w-full border rounded px-3 py-2"></textarea>
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+              <h2 className="font-bold text-purple-800 mb-2">💻 Online First</h2>
+              <p className="text-sm text-gray-700">
+                Let customers discover your online business through
+                LocalStreetShop.
+              </p>
+            </div>
+          </section>
+
+          <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 md:p-8 max-w-2xl mx-auto">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-blue-700">
+                Add Your Home Business
+              </h2>
+              <p className="text-sm text-gray-600 mt-2">
+                Submit your business for review. Approved listings may be shown
+                on LocalStreetShop.
+              </p>
             </div>
 
-            <div>
-              <label className="block font-medium">Website / Social Media</label>
-              <input name="website" type="text" className="w-full border rounded px-3 py-2" />
-            </div>
+            {!submitted ? (
+              <form onSubmit={handleSubmit} className="space-y-5 text-left">
+                <div>
+                  <label className="block font-semibold mb-1">
+                    Business Name
+                  </label>
+                  <input
+                    name="name"
+                    type="text"
+                    required
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3"
+                  />
+                </div>
 
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-            >
-              Submit My Business
-            </button>
-          </form>
-        ) : (
-          <p className="text-green-700 font-semibold text-lg">
-            ✅ Thank you! We'll review and add your business shortly.
-          </p>
-        )}
+                <div>
+                  <label className="block font-semibold mb-1">City</label>
+                  <input
+                    name="city"
+                    type="text"
+                    required
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3"
+                  />
+                </div>
 
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-4 text-blue-800">🧾 Featured Home Businesses (Coming Soon)</h2>
-          <p className="text-gray-600 max-w-xl mx-auto">
-            We'll start listing approved home-based businesses right here soon — grouped by city or type. Stay tuned!
-          </p>
+                <div>
+                  <label className="block font-semibold mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    rows={4}
+                    required
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3"
+                  ></textarea>
+                </div>
+
+                <div>
+                  <label className="block font-semibold mb-1">
+                    Website / Social Media
+                  </label>
+                  <input
+                    name="website"
+                    type="text"
+                    placeholder="Instagram, Facebook, website, or online store"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition font-semibold shadow"
+                >
+                  Submit My Business
+                </button>
+              </form>
+            ) : (
+              <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
+                <h3 className="text-xl font-bold text-green-700 mb-2">
+                  ✅ Thank you!
+                </h3>
+                <p className="text-gray-700">
+                  We&apos;ll review your submission and add your business
+                  shortly if approved.
+                </p>
+              </div>
+            )}
+          </section>
+
+          <section className="mt-12 bg-blue-700 text-white rounded-2xl p-6 md:p-8 text-center shadow-sm">
+            <h2 className="text-2xl font-bold mb-3">
+              Featured Home Businesses Coming Soon
+            </h2>
+            <p className="text-blue-100 max-w-2xl mx-auto">
+              Approved home-based and online businesses will be listed here in
+              the future, grouped by city, category, or business type.
+            </p>
+          </section>
         </div>
       </main>
     </>

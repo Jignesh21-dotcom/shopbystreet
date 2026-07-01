@@ -35,7 +35,7 @@ export default async function CountryPage({ params }: Props) {
 
   const provinces = await getProvincesByCountrySlug(countrySlug);
 
-  const title = `Explore Provinces in ${countryDisplay} | Local Street Shop`;
+  const title = `Explore Provinces in ${countryDisplay} | LocalStreetShop`;
   const description = `Browse provinces in ${countryDisplay} and discover local businesses and shops city by city.`;
   const url = `https://www.localstreetshop.com/countries/${countrySlug}`;
 

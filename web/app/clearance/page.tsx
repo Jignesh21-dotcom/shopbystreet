@@ -18,7 +18,7 @@ export default function ClearancePage() {
   return (
     <>
       <SEO
-        title="Clearance Sale - Big Discounts | Shop Street"
+        title="Clearance Sale - Big Discounts | LocalStreetShop"
         description="Explore massive discounts on local products. Limited-time deals from neighborhood shops near you!"
         url="https://www.localstreetshop.com/clearance"
       />

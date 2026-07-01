@@ -4,10 +4,9 @@ import Link from 'next/link';
 import SEO from '@/app/components/SEO';
 
 export default function HomePage() {
-  const title =
-    'Local Street Shop | The Digital Main Street of Canada';
+  const title = 'LocalStreetShop | The Digital Main Street of Canada';
   const description =
-    'Walk real streets online, discover local businesses, and help bring Canadian main streets into the digital world.';
+    'Discover local shops, support small businesses, and explore Canadian streets online with LocalStreetShop.';
   const url = 'https://www.localstreetshop.com/';
 
   return (
@@ -33,14 +32,14 @@ export default function HomePage() {
               </h1>
 
               <p className="text-xl md:text-2xl font-light opacity-0 animate-fade-in-up delay-200 max-w-3xl mx-auto">
-                Walk real streets online, discover local businesses, and help
-                bring local shopping into the digital world.
+                Discover local shops, support small businesses, and strengthen
+                communities — one street at a time.
               </p>
 
               <div className="opacity-0 animate-fade-in-up delay-300 flex flex-col md:flex-row items-center justify-center gap-4">
                 <Link
                   href="/countries/canada"
-                  className="inline-block bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
+                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
                 >
                   🌎 Explore Streets
                 </Link>
@@ -49,7 +48,14 @@ export default function HomePage() {
                   href="/shop-owner"
                   className="inline-block bg-white hover:bg-blue-50 text-blue-700 px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
                 >
-                  🏪 Claim Your Business
+                  🏪 List Your Business
+                </Link>
+
+                <Link
+                  href="/street-ambassador"
+                  className="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
+                >
+                  🤝 Become an Ambassador
                 </Link>
               </div>
             </section>
@@ -60,26 +66,26 @@ export default function HomePage() {
                 <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
                   Built for local communities
                 </p>
+
                 <h2 className="text-3xl font-bold">
-                  We help people explore local streets before they visit.
+                  A better way to discover local businesses
                 </h2>
+
                 <p className="mt-3 text-gray-700">
-                  Local Street Shop turns real streets into online walking
-                  experiences so shoppers can discover businesses by city,
-                  street, address, and storefront.
+                  LocalStreetShop turns real Canadian streets into online
+                  discovery experiences so shoppers can explore businesses by
+                  city, street, address, and storefront.
                 </p>
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-3">
                 <div className="rounded-2xl bg-blue-50 p-5">
-                  <p className="font-bold text-blue-800 mb-3">
-                    🧭 For Shoppers
-                  </p>
+                  <p className="font-bold text-blue-800 mb-3">🧭 For Shoppers</p>
                   <ul className="space-y-2 text-sm text-gray-700">
                     <li>✓ Walk real streets online</li>
-                    <li>✓ Discover businesses by city, street, and address</li>
-                    <li>✓ Explore shops before visiting in person</li>
-                    <li>✓ Support local businesses in your community</li>
+                    <li>✓ Discover shops by city and street</li>
+                    <li>✓ Explore before visiting in person</li>
+                    <li>✓ Support local communities</li>
                   </ul>
 
                   <Link
@@ -96,9 +102,9 @@ export default function HomePage() {
                   </p>
                   <ul className="space-y-2 text-sm text-gray-700">
                     <li>✓ Claim your business listing</li>
-                    <li>✓ Add products, hours, contact info, and photos</li>
-                    <li>✓ Show up on your street’s digital walk</li>
-                    <li>✓ Phase 1 owners keep product management free forever</li>
+                    <li>✓ Add products, hours, photos, and contact info</li>
+                    <li>✓ Be discovered on your digital street</li>
+                    <li>✓ Phase 1 owners keep product tools free</li>
                   </ul>
 
                   <Link
@@ -106,6 +112,25 @@ export default function HomePage() {
                     className="inline-block mt-5 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-semibold shadow transition"
                   >
                     Add or Claim Your Shop →
+                  </Link>
+                </div>
+
+                <div className="rounded-2xl bg-green-50 p-5">
+                  <p className="font-bold text-green-800 mb-3">
+                    🤝 For Ambassadors
+                  </p>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li>✓ Support local businesses</li>
+                    <li>✓ Gain real-world experience</li>
+                    <li>✓ Build communication and marketing skills</li>
+                    <li>✓ Earn certificates and recognition</li>
+                  </ul>
+
+                  <Link
+                    href="/street-ambassador"
+                    className="inline-block mt-5 bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-full text-sm font-semibold shadow transition"
+                  >
+                    Join the Ambassador Program →
                   </Link>
                 </div>
               </div>
@@ -118,7 +143,7 @@ export default function HomePage() {
               </p>
 
               <h2 className="text-3xl font-bold mb-6">
-                A new way to explore local business streets
+                Explore Canada street by street
               </h2>
 
               <div className="grid gap-4 md:grid-cols-5">
@@ -142,12 +167,12 @@ export default function HomePage() {
               </div>
             </section>
 
-            {/* BIA / COMMUNITY PARTNER SECTION */}
+            {/* COMMUNITY SECTION */}
             <section className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl p-6 md:p-8 mt-8 max-w-5xl w-full text-left shadow-2xl">
               <div className="grid gap-6 md:grid-cols-2 md:items-center">
                 <div>
                   <p className="text-sm uppercase tracking-widest text-blue-100 font-semibold mb-2">
-                    For BIAs and local business communities
+                    For BIAs, cities, and local business communities
                   </p>
 
                   <h2 className="text-3xl font-bold mb-3">
@@ -155,24 +180,24 @@ export default function HomePage() {
                   </h2>
 
                   <p className="text-blue-100">
-                    Local Street Shop helps communities showcase their local
-                    businesses through a virtual street-walking experience. It
-                    gives shoppers a simple way to explore streets online and
-                    gives business owners a place to be discovered.
+                    LocalStreetShop helps communities showcase local businesses
+                    through a modern digital street experience while giving
+                    shoppers a simple way to discover and support nearby shops.
                   </p>
                 </div>
 
                 <div className="bg-white/10 rounded-2xl p-5">
                   <p className="font-bold mb-3">Community benefits</p>
+
                   <ul className="space-y-2 text-sm text-blue-50">
-                    <li>✓ Showcase local businesses street by street</li>
+                    <li>✓ Showcase businesses street by street</li>
                     <li>✓ Support downtown and main street discovery</li>
                     <li>✓ Help businesses become visible online</li>
-                    <li>✓ Create a modern local shopping experience</li>
+                    <li>✓ Create student ambassador opportunities</li>
                   </ul>
 
                   <Link
-                    href="/contact"
+                    href="/contact-us"
                     className="inline-block mt-5 bg-white text-blue-700 px-5 py-2 rounded-full text-sm font-bold hover:bg-blue-50 transition"
                   >
                     Partner With Us →

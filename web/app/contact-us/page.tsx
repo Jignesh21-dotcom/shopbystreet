@@ -106,8 +106,8 @@ export default function ContactUsPage() {
   return (
     <>
       <SEO
-        title="Contact Us | Shop Street"
-        description="Have questions or need help with your shop listing? Reach out to the Shop Street team for support and guidance."
+        title="Contact Us | LocalStreetShop"
+        description="Have questions or need help with your shop listing? Reach out to the LocalStreetShop team for support and guidance."
         url="https://www.localstreetshop.com/contact-us"
       />
 

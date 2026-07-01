@@ -60,8 +60,8 @@ export default async function DiscoverPage() {
   const discounted = shops.find((s) => s.discount && s.street && s.street.city);
   const gem = shops.find((s) => s.tagline && s.street && s.street.city);
 
-  const title = 'Discover Local Gems | Local Street Shop';
-  const description = 'Explore featured businesses, hidden gems, and local discounts across Canadian cities. Handpicked highlights from Local Street Shop.';
+  const title = 'Discover Local Gems | LocalStreetShop';
+  const description = 'Explore featured businesses, hidden gems, and local discounts across Canadian cities. Handpicked highlights from LocalStreetShop.';
   const url = 'https://www.localstreetshop.com/discover';
 
   return (

@@ -270,7 +270,7 @@ export default function ManageShopPage() {
   return (
     <>
       <SEO
-        title={`Manage ${shop?.name || 'Shop'} | Local Street Shop`}
+        title={`Manage ${shop?.name || 'Shop'} | LocalStreetShop`}
         description="Edit your shop details on LocalStreetShop."
         url={`https://www.localstreetshop.com/shop-owner/shops/${shopId}`}
         noindex
