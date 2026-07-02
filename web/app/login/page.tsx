@@ -8,13 +8,19 @@ import SEO from '@/app/components/SEO';
 
 export default function LoginPage() {
   const router = useRouter();
+
   const [isSignUp, setIsSignUp] = useState(false);
   const [showReset, setShowReset] = useState(false);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [role, setRole] = useState<'member' | 'owner'>('member');
+
   const [message, setMessage] = useState<string | null>(null);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState('');
+  const [submittedRole, setSubmittedRole] = useState<'member' | 'owner'>('member');
 
   useEffect(() => {
     const checkUser = async () => {
@@ -27,34 +33,56 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('mode');
+
     if (mode === 'signup') {
       setIsSignUp(true);
       setShowReset(false);
     }
   }, []);
 
+  const resetForm = () => {
+    setEmail('');
+    setPassword('');
+    setUsername('');
+    setRole('member');
+    setMessage(null);
+  };
+
+  const goToLogin = () => {
+    setSignupSuccess(false);
+    setIsSignUp(false);
+    setShowReset(false);
+    resetForm();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
 
-    if (showReset) {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const cleanEmail = email.trim().toLowerCase();
 
-      if (error) setMessage(`❌ ${error.message}`);
-      else setMessage('✅ Reset link sent! Check your email.');
+    if (showReset) {
+      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail);
+
+      if (error) {
+        setMessage(`❌ ${error.message}`);
+      } else {
+        setMessage('✅ Reset link sent! Check your email.');
+      }
 
       return;
     }
 
     if (isSignUp) {
       const { error } = await supabase.auth.signUp({
-        email,
+        email: cleanEmail,
         password,
         options: {
           data: {
-            username,
+            username: username.trim(),
             isShopOwner: role === 'owner',
             shopStatus: role === 'owner' ? 'pendingPayment' : null,
           },
@@ -64,20 +92,25 @@ export default function LoginPage() {
       if (error) {
         setMessage(`❌ ${error.message}`);
       } else {
-        setMessage('✅ Sign-up successful! Please check your email to confirm.');
+        setSubmittedEmail(cleanEmail);
+        setSubmittedRole(role);
+        setSignupSuccess(true);
+        resetForm();
       }
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
 
-      if (error) {
-        setMessage(`❌ ${error.message}`);
-      } else {
-        setMessage('✅ Logged in successfully! Redirecting...');
-        setTimeout(() => router.push('/profile'), 1200);
-      }
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password,
+    });
+
+    if (error) {
+      setMessage(`❌ ${error.message}`);
+    } else {
+      setMessage('✅ Logged in successfully! Redirecting...');
+      setTimeout(() => router.push('/profile'), 1200);
     }
   };
 
@@ -102,204 +135,269 @@ export default function LoginPage() {
       />
 
       <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
-        <div className="max-w-5xl mx-auto grid gap-8 md:grid-cols-2 md:items-center">
+        <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 md:items-center">
           <section className="text-center md:text-left">
-            <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
+            <p className="mb-2 text-sm font-bold uppercase tracking-widest text-blue-700">
               LocalStreetShop Community
             </p>
 
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+            <h1 className="mb-4 text-4xl font-extrabold md:text-5xl">
               Welcome to Canada&apos;s Digital Main Street
             </h1>
 
-            <p className="text-gray-600 text-lg mb-6">
+            <p className="mb-6 text-lg text-gray-600">
               Sign in to review local shops, manage your business, access deals,
               and connect with the LocalStreetShop community.
             </p>
 
             <div className="grid gap-4 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
-  <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 shadow-sm">
-    <h2 className="font-bold text-blue-800">🧭 Shoppers</h2>
-    <p className="text-sm text-gray-600 mt-1">
-      Explore and review local shops.
-    </p>
-  </div>
+              <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 shadow-sm">
+                <h2 className="font-bold text-blue-800">🧭 Shoppers</h2>
+                <p className="mt-1 text-sm text-gray-600">
+                  Explore and review local shops.
+                </p>
+              </div>
 
-  <div className="bg-green-50 border border-green-100 rounded-2xl p-4 shadow-sm">
-    <h2 className="font-bold text-green-800">🏪 Owners</h2>
-    <p className="text-sm text-gray-600 mt-1">
-      Claim listings and manage products.
-    </p>
-  </div>
+              <div className="rounded-2xl border border-green-100 bg-green-50 p-4 shadow-sm">
+                <h2 className="font-bold text-green-800">🏪 Owners</h2>
+                <p className="mt-1 text-sm text-gray-600">
+                  Claim listings and manage products.
+                </p>
+              </div>
 
-  <div className="bg-purple-50 border border-purple-100 rounded-2xl p-4 shadow-sm">
-    <h2 className="font-bold text-purple-800">🤝 Community</h2>
-    <p className="text-sm text-gray-600 mt-1">
-      Support local businesses.
-    </p>
-  </div>
-</div>
+              <div className="rounded-2xl border border-purple-100 bg-purple-50 p-4 shadow-sm">
+                <h2 className="font-bold text-purple-800">🤝 Community</h2>
+                <p className="mt-1 text-sm text-gray-600">
+                  Support local businesses.
+                </p>
+              </div>
+            </div>
           </section>
 
-          <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
-            <h2 className="text-3xl font-extrabold text-blue-700 mb-2 text-center">
-              {showReset
-                ? 'Reset Password'
-                : isSignUp
-                ? 'Create Account'
-                : 'Welcome Back'}
-            </h2>
+          <section className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+            {signupSuccess ? (
+              <div className="text-center">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
+                  ✅
+                </div>
 
-            <p className="text-center text-gray-500 mb-6">
-              {showReset
-                ? 'Enter your email and we’ll send you a reset link.'
-                : isSignUp
-                ? 'Join LocalStreetShop as a shopper or shop owner.'
-                : 'Log in to continue to your account.'}
-            </p>
+                <p className="mb-2 text-sm font-bold uppercase tracking-widest text-blue-700">
+                  Almost there
+                </p>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {isSignUp && !showReset && (
-                <>
+                <h2 className="mb-3 text-3xl font-extrabold text-gray-950">
+                  Check your email
+                </h2>
+
+                <p className="text-gray-600">
+                  We sent a confirmation link to:
+                </p>
+
+                <p className="mt-3 break-words rounded-2xl bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-900">
+                  {submittedEmail}
+                </p>
+
+                <p className="mt-5 text-sm leading-6 text-gray-600">
+                  {submittedRole === 'owner'
+                    ? 'Confirm your email to start claiming your business, managing your storefront, and adding products on LocalStreetShop.'
+                    : 'Confirm your email to start discovering local businesses, exploring streets, and supporting shops in your community.'}
+                </p>
+
+                <div className="mt-7 space-y-3">
+                  <button
+                    type="button"
+                    onClick={goToLogin}
+                    className="block w-full rounded-full bg-blue-700 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-800"
+                  >
+                    Go to Login
+                  </button>
+
+                  <Link
+                    href="/"
+                    className="block w-full rounded-full border border-gray-200 px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
+                  >
+                    Back to Home
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <>
+                <h2 className="mb-2 text-center text-3xl font-extrabold text-blue-700">
+                  {showReset
+                    ? 'Reset Password'
+                    : isSignUp
+                    ? 'Create Account'
+                    : 'Welcome Back'}
+                </h2>
+
+                <p className="mb-6 text-center text-gray-500">
+                  {showReset
+                    ? 'Enter your email and we’ll send you a reset link.'
+                    : isSignUp
+                    ? 'Join LocalStreetShop as a shopper or shop owner.'
+                    : 'Log in to continue to your account.'}
+                </p>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  {isSignUp && !showReset && (
+                    <>
+                      <div>
+                        <label className="mb-1 block text-sm font-semibold text-gray-700">
+                          Username
+                        </label>
+                        <input
+                          type="text"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setRole('member')}
+                          className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
+                            role === 'member'
+                              ? 'border-blue-600 bg-blue-50 text-blue-700'
+                              : 'border-gray-200 bg-white text-gray-700'
+                          }`}
+                        >
+                          👤 Shopper
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setRole('owner')}
+                          className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
+                            role === 'owner'
+                              ? 'border-blue-600 bg-blue-50 text-blue-700'
+                              : 'border-gray-200 bg-white text-gray-700'
+                          }`}
+                        >
+                          🏪 Shop Owner
+                        </button>
+                      </div>
+                    </>
+                  )}
+
                   <div>
-                    <label className="block mb-1 text-sm font-semibold text-gray-700">
-                      Username
+                    <label className="mb-1 block text-sm font-semibold text-gray-700">
+                      Email
                     </label>
                     <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                       required
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setRole('member')}
-                      className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
-                        role === 'member'
-                          ? 'border-blue-600 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 bg-white text-gray-700'
-                      }`}
-                    >
-                      👤 Shopper
-                    </button>
+                  {!showReset && (
+                    <div>
+                      <label className="mb-1 block text-sm font-semibold text-gray-700">
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        required
+                      />
+                    </div>
+                  )}
 
+                  <button
+                    type="submit"
+                    className="w-full rounded-full bg-blue-600 py-3 font-semibold text-white shadow transition hover:bg-blue-700"
+                  >
+                    {showReset
+                      ? 'Send Reset Link'
+                      : isSignUp
+                      ? 'Create Account'
+                      : 'Login'}
+                  </button>
+                </form>
+
+                {message && (
+                  <div
+                    className={`mt-4 rounded-xl px-4 py-3 text-center text-sm font-semibold ${
+                      message.includes('✅')
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700'
+                    }`}
+                  >
+                    {message}
+                  </div>
+                )}
+
+                {!showReset && (
+                  <div className="mt-5 text-center">
                     <button
-                      type="button"
-                      onClick={() => setRole('owner')}
-                      className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
-                        role === 'owner'
-                          ? 'border-blue-600 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 bg-white text-gray-700'
-                      }`}
+                      onClick={() => {
+                        setShowReset(true);
+                        setMessage(null);
+                      }}
+                      className="text-sm font-semibold text-blue-600 hover:underline"
                     >
-                      🏪 Shop Owner
+                      Forgot Password?
                     </button>
                   </div>
-                </>
-              )}
+                )}
 
-              <div>
-                <label className="block mb-1 text-sm font-semibold text-gray-700">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  required
-                />
-              </div>
-
-              {!showReset && (
-                <div>
-                  <label className="block mb-1 text-sm font-semibold text-gray-700">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    required
-                  />
+                <div className="mt-6 text-center">
+                  {showReset ? (
+                    <button
+                      className="text-sm font-semibold text-blue-600 hover:underline"
+                      onClick={() => {
+                        setShowReset(false);
+                        setMessage(null);
+                      }}
+                    >
+                      ← Back to Login
+                    </button>
+                  ) : isSignUp ? (
+                    <p className="text-sm text-gray-600">
+                      Already have an account?{' '}
+                      <button
+                        className="font-semibold text-blue-600 hover:underline"
+                        onClick={() => {
+                          setIsSignUp(false);
+                          setMessage(null);
+                        }}
+                      >
+                        Log in
+                      </button>
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-600">
+                      Don&apos;t have an account?{' '}
+                      <button
+                        className="font-semibold text-blue-600 hover:underline"
+                        onClick={() => {
+                          setIsSignUp(true);
+                          setMessage(null);
+                        }}
+                      >
+                        Create account
+                      </button>
+                    </p>
+                  )}
                 </div>
-              )}
 
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-3 rounded-full hover:bg-blue-700 transition font-semibold shadow"
-              >
-                {showReset ? 'Send Reset Link' : isSignUp ? 'Create Account' : 'Login'}
-              </button>
-            </form>
-
-            {message && (
-              <div
-                className={`mt-4 text-center px-4 py-3 rounded-xl text-sm font-semibold ${
-                  message.includes('✅')
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-700'
-                }`}
-              >
-                {message}
-              </div>
-            )}
-
-            {!showReset && (
-              <div className="mt-5 text-center">
-                <button
-                  onClick={() => setShowReset(true)}
-                  className="text-sm text-blue-600 hover:underline font-semibold"
-                >
-                  Forgot Password?
-                </button>
-              </div>
-            )}
-
-            <div className="mt-6 text-center">
-              {showReset ? (
-                <button
-                  className="text-blue-600 hover:underline font-semibold text-sm"
-                  onClick={() => setShowReset(false)}
-                >
-                  ← Back to Login
-                </button>
-              ) : isSignUp ? (
-                <p className="text-sm text-gray-600">
-                  Already have an account?{' '}
-                  <button
-                    className="text-blue-600 hover:underline font-semibold"
-                    onClick={() => setIsSignUp(false)}
+                <div className="mt-6 text-center">
+                  <Link
+                    href="/"
+                    className="text-sm font-semibold text-gray-500 hover:text-blue-700"
                   >
-                    Log in
-                  </button>
-                </p>
-              ) : (
-                <p className="text-sm text-gray-600">
-                  Don&apos;t have an account?{' '}
-                  <button
-                    className="text-blue-600 hover:underline font-semibold"
-                    onClick={() => setIsSignUp(true)}
-                  >
-                    Create account
-                  </button>
-                </p>
-              )}
-            </div>
-
-            <div className="mt-6 text-center">
-              <Link
-                href="/"
-                className="text-sm text-gray-500 hover:text-blue-700 font-semibold"
-              >
-                ← Back to Home
-              </Link>
-            </div>
+                    ← Back to Home
+                  </Link>
+                </div>
+              </>
+            )}
           </section>
         </div>
       </main>
