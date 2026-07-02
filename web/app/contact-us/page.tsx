@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContactUsPage() {
-  return <ContactClient />;
+export default function ContactUsPage({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
+  const initialSubject =
+    typeof searchParams?.subject === 'string' ? searchParams.subject : null;
+
+  return <ContactClient initialSubject={initialSubject} />;
 }

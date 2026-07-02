@@ -1,36 +1,23 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
-export default function ContactClient() {
-  const searchParams = useSearchParams();
+type ContactClientProps = {
+  initialSubject?: string | null;
+};
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: 'General Inquiry',
-    message: '',
-  });
+export default function ContactClient({ initialSubject = null }: ContactClientProps) {
+  const [formData, setFormData] = useState(() => {
+    const subject = initialSubject || 'General Inquiry';
 
-  const [file, setFile] = useState<File | null>(null);
-  const [submittedEmail, setSubmittedEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const subject = searchParams.get('subject');
-
-    if (!subject) return;
-
-    setFormData((prev) => ({
-      ...prev,
+    return {
+      name: '',
+      email: '',
+      phone: '',
       subject,
       message:
-        subject === 'Partnership or Ambassador Question' && !prev.message
+        subject === 'Partnership or Ambassador Question'
           ? `Hello LocalStreetShop Team,
 
 I'm interested in becoming a LocalStreetShop Street Ambassador.
@@ -45,9 +32,15 @@ Why I'd like to become an ambassador:
 
 
 Thank you!`
-          : prev.message,
-    }));
-  }, [searchParams]);
+          : '',
+    };
+  });
+
+  const [file, setFile] = useState<File | null>(null);
+  const [submittedEmail, setSubmittedEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
