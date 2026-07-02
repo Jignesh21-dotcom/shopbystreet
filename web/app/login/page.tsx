@@ -18,9 +18,13 @@ export default function LoginPage() {
   const [role, setRole] = useState<'member' | 'owner'>('member');
 
   const [message, setMessage] = useState<string | null>(null);
+
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
   const [submittedRole, setSubmittedRole] = useState<'member' | 'owner'>('member');
+
+  const [resetSuccess, setResetSuccess] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
 
   useEffect(() => {
     const checkUser = async () => {
@@ -53,6 +57,7 @@ export default function LoginPage() {
 
   const goToLogin = () => {
     setSignupSuccess(false);
+    setResetSuccess(false);
     setIsSignUp(false);
     setShowReset(false);
     resetForm();
@@ -65,12 +70,16 @@ export default function LoginPage() {
     const cleanEmail = email.trim().toLowerCase();
 
     if (showReset) {
-      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail);
+      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+        redirectTo: `${window.location.origin}/update-password`,
+      });
 
       if (error) {
         setMessage(`❌ ${error.message}`);
       } else {
-        setMessage('✅ Reset link sent! Check your email.');
+        setResetEmail(cleanEmail);
+        setResetSuccess(true);
+        setEmail('');
       }
 
       return;
@@ -210,6 +219,51 @@ export default function LoginPage() {
                     className="block w-full rounded-full bg-blue-700 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-800"
                   >
                     Go to Login
+                  </button>
+
+                  <Link
+                    href="/"
+                    className="block w-full rounded-full border border-gray-200 px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
+                  >
+                    Back to Home
+                  </Link>
+                </div>
+              </div>
+            ) : resetSuccess ? (
+              <div className="text-center">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
+                  ✅
+                </div>
+
+                <p className="mb-2 text-sm font-bold uppercase tracking-widest text-blue-700">
+                  Password reset
+                </p>
+
+                <h2 className="mb-3 text-3xl font-extrabold text-gray-950">
+                  Check your email
+                </h2>
+
+                <p className="text-gray-600">
+                  We sent a password reset link to:
+                </p>
+
+                <p className="mt-3 break-words rounded-2xl bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-900">
+                  {resetEmail}
+                </p>
+
+                <p className="mt-5 text-sm leading-6 text-gray-600">
+                  Open the email and click the reset button to choose a new
+                  password. If you do not see it within a few minutes, check your
+                  Spam or Junk folder.
+                </p>
+
+                <div className="mt-7 space-y-3">
+                  <button
+                    type="button"
+                    onClick={goToLogin}
+                    className="block w-full rounded-full bg-blue-700 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-800"
+                  >
+                    Back to Login
                   </button>
 
                   <Link
