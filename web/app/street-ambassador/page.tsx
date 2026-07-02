@@ -144,7 +144,7 @@ export default function StreetAmbassadorPage() {
         </p>
 
         <Link
-          href="/contact-us"
+          href="/contact-us?subject=Partnership%20or%20Ambassador%20Question"
           className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
         >
           Apply Through Contact Form
