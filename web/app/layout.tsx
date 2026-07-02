@@ -1,13 +1,65 @@
+import type { Metadata, Viewport } from 'next';
+import { Poppins } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import { Poppins } from 'next/font/google';
-import Script from 'next/script'; // ✅ Required for GTM
 
-export const metadata = {
-  title: "LocalStreetShop",
+export const metadata: Metadata = {
+  metadataBase: new URL('https://www.localstreetshop.com'),
+
+  title: {
+    default: 'LocalStreetShop',
+    template: '%s | LocalStreetShop',
+  },
+
   description:
-    "The Digital Main Street of Canada. Discover local shops, support small businesses, explore cities, streets, and communities across Canada.",
+    'The Digital Main Street of Canada. Discover local shops, support small businesses, and explore cities, streets, and communities across Canada.',
+
+  keywords: [
+    'LocalStreetShop',
+    'shop local',
+    'Canadian businesses',
+    'local shopping',
+    'Ontario businesses',
+    'digital main street',
+    'small businesses Canada',
+    'local business directory',
+  ],
+
+  authors: [{ name: 'LocalStreetShop' }],
+  creator: 'LocalStreetShop',
+  publisher: 'LocalStreetShop',
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+
+  openGraph: {
+    title: 'LocalStreetShop',
+    description:
+      'Discover local shops, support small businesses, and explore cities, streets, and communities across Canada.',
+    url: 'https://www.localstreetshop.com',
+    siteName: 'LocalStreetShop',
+    locale: 'en_CA',
+    type: 'website',
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: 'LocalStreetShop',
+    description:
+      'Discover local shops, support small businesses, and explore cities, streets, and communities across Canada.',
+  },
+
+  icons: {
+    icon: '/favicon.ico',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#1d4ed8',
 };
 
 const poppins = Poppins({
@@ -15,11 +67,14 @@ const poppins = Poppins({
   weight: ['400', '600', '700'],
 });
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
+    <html lang="en-CA">
       <head>
-        {/* ✅ Google Tag Manager Head Script */}
         <Script
           id="gtm-script"
           strategy="afterInteractive"
@@ -32,19 +87,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${poppins.className} min-h-screen bg-gray-100 flex flex-col`} suppressHydrationWarning>
-        {/* ✅ Google Tag Manager Noscript */}
+
+      <body
+        className={`${poppins.className} flex min-h-screen flex-col bg-white`}
+        suppressHydrationWarning
+      >
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-WCD44KWZ"
             height="0"
             width="0"
             style={{ display: 'none', visibility: 'hidden' }}
-          ></iframe>
+          />
         </noscript>
 
         <Header />
+
         <main className="flex-grow">{children}</main>
+
         <Footer />
       </body>
     </html>

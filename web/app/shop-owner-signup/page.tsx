@@ -1,16 +1,24 @@
 // app/shop-owner-signup/page.tsx
+import type { Metadata } from 'next';
 import SignUpClient from './SignUpClient';
-import SEO from '@/app/components/SEO';
+
+export const metadata: Metadata = {
+  title: 'Shop Owner Sign Up | LocalStreetShop',
+  description:
+    'Create your shop owner account to claim your business, manage your storefront, and add products on LocalStreetShop.',
+  alternates: {
+    canonical: 'https://www.localstreetshop.com/shop-owner-signup',
+  },
+  openGraph: {
+    title: 'Shop Owner Sign Up | LocalStreetShop',
+    description:
+      'Create your shop owner account to claim your business, manage your storefront, and add products on LocalStreetShop.',
+    url: 'https://www.localstreetshop.com/shop-owner-signup',
+    siteName: 'LocalStreetShop',
+    type: 'website',
+  },
+};
 
 export default function ShopOwnerSignUpPage() {
-  return (
-    <>
-      <SEO
-        title="Shop Owner Sign Up | LocalStreetShop"
-        description="Create your shop owner account to start listing your local business on LocalStreetShop. Connect with customers and manage your store easily."
-        url="https://www.localstreetshop.com/shop-owner-signup"
-      />
-      <SignUpClient />
-    </>
-  );
+  return <SignUpClient />;
 }

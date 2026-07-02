@@ -1,4 +1,4 @@
-import { supabaseServer } from '@/lib/supabaseServerClient';
+import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 import SEO from '@/app/components/SEO';
 
@@ -20,7 +20,7 @@ type Shop = {
 };
 
 export default async function DiscoverPage() {
-  const { data, error } = await supabaseServer
+  const { data, error } = await supabase
     .from('shops')
     .select(`
       id,

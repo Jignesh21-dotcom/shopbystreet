@@ -6,22 +6,6 @@ import Image from 'next/image';
 import ExpansionNotice from '@/app/components/ExpansionNotice';
 import { getCitiesByProvinceSlug } from '@/lib/data';
 
-const provinceBackgrounds: Record<string, string> = {
-  ontario: 'https://images.pexels.com/photos/29290069/pexels-photo-29290069.jpeg',
-  quebec: 'https://images.pexels.com/photos/462118/pexels-photo-462118.jpeg',
-  'british-columbia': 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
-  alberta: 'https://images.pexels.com/photos/417173/pexels-photo-417173.jpeg',
-  manitoba: 'https://images.pexels.com/photos/356844/pexels-photo-356844.jpeg',
-  saskatchewan: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
-  'nova-scotia': 'https://images.pexels.com/photos/417169/pexels-photo-417169.jpeg',
-  'new-brunswick': 'https://images.pexels.com/photos/417171/pexels-photo-417171.jpeg',
-  'newfoundland-and-labrador': 'https://images.pexels.com/photos/417172/pexels-photo-417172.jpeg',
-  'prince-edward-island': 'https://images.pexels.com/photos/417168/pexels-photo-417168.jpeg',
-  'northwest-territories': 'https://images.pexels.com/photos/417174/pexels-photo-417174.jpeg',
-  nunavut: 'https://images.pexels.com/photos/417175/pexels-photo-417175.jpeg',
-  yukon: 'https://images.pexels.com/photos/417176/pexels-photo-417176.jpeg',
-};
-
 const provinceFlags: Record<string, string> = {
   ontario: '/flags/ontario.png',
   quebec: '/flags/quebec.png',
@@ -40,9 +24,13 @@ const provinceFlags: Record<string, string> = {
 
 type ProvinceClientProps = {
   province: string;
+  provinceName: string;
 };
 
-export default function ProvinceClient({ province }: ProvinceClientProps) {
+export default function ProvinceClient({
+  province,
+  provinceName,
+}: ProvinceClientProps) {
   const [cities, setCities] = useState<{ name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,22 +38,21 @@ export default function ProvinceClient({ province }: ProvinceClientProps) {
 
   useEffect(() => {
     const fetchCities = async () => {
-      console.log('🚀 Starting to fetch cities for province:', province);
       setLoading(true);
       setError(null);
 
       try {
         const data = await getCitiesByProvinceSlug(province);
-        console.log('📊 Received data:', data?.length || 0, 'cities');
+
         if (!data || data.length === 0) {
-          setError('No cities found or an error occurred.');
+          setCities([]);
+          setError('No cities found yet.');
         } else {
           setCities(data);
-          console.log('✨ Cities set in state:', data.length);
         }
       } catch (err) {
-        console.error('💥 Error in fetchCities:', err);
-        setError('An unexpected error occurred.');
+        console.error('Error fetching cities:', err);
+        setError('An unexpected error occurred while loading cities.');
       }
 
       setLoading(false);
@@ -75,17 +62,24 @@ export default function ProvinceClient({ province }: ProvinceClientProps) {
   }, [province]);
 
   const filteredCities = cities.filter((city) =>
-    city.name.toLowerCase().includes(search.toLowerCase())
+    city.name.toLowerCase().includes(search.toLowerCase().trim())
   );
 
+  const provinceFlag =
+    provinceFlags[province.toLowerCase()] || '/flags/ontario.png';
+
   const highlightText = (name: string) => {
-    if (!search) return name;
+    if (!search.trim()) return name;
+
     const parts = name.split(new RegExp(`(${search})`, 'gi'));
+
     return (
       <>
         {parts.map((part, i) =>
           part.toLowerCase() === search.toLowerCase() ? (
-            <mark key={i} className="bg-yellow-200">{part}</mark>
+            <mark key={i} className="rounded bg-yellow-200 px-1">
+              {part}
+            </mark>
           ) : (
             <span key={i}>{part}</span>
           )
@@ -94,74 +88,136 @@ export default function ProvinceClient({ province }: ProvinceClientProps) {
     );
   };
 
-  const backgroundImage =
-    provinceBackgrounds[province.toLowerCase()] ||
-    'https://images.pexels.com/photos/1029613/pexels-photo-1029613.jpeg'; // fallback
-
-  const provinceFlag = provinceFlags[province.toLowerCase()] || '/flags/ontario.png';
-
   return (
-    <div
-      className="min-h-screen p-6 bg-cover bg-center flex flex-col items-center relative overflow-hidden"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
-    >
-      <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
-
-      <div className="relative z-10 flex flex-col items-center w-full">
+    <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         <Link
           href="/countries/canada"
-          className="self-start mb-6 text-blue-200 hover:text-white hover:underline"
+          className="mb-6 inline-flex items-center text-sm font-semibold text-blue-700 transition hover:text-blue-900"
         >
           ← Back to Canada
         </Link>
 
-        <ExpansionNotice />
+        <section className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-6 py-12 text-white shadow-sm sm:px-10">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-blue-100">
+                LocalStreetShop Province Directory
+              </p>
 
-        <h1 className="text-4xl font-bold text-white mb-6 capitalize text-center flex items-center gap-4">
-          <Image
-            src={provinceFlag}
-            alt={`${province} flag`}
-            width={48}
-            height={32}
-            className="rounded border shadow"
-          />
-          {decodeURIComponent(province).replace(/-/g, ' ')}
-        </h1>
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
+                Explore {provinceName}
+              </h1>
 
-        <input
-          type="text"
-          placeholder="Search for a city..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="mb-8 p-3 w-full max-w-md rounded-lg border border-blue-300 shadow focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-400 transition"
-        />
+              <p className="mt-5 max-w-3xl text-lg leading-8 text-blue-50">
+                Browse cities across {provinceName} and discover local shops,
+                restaurants, services, cafés, and businesses street by street.
+              </p>
+            </div>
 
-        {loading ? (
-          <p className="text-white text-lg">Loading cities...</p>
-        ) : error ? (
-          <div className="text-center mt-10 text-white text-lg">
-            😕 {error}
+            <div className="flex h-24 w-28 shrink-0 items-center justify-center rounded-3xl bg-white/15 p-4">
+              <Image
+                src={provinceFlag}
+                alt={`${provinceName} flag`}
+                width={72}
+                height={48}
+                className="rounded border border-white/30 object-contain shadow-sm"
+              />
+            </div>
           </div>
-        ) : filteredCities.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl">
-            {filteredCities.map((city) => (
-              <Link
-                key={city.slug}
-                href={`/cities/${encodeURIComponent(city.slug)}`}
-                className="group bg-white p-6 rounded-2xl shadow-md hover:shadow-2xl hover:scale-105 hover:border-blue-400 border border-transparent transform transition-all duration-300 text-center flex items-center justify-center"
-              >
-                <h2 className="text-2xl font-semibold text-blue-700 group-hover:text-blue-900 flex items-center justify-center">
-                  🏙️ {highlightText(city.name)}
-                </h2>
-              </Link>
-            ))}
+        </section>
+
+        <div className="mt-6">
+          <ExpansionNotice />
+        </div>
+
+        <section className="mt-10">
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-blue-700">
+                Cities
+              </p>
+
+              <h2 className="mt-2 text-3xl font-extrabold text-slate-950">
+                Choose a city to start exploring
+              </h2>
+
+              <p className="mt-2 text-slate-600">
+                Find local businesses by city, street, address, and shop.
+              </p>
+            </div>
+
+            <p className="text-sm font-semibold text-slate-500">
+              {cities.length} {cities.length === 1 ? 'city' : 'cities'} available
+            </p>
           </div>
-        ) : (
-          <div className="text-center mt-10 text-white text-lg">
-            😕 No cities found matching "<span className="font-semibold">{search}</span>"
+
+          <div className="mb-8">
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              Search cities in {provinceName}
+            </label>
+
+            <input
+              type="text"
+              placeholder="Search for a city..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white px-5 py-4 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
           </div>
-        )}
+
+          {loading ? (
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-sm">
+              <p className="font-semibold text-slate-600">Loading cities...</p>
+            </div>
+          ) : error ? (
+            <div className="rounded-[2rem] border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
+              <h2 className="text-2xl font-extrabold text-slate-950">
+                Cities coming soon
+              </h2>
+              <p className="mt-2 text-slate-600">{error}</p>
+            </div>
+          ) : filteredCities.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredCities.map((city) => (
+                <Link
+                  key={city.slug}
+                  href={`/cities/${encodeURIComponent(city.slug)}`}
+                  className="group rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-md"
+                >
+                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-700">
+                    City
+                  </p>
+
+                  <h3 className="mt-3 text-2xl font-extrabold text-slate-950 transition group-hover:text-blue-700">
+                    {highlightText(city.name)}
+                  </h3>
+
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    Explore streets, shops, restaurants, services, and local
+                    businesses in {city.name}.
+                  </p>
+
+                  <p className="mt-5 font-bold text-blue-700">
+                    Explore City →
+                  </p>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-[2rem] border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
+              <h2 className="text-2xl font-extrabold text-slate-950">
+                No cities found
+              </h2>
+
+              <p className="mt-2 text-slate-600">
+                No cities match “{search}” in {provinceName}. Try a different
+                search.
+              </p>
+            </div>
+          )}
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

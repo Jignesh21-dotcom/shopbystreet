@@ -46,7 +46,7 @@ export default function CityClient({
       <>
         {parts.map((part, i) =>
           part.toLowerCase() === search.toLowerCase() ? (
-            <mark key={i} className="bg-yellow-200">
+            <mark key={i} className="bg-yellow-200 rounded px-1">
               {part}
             </mark>
           ) : (
@@ -58,22 +58,33 @@ export default function CityClient({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <Link
-          href="/provinces/ontario"
-          className="inline-block mb-6 text-blue-700 hover:text-blue-900 hover:underline"
-        >
-          ← Back to Ontario
-        </Link>
+    <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-wrap gap-3 mb-8">
+          <Link
+            href="/provinces/ontario"
+            className="text-sm font-semibold text-blue-700 hover:text-blue-900 transition"
+          >
+            ← Back to Ontario
+          </Link>
 
-        <section className="bg-white rounded-3xl shadow-lg overflow-hidden mb-10">
-          <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-10">
-            <p className="text-sm uppercase tracking-widest opacity-90 mb-3">
-              {isKitchenerDemo ? 'Downtown Kitchener Demo' : 'LocalStreetShop'}
+          <Link
+            href="/live-cities"
+            className="text-sm font-semibold text-green-700 hover:text-green-900 transition"
+          >
+            🏙️ View Live Cities
+          </Link>
+        </div>
+
+        <section className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-hidden mb-10">
+          <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-8 md:p-10">
+            <p className="text-sm uppercase tracking-widest text-blue-100 font-semibold mb-3">
+              {isKitchenerDemo
+                ? 'Downtown Kitchener Demo'
+                : 'LocalStreetShop City Explorer'}
             </p>
 
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
               Explore {cityName} Street by Street
             </h1>
 
@@ -84,25 +95,25 @@ export default function CityClient({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-white">
-            <div className="rounded-2xl bg-blue-50 p-5">
-              <p className="text-3xl font-bold text-blue-700">
-                {filteredStreets.length}
+            <div className="rounded-2xl bg-blue-50 border border-blue-100 p-5">
+              <p className="text-3xl font-extrabold text-blue-700">
+                {filteredStreets.length.toLocaleString()}
               </p>
               <p className="text-gray-600">Streets</p>
             </div>
 
-            <div className="rounded-2xl bg-green-50 p-5">
-              <p className="text-3xl font-bold text-green-700">
-                {totalBusinesses}
+            <div className="rounded-2xl bg-green-50 border border-green-100 p-5">
+              <p className="text-3xl font-extrabold text-green-700">
+                {totalBusinesses.toLocaleString()}
               </p>
               <p className="text-gray-600">Businesses</p>
             </div>
 
             <a
               href="#street-list"
-              className="rounded-2xl bg-purple-50 p-5 hover:bg-purple-100 transition block cursor-pointer"
+              className="rounded-2xl bg-purple-50 border border-purple-100 p-5 hover:bg-purple-100 transition block cursor-pointer"
             >
-              <p className="text-3xl font-bold text-purple-700">Walk</p>
+              <p className="text-3xl font-extrabold text-purple-700">Walk</p>
               <p className="text-gray-600">Street Experience</p>
               <p className="mt-2 text-sm font-semibold text-purple-700">
                 Choose a street to start →
@@ -112,13 +123,25 @@ export default function CityClient({
         </section>
 
         <section id="street-list" className="scroll-mt-28">
-          <input
-            type="text"
-            placeholder="Search for a street..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="mb-8 p-4 w-full max-w-md rounded-xl border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
-          />
+          <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
+                Streets in {cityName}
+              </p>
+
+              <h2 className="text-3xl font-extrabold">
+                Choose a street to explore
+              </h2>
+            </div>
+
+            <input
+              type="text"
+              placeholder="Search for a street..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="p-4 w-full md:max-w-md rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm bg-white"
+            />
+          </div>
 
           {filteredStreets.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -126,19 +149,19 @@ export default function CityClient({
                 <Link
                   key={street.slug}
                   href={`/cities/${citySlug}/${street.slug}`}
-                  className="group bg-white rounded-3xl shadow-md hover:shadow-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                  className="group bg-white border border-gray-200 rounded-3xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
                 >
-                  <div className="h-36 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                  <div className="h-32 bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
                     <span className="text-white text-5xl">🏬</span>
                   </div>
 
                   <div className="p-6">
-                    <h2 className="text-2xl font-bold text-blue-800 mb-2 group-hover:text-indigo-700">
+                    <h3 className="text-2xl font-extrabold text-gray-900 mb-2 group-hover:text-blue-700 transition">
                       {highlightText(street.name!)}
-                    </h2>
+                    </h3>
 
                     <p className="text-gray-600 mb-4">
-                      {street.shop_count ?? 0} businesses
+                      {(street.shop_count ?? 0).toLocaleString()} businesses
                     </p>
 
                     {street.featured_business && (
@@ -158,14 +181,14 @@ export default function CityClient({
               ))}
             </div>
           ) : citySlug.toLowerCase() === 'toronto' ? (
-            <div className="text-center mt-10 text-gray-600 text-lg">
-              😕 No streets found matching "{search}"
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center text-gray-600 text-lg shadow-sm">
+              😕 No streets found matching &quot;{search}&quot;
             </div>
           ) : (
             <ExpansionNotice />
           )}
         </section>
       </div>
-    </div>
+    </main>
   );
 }

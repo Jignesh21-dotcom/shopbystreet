@@ -9,11 +9,12 @@ const normalizeSlug = (slug: string) =>
 
 export default async function StreetPage({ params }: any) {
   const awaitedParams = await params;
+
   const city = normalizeSlug(decodeURIComponent(awaitedParams?.city || ''));
   const street = normalizeSlug(decodeURIComponent(awaitedParams?.street || ''));
 
   if (!city || !street) {
-    return <div>Invalid URL.</div>;
+    return <div>Invalid street URL.</div>;
   }
 
   const { data: streetData, error: streetError } = await getStreetBySlug(street);
@@ -31,20 +32,18 @@ export default async function StreetPage({ params }: any) {
     return <div>Street not found in this city.</div>;
   }
 
-  let provinceSlug = 'ontario';
-  const provinceData: any = cityData?.province;
+  const provinceData: any = Array.isArray(cityData?.province)
+    ? cityData.province[0]
+    : cityData?.province;
 
-  if (Array.isArray(provinceData)) {
-    provinceSlug = provinceData[0]?.slug || 'ontario';
-  } else if (provinceData && typeof provinceData === 'object') {
-    provinceSlug = provinceData.slug || 'ontario';
-  }
+  const provinceSlug = provinceData?.slug || 'ontario';
+  const provinceName = provinceData?.name || 'Ontario';
 
   const { data: shops, error: shopsError } = await getShopsByStreetId(streetData.id);
 
-  if (shopsError || !shops) {
+  if (shopsError) {
     console.error('Failed to load shops:', shopsError);
-    return <div>No shops found for this street.</div>;
+    return <div>Unable to load shops for this street.</div>;
   }
 
   const streetName = streetData.name;
@@ -53,8 +52,8 @@ export default async function StreetPage({ params }: any) {
   return (
     <>
       <SEO
-        title={`${streetName} – Shops in ${cityName} | LocalStreetShop`}
-        description={`Walk ${streetName} in ${cityName}, ${provinceSlug}, and discover local businesses in address order.`}
+        title={`${streetName} Shops in ${cityName} | LocalStreetShop`}
+        description={`Explore local shops, restaurants, services, and businesses on ${streetName} in ${cityName}, ${provinceName}. Walk the street online and discover what is nearby.`}
         url={`https://www.localstreetshop.com/cities/${city}/${street}`}
       />
 
@@ -63,7 +62,7 @@ export default async function StreetPage({ params }: any) {
         city={cityData.slug}
         street={streetData.slug}
         streetName={streetName}
-        shops={shops}
+        shops={shops || []}
       />
     </>
   );

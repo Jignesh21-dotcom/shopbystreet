@@ -185,10 +185,20 @@ export default function MemberPage() {
     fetchShops();
   }, [selectedStreet]);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedShop || !review) {
+    if (!user) {
+      setMessage('Please log in before submitting a review.');
+      return;
+    }
+
+    if (!selectedShop || !review.trim()) {
       setMessage('Please select a shop and write your review.');
       return;
     }
@@ -197,7 +207,7 @@ export default function MemberPage() {
       {
         shop_id: selectedShop,
         user_id: user.id,
-        review,
+        review: review.trim(),
       },
     ]);
 
@@ -228,12 +238,21 @@ export default function MemberPage() {
                 Owner area to manage your business.
               </p>
 
-              <Link
-                href="/shop-owner"
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold shadow transition"
-              >
-                Go to Shop Owner Area
-              </Link>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Link
+                  href="/shop-owner"
+                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold shadow transition"
+                >
+                  Go to Shop Owner Area
+                </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="inline-block bg-white text-red-600 border border-red-200 px-6 py-3 rounded-full font-semibold hover:bg-red-50 transition"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           ) : !user ? (
             <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 md:p-10 text-center">
@@ -309,6 +328,36 @@ export default function MemberPage() {
                 </h1>
 
                 <p className="text-gray-600">
+                  Signed in as{' '}
+                  <span className="font-semibold text-gray-900">
+                    {user.email}
+                  </span>
+                </p>
+
+                <div className="mt-5 flex flex-wrap justify-center gap-3">
+                  <Link
+                    href="/deals"
+                    className="px-5 py-2.5 bg-blue-50 text-blue-700 rounded-full hover:bg-blue-100 font-semibold transition"
+                  >
+                    View Deals
+                  </Link>
+
+                  <Link
+                    href="/live-cities"
+                    className="px-5 py-2.5 bg-blue-50 text-blue-700 rounded-full hover:bg-blue-100 font-semibold transition"
+                  >
+                    Browse Cities
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="px-5 py-2.5 bg-red-50 text-red-600 rounded-full hover:bg-red-100 font-semibold transition"
+                  >
+                    Logout
+                  </button>
+                </div>
+
+                <p className="text-gray-600 mt-6">
                   Leave a quick review for your favorite local shop.
                 </p>
               </div>

@@ -149,7 +149,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
 
               <div className="flex flex-wrap gap-3 mt-6">
                 <Link
-                  href={`/shops/${business.slug}/products`}
+                  href={`/cities/${rawCity}/${rawStreet}/${business.slug}/products`}
                   className="bg-white text-blue-700 px-5 py-3 rounded-xl font-bold hover:bg-blue-50 transition"
                 >
                   🛍 View Products

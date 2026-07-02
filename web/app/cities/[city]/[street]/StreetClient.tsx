@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import StreetStopsToggle from './StreetStopsToggle'
 
 type Shop = {
   id: string;
@@ -38,6 +39,28 @@ const slugify = (text: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)+/g, '');
 
+const formatName = (text: string) =>
+  text
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const getSafeImageUrl = (rawUrl: string | undefined, currentStreetPath: string) => {
+  if (!rawUrl) return null;
+
+  const cleaned = rawUrl.trim();
+  if (!cleaned || cleaned === '/' || cleaned === '#') return null;
+
+  if (cleaned === currentStreetPath || cleaned === `${currentStreetPath}/`) {
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(cleaned) || cleaned.startsWith('/')) {
+    return cleaned;
+  }
+
+  return null;
+};
+
 export default function StreetClient({
   province,
   city,
@@ -48,11 +71,15 @@ export default function StreetClient({
 }: StreetClientProps) {
   const [search, setSearch] = useState('');
 
-  const displayStreetName = streetName || street.replace(/-/g, ' ');
+  const displayStreetName = streetName || formatName(street);
+  const displayCityName = formatName(city);
+  const currentStreetPath = `/cities/${city}/${street}`;
 
   const filteredShops = shops
     .filter((shop) => {
-      const query = search.toLowerCase();
+      const query = search.toLowerCase().trim();
+
+      if (!query) return true;
 
       return (
         shop.name.toLowerCase().includes(query) ||
@@ -86,43 +113,49 @@ export default function StreetClient({
     ? `/cities/${city}/${street}/address/${slugify(firstStop.address)}`
     : '#';
 
+  const totalBusinesses = shops.length;
+  const totalStops = addressGroups.length;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+    <main className="min-h-screen bg-slate-50">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Link
           href={`/cities/${city}`}
-          className="inline-block mb-6 text-blue-700 hover:text-blue-900 hover:underline"
+          prefetch={false}
+          className="mb-6 inline-flex items-center text-sm font-semibold text-blue-700 hover:text-blue-900"
         >
-          ← Back to {city}
+          ← Back to {displayCityName}
         </Link>
 
-        <section className="bg-white rounded-3xl shadow-lg overflow-hidden mb-10">
-          <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-10">
-            <p className="text-sm uppercase tracking-widest opacity-90 mb-3">
+        <section className="overflow-hidden rounded-[2rem] border border-blue-100 bg-white shadow-sm">
+          <div className="bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-6 py-10 text-white sm:px-10">
+            <p className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-blue-100">
               {isKitchenerDemo
-                ? 'Downtown Kitchener Virtual Street Walk'
-                : 'LocalStreetShop'}
+                ? 'Downtown Kitchener Street Walk'
+                : 'Local Street Walk'}
             </p>
 
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 capitalize">
+            <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight sm:text-5xl">
               Walk {displayStreetName}
             </h1>
 
-            <p className="text-lg md:text-xl text-blue-100 max-w-3xl mb-8">
-              Explore businesses stop by stop in address order, like walking
-              down the street in real life.
+            <p className="mt-5 max-w-3xl text-lg leading-8 text-blue-50">
+              Explore local shops, restaurants, services, and businesses on{' '}
+              {displayStreetName} in address order, just like walking the street
+              in real life.
             </p>
 
             {firstStop && (
-              <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <Link
                   href={firstStopHref}
-                  className="inline-flex items-center justify-center bg-white text-blue-700 px-7 py-4 rounded-2xl font-bold shadow-md hover:bg-blue-50 transition"
+                  prefetch={false}
+                  className="inline-flex items-center justify-center rounded-full bg-white px-7 py-4 text-base font-bold text-blue-700 shadow-sm transition hover:bg-blue-50"
                 >
-                  🚶 Start Walk
+                  🚶 Start Walk →
                 </Link>
 
-                <p className="text-blue-100">
+                <p className="text-sm text-blue-50">
                   First stop:{' '}
                   <span className="font-semibold">{firstStop.address}</span>
                 </p>
@@ -130,114 +163,126 @@ export default function StreetClient({
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-white">
-            <div className="rounded-2xl bg-blue-50 p-5">
-              <p className="text-3xl font-bold text-blue-700">{shops.length}</p>
-              <p className="text-gray-600">Businesses</p>
+          <div className="grid grid-cols-1 gap-4 border-t border-blue-100 bg-white p-5 sm:grid-cols-3">
+            <div className="rounded-3xl bg-blue-50 p-5">
+              <p className="text-3xl font-extrabold text-blue-700">
+                {totalBusinesses}
+              </p>
+              <p className="mt-1 text-sm font-medium text-slate-600">
+                Local businesses
+              </p>
             </div>
 
-            <div className="rounded-2xl bg-green-50 p-5">
-              <p className="text-3xl font-bold text-green-700">
-                {addressGroups.length}
+            <div className="rounded-3xl bg-indigo-50 p-5">
+              <p className="text-3xl font-extrabold text-indigo-700">
+                {totalStops}
               </p>
-              <p className="text-gray-600">Street Stops</p>
+              <p className="mt-1 text-sm font-medium text-slate-600">
+                Street stops
+              </p>
             </div>
 
-            <div className="rounded-2xl bg-purple-50 p-5">
-              <p className="text-3xl font-bold text-purple-700">
-                {addressGroups.length > 0 ? 'Ready' : 'Empty'}
+            <div className="rounded-3xl bg-amber-50 p-5">
+              <p className="text-3xl font-extrabold text-amber-700">
+                {totalStops > 0 ? 'Ready' : 'Empty'}
               </p>
-              <p className="text-gray-600">Walk Mode</p>
+              <p className="mt-1 text-sm font-medium text-slate-600">
+                Walk mode
+              </p>
             </div>
           </div>
         </section>
 
         {addressGroups.length > 0 && (
-          <section className="bg-white rounded-3xl shadow-md p-6 mb-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm font-bold text-blue-600 uppercase tracking-widest">
-                  Virtual Walk Preview
+                <p className="text-sm font-bold uppercase tracking-[0.2em] text-blue-700">
+                  Street Walk Preview
                 </p>
-                <h2 className="text-2xl font-bold text-gray-900 mt-1">
+
+                <h2 className="mt-2 text-2xl font-extrabold text-slate-950">
                   {addressGroups.length} stops on {displayStreetName}
                 </h2>
-                <p className="text-gray-600 mt-2">
-                  Start at the first address, then move forward using Previous
-                  Stop and Next Stop.
+
+                <p className="mt-2 max-w-2xl text-slate-600">
+                  Start at the first address, then continue stop by stop to
+                  explore businesses along the street.
                 </p>
               </div>
 
               <Link
                 href={firstStopHref}
-                className="bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-800 transition text-center"
+                prefetch={false}
+                className="rounded-full bg-blue-700 px-6 py-3 text-center font-bold text-white transition hover:bg-blue-800"
               >
-                Start Walking →
+                🚶 Start Walking →
               </Link>
             </div>
 
-            <div className="mt-6 h-3 bg-blue-100 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-600 rounded-full w-full" />
-            </div>
-
-            <div className="flex flex-wrap gap-2 mt-4">
-              {addressGroups.map((group) => (
-                <Link
-                  key={`preview-${group.address}`}
-                  href={`/cities/${city}/${street}/address/${slugify(group.address)}`}
-                  className="text-sm bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-700 px-3 py-2 rounded-full transition"
-                >
-                  {group.address}
-                </Link>
-              ))}
-            </div>
+            <StreetStopsToggle
+  stops={addressGroups.map((group) => ({
+    address: group.address,
+    href: `/cities/${city}/${street}/address/${slugify(group.address)}`,
+  }))}
+/>
           </section>
         )}
 
-        <input
-          type="text"
-          placeholder="Search by business, address, category, or phone..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="mb-8 p-4 w-full max-w-xl rounded-xl border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
-        />
+        <section className="mt-8">
+          <label className="mb-2 block text-sm font-bold text-slate-700">
+            Search this street
+          </label>
+
+          <input
+            type="text"
+            placeholder="Search by business, address, category, or phone..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white px-5 py-4 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+          />
+        </section>
 
         {addressGroups.length > 0 ? (
-          <div className="space-y-8 w-full">
+          <div className="mt-8 space-y-8">
             {addressGroups.map((group, index) => {
               const addressHref = `/cities/${city}/${street}/address/${slugify(
                 group.address
               )}`;
 
+              const categoryCounts = group.shops.reduce(
+                (acc: Record<string, number>, shop) => {
+                  const category = shop.category || 'Other';
+                  acc[category] = (acc[category] || 0) + 1;
+                  return acc;
+                },
+                {}
+              );
+
               return (
                 <section
                   key={`list-${group.address}`}
-                  className="bg-white rounded-3xl shadow-md p-6"
+                  className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm"
                 >
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5 border-b pb-4">
+                  <div className="mb-6 flex flex-col gap-4 border-b border-slate-100 pb-5 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <p className="text-sm font-bold text-blue-600">
+                      <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-700">
                         Stop {index + 1} of {addressGroups.length}
                       </p>
 
                       <Link
                         href={addressHref}
-                        className="inline-block text-2xl font-bold text-blue-800 hover:text-blue-600 hover:underline"
+                        prefetch={false}
+                        className="mt-2 inline-block text-2xl font-extrabold text-slate-950 transition hover:text-blue-700"
                       >
-                        📍 {group.address}
+                        {group.address}
                       </Link>
 
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {Object.entries(
-                          group.shops.reduce((acc: Record<string, number>, shop) => {
-                            const category = shop.category || 'Other';
-                            acc[category] = (acc[category] || 0) + 1;
-                            return acc;
-                          }, {})
-                        ).map(([category, count]) => (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {Object.entries(categoryCounts).map(([category, count]) => (
                           <span
                             key={category}
-                            className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold"
+                            className="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-700"
                           >
                             {category} ({count})
                           </span>
@@ -245,84 +290,103 @@ export default function StreetClient({
                       </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <span className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold text-center">
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <span className="rounded-full bg-slate-100 px-4 py-2 text-center text-sm font-bold text-slate-700">
                         {group.shops.length}{' '}
                         {group.shops.length === 1 ? 'business' : 'businesses'}
                       </span>
 
                       <Link
                         href={addressHref}
-                        className="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800 transition text-center"
+                        prefetch={false}
+                        className="rounded-full bg-blue-700 px-5 py-2 text-center text-sm font-bold text-white transition hover:bg-blue-800"
                       >
                         Continue Walk →
                       </Link>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {group.shops.map((shop) => (
-                      <Link
-                        key={shop.id}
-                        href={`/cities/${city}/${street}/${shop.slug}`}
-                        className="block rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-lg transition overflow-hidden"
-                      >
-                        {shop.image_url ? (
-                          <img
-                            src={shop.image_url}
-                            alt={`${shop.name} storefront`}
-                            className="h-44 w-full object-cover"
-                          />
-                        ) : (
-                          <div className="h-44 w-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center text-gray-500 text-sm font-semibold">
-                            🏪 Storefront photo coming soon
-                          </div>
-                        )}
+                  <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+                    {group.shops.map((shop) => {
+                      const safeImageUrl = getSafeImageUrl(shop.image_url, currentStreetPath);
 
-                        <div className="p-5">
-                          <h3 className="text-xl font-bold text-blue-700">
-                            {shop.name}
-                          </h3>
-
-                          {shop.category && (
-                            <p className="text-sm text-purple-600 font-medium mt-1">
-                              {shop.category}
-                            </p>
+                      return (
+                        <Link
+                          key={shop.id}
+                          href={`/cities/${city}/${street}/${shop.slug}`}
+                          prefetch={false}
+                          className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                        >
+                          {safeImageUrl ? (
+                            <img
+                              src={safeImageUrl}
+                              alt={`${shop.name} storefront`}
+                              className="h-44 w-full object-cover transition duration-300 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="flex h-44 w-full items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 px-6 text-center text-sm font-semibold text-slate-500">
+                              Storefront photo coming soon
+                            </div>
                           )}
 
-                          {shop.phone && (
-                            <p className="text-gray-600 mt-3">📞 {shop.phone}</p>
-                          )}
+                          <div className="p-5">
+                            <h3 className="text-xl font-extrabold text-slate-950 group-hover:text-blue-700">
+                              {shop.name}
+                            </h3>
 
-                          {!isKitchenerDemo && (
-                            <>
-                              <p className="text-gray-600 mt-3">
-                                {shop.description || shop.address || 'No address available.'}
+                            {shop.category && (
+                              <p className="mt-2 text-sm font-bold text-blue-700">
+                                {shop.category}
                               </p>
+                            )}
 
-                              {shop.parking && (
-                                <p className="text-sm text-gray-500 mt-4">
-                                  🚗 Parking: {shop.parking}
+                            {shop.phone && (
+                              <p className="mt-3 text-sm text-slate-600">
+                                Phone: {shop.phone}
+                              </p>
+                            )}
+
+                            {!isKitchenerDemo && (
+                              <>
+                                <p className="mt-3 text-sm leading-6 text-slate-600">
+                                  {shop.description ||
+                                    shop.address ||
+                                    'Address details coming soon.'}
                                 </p>
-                              )}
-                            </>
-                          )}
 
-                          <p className="mt-4 text-blue-700 font-semibold">
-                            View business →
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
+                                {shop.parking && (
+                                  <p className="mt-4 text-sm text-slate-500">
+                                    Parking: {shop.parking}
+                                  </p>
+                                )}
+                              </>
+                            )}
+
+                            <p className="mt-5 font-bold text-blue-700">
+                              View business →
+                            </p>
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </section>
               );
             })}
           </div>
         ) : (
-          <p className="text-gray-600 text-lg">No businesses found.</p>
+          <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <h2 className="text-2xl font-extrabold text-slate-950">
+              No businesses found
+            </h2>
+            <p className="mt-2 text-slate-600">
+              Try a different search term or explore another street in{' '}
+              {displayCityName}.
+            </p>
+          </section>
         )}
       </div>
-    </div>
+    </main>
   );
 }
