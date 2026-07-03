@@ -165,9 +165,9 @@ export default function ShopOwnerDashboardClient() {
   }, [router]);
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
-      <div className="mx-auto max-w-5xl bg-white p-6 rounded-xl shadow-md">
-        <h1 className="text-3xl font-bold text-blue-700 mb-4">🛍️ Shop Owner Dashboard</h1>
+    <main className="min-h-screen bg-gray-50 px-4 py-6 sm:p-8">
+      <div className="mx-auto max-w-5xl rounded-xl bg-white p-4 shadow-md sm:p-6">
+        <h1 className="mb-4 text-2xl font-bold text-blue-700 sm:text-3xl">🛍️ Shop Owner Dashboard</h1>
 
         <p className="text-gray-700 mb-6">
           Welcome, <strong>{user?.email}</strong>! This is your shop management area.
@@ -232,7 +232,7 @@ export default function ShopOwnerDashboardClient() {
                     key={shop.id}
                     className="border border-gray-200 rounded-xl p-5 bg-green-50"
                   >
-                    <h2 className="text-2xl font-bold text-green-800">✅ {shop.name}</h2>
+                    <h2 className="text-xl font-bold text-green-800 sm:text-2xl">✅ {shop.name}</h2>
 
                     <p className="text-gray-700 mt-1">
                       {street?.name && <>Street: {street.name}</>}
@@ -240,31 +240,31 @@ export default function ShopOwnerDashboardClient() {
                       {shop.address && <> | Address: {shop.address}</>}
                     </p>
 
-                    <div className="flex flex-wrap gap-3 mt-4">
+                    <div className="mt-4 flex flex-wrap gap-3">
                       <Link
                         href={`/shop-owner/shops/${shop.id}`}
-                        className="rounded-full bg-yellow-500 px-5 py-2 text-sm font-semibold text-white hover:bg-yellow-600 transition"
+                        className="rounded-full bg-yellow-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-yellow-600 max-sm:w-full max-sm:text-center"
                       >
                         ✏️ Manage Shop
                       </Link>
 
                       <Link
                         href="/shop-owner/products/add"
-                        className="rounded-full bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700 transition"
+                        className="rounded-full bg-green-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-green-700 max-sm:w-full max-sm:text-center"
                       >
                         ➕ Add Product
                       </Link>
 
                       <Link
                         href="/pricing"
-                        className="rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 px-5 py-2 text-sm font-bold text-white hover:from-indigo-700 hover:to-blue-700 shadow-sm transition"
+                        className="rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-blue-700 max-sm:w-full max-sm:text-center"
                       >
                         ⚡ Upgrade Plan
                       </Link>
 
                       <Link
                         href="/shop-owner/products"
-                        className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition"
+                        className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 max-sm:w-full max-sm:text-center"
                       >
                         📦 Manage Products
                       </Link>
@@ -273,7 +273,7 @@ export default function ShopOwnerDashboardClient() {
                         <Link
                           href={publicHref}
                           target="_blank"
-                          className="rounded-full bg-gray-700 px-5 py-2 text-sm font-semibold text-white hover:bg-gray-800 transition"
+                          className="rounded-full bg-gray-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 max-sm:w-full max-sm:text-center"
                         >
                           👁️ View Public Listing
                         </Link>
@@ -283,7 +283,7 @@ export default function ShopOwnerDashboardClient() {
                         href="https://buy.stripe.com/cNi3cu9mk2tk7I899N4ow00"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition"
+                        className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 max-sm:w-full max-sm:text-center"
                       >
                         💚 Support LocalStreetShop
                       </a>

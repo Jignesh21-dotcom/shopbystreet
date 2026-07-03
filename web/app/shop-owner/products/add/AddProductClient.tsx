@@ -217,7 +217,7 @@ export default function AddProductClient() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-900 sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto max-w-4xl">
         <Link
           href="/shop-owner/products"
@@ -226,23 +226,23 @@ export default function AddProductClient() {
           ← Back to Products
         </Link>
 
-        <section className="rounded-[2rem] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-6 py-12 text-white shadow-sm sm:px-10">
+        <section className="rounded-[2rem] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-5 py-9 text-white shadow-sm sm:px-10 sm:py-12">
           <p className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-blue-100">
             Shop Owner Products
           </p>
 
-          <h1 className="text-4xl font-extrabold sm:text-5xl">
+          <h1 className="text-3xl font-extrabold sm:text-5xl">
             Add a new product
           </h1>
 
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-blue-50">
+          <p className="mt-4 max-w-3xl text-base leading-7 text-blue-50 sm:mt-5 sm:text-lg sm:leading-8">
             Add products to your business listing so local customers can
             discover what you sell. Sale prices may also appear on the Deals
             page when the discount is 50% or more.
           </p>
         </section>
 
-        <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <section className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:mt-8 sm:p-8">
           {pageLoading ? (
             <p className="text-slate-600">Loading your shops...</p>
           ) : shops.length === 0 ? (

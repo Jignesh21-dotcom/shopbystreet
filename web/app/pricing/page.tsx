@@ -78,30 +78,30 @@ export default function PricingPage() {
 
   return (
     <main className="min-h-screen bg-gray-50 text-gray-800 antialiased">
-      <section className="bg-gradient-to-b from-blue-50 to-gray-50 py-16 px-4 border-b border-gray-100">
+      <section className="border-b border-gray-100 bg-gradient-to-b from-blue-50 to-gray-50 px-4 py-12 sm:py-16">
         <div className="max-w-3xl mx-auto text-center">
           <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
             Founding Business Program
           </span>
-          <h1 className="text-4xl font-extrabold text-gray-900 mt-4 tracking-tight sm:text-5xl">
+          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
             Simple, Transparent Pricing
           </h1>
-          <p className="text-lg text-gray-600 mt-4 max-w-2xl mx-auto">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-gray-600 sm:text-lg">
             Put your local brick-and-mortar storefront on Canada&apos;s digital main street. Choose
             a tier to showcase your inventory to neighborhood shoppers.
           </p>
         </div>
       </section>
 
-      <section className="py-16 px-4 max-w-6xl mx-auto">
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:py-16">
         {errorMessage && (
           <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
             {errorMessage}
           </div>
         )}
 
-        <div className="grid md:grid-cols-3 gap-8 items-stretch">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 flex flex-col justify-between hover:border-gray-300 transition-all duration-200">
+        <div className="grid items-stretch gap-6 md:grid-cols-3 md:gap-8">
+          <div className="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-gray-300 sm:p-8">
             <div>
               <div className="flex justify-between items-start">
                 <div>
@@ -142,7 +142,7 @@ export default function PricingPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border-2 border-blue-600 shadow-md p-8 flex flex-col justify-between relative transform md:-translate-y-2 transition-all duration-200">
+          <div className="relative flex flex-col justify-between rounded-2xl border-2 border-blue-600 bg-white p-6 shadow-md transition-all duration-200 md:-translate-y-2 sm:p-8">
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-sm">
               Most Popular
             </div>
@@ -195,7 +195,7 @@ export default function PricingPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 flex flex-col justify-between hover:border-gray-300 transition-all duration-200">
+          <div className="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-gray-300 sm:p-8">
             <div>
               <div className="flex justify-between items-start">
                 <div>
@@ -245,8 +245,8 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="pb-20 px-4 max-w-4xl mx-auto">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+      <section className="mx-auto max-w-4xl px-4 pb-14 sm:pb-20">
+        <div className="flex flex-col items-center justify-between gap-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white shadow-xl md:flex-row md:gap-6 md:p-8">
           <div className="max-w-xl text-center md:text-left">
             <h4 className="text-xl font-bold">Met with one of our Street Ambassadors?</h4>
             <p className="text-sm text-blue-100 mt-2">
