@@ -3,10 +3,33 @@ import Stripe from 'stripe';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-const growthShowcasePriceId = 'price_1TpAMaBZgvjk1IFcH1eUjYQ7';
-const premiumMainStreetPriceId = 'price_1TpAMyBZgvjk1IFcqKiKJ4Hv';
-const growthAmbassadorCouponId = process.env.STRIPE_GROWTH_AMBASSADOR_COUPON_ID;
-const premiumAmbassadorCouponId = process.env.STRIPE_PREMIUM_AMBASSADOR_COUPON_ID;
+const isLiveMode = stripeSecretKey?.startsWith('sk_live_') ?? false;
+
+const growthShowcasePriceId = isLiveMode
+  ? process.env.STRIPE_GROWTH_SHOWCASE_PRICE_ID_LIVE ||
+    process.env.STRIPE_GROWTH_SHOWCASE_PRICE_ID ||
+    'price_1TpAvxBZgvjk1IFcc1IhQtPV'
+  : process.env.STRIPE_GROWTH_SHOWCASE_PRICE_ID_TEST ||
+    process.env.STRIPE_GROWTH_SHOWCASE_PRICE_ID;
+
+const premiumMainStreetPriceId = isLiveMode
+  ? process.env.STRIPE_PREMIUM_MAIN_STREET_PRICE_ID_LIVE ||
+    process.env.STRIPE_PREMIUM_MAIN_STREET_PRICE_ID ||
+    'price_1TpAwUBZgvjk1IFcYfFLGV8e'
+  : process.env.STRIPE_PREMIUM_MAIN_STREET_PRICE_ID_TEST ||
+    process.env.STRIPE_PREMIUM_MAIN_STREET_PRICE_ID;
+
+const growthAmbassadorCouponId = isLiveMode
+  ? process.env.STRIPE_GROWTH_AMBASSADOR_COUPON_ID_LIVE ||
+    process.env.STRIPE_GROWTH_AMBASSADOR_COUPON_ID
+  : process.env.STRIPE_GROWTH_AMBASSADOR_COUPON_ID_TEST ||
+    process.env.STRIPE_GROWTH_AMBASSADOR_COUPON_ID;
+
+const premiumAmbassadorCouponId = isLiveMode
+  ? process.env.STRIPE_PREMIUM_AMBASSADOR_COUPON_ID_LIVE ||
+    process.env.STRIPE_PREMIUM_AMBASSADOR_COUPON_ID
+  : process.env.STRIPE_PREMIUM_AMBASSADOR_COUPON_ID_TEST ||
+    process.env.STRIPE_PREMIUM_AMBASSADOR_COUPON_ID;
 
 const TIER_CONFIG = {
   growth: {
@@ -76,7 +99,17 @@ export async function POST(req: Request) {
 
     if (!tierConfig.priceId) {
       return NextResponse.json(
-        { error: `Stripe price ID is missing for tier: ${selectedTier}` },
+        {
+          error: `Stripe price ID is missing for tier: ${selectedTier} in ${isLiveMode ? 'live' : 'test'} mode. Set ${
+            selectedTier === 'growth'
+              ? isLiveMode
+                ? 'STRIPE_GROWTH_SHOWCASE_PRICE_ID_LIVE'
+                : 'STRIPE_GROWTH_SHOWCASE_PRICE_ID_TEST'
+              : isLiveMode
+              ? 'STRIPE_PREMIUM_MAIN_STREET_PRICE_ID_LIVE'
+              : 'STRIPE_PREMIUM_MAIN_STREET_PRICE_ID_TEST'
+          } in Vercel.`,
+        },
         { status: 500 }
       );
     }
