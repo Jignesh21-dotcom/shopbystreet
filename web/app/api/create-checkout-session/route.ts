@@ -114,6 +114,10 @@ export async function POST(req: Request) {
       );
     }
 
+    const stripePrice = await stripe.prices.retrieve(tierConfig.priceId);
+    const checkoutMode: Stripe.Checkout.SessionCreateParams.Mode =
+      stripePrice.type === 'recurring' ? 'subscription' : 'payment';
+
     let checkoutDiscounts: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
 
     if (normalizedCouponCode) {
@@ -153,7 +157,7 @@ export async function POST(req: Request) {
           quantity: 1,
         },
       ],
-      mode: 'payment',
+      mode: checkoutMode,
       discounts: checkoutDiscounts,
       metadata: {
         tier: selectedTier,
