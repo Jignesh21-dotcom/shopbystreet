@@ -2,25 +2,50 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function PaymentSuccessPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const activateShop = async () => {
-      await supabase.auth.updateUser({
-        data: { shopStatus: 'active' },
-      });
+    const activateShopTier = async () => {
+      const sessionId = searchParams.get('session_id');
+
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !sessionData.session?.access_token) {
+        return;
+      }
+
+      if (sessionId) {
+        try {
+          await fetch('/api/shop-owner/activate-tier', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${sessionData.session.access_token}`,
+            },
+            body: JSON.stringify({ sessionId }),
+          });
+        } catch (error) {
+          console.error('Failed to activate paid tier:', error);
+        }
+      } else {
+        // Keeps backward compatibility for older success links without a session id.
+        await supabase.auth.updateUser({
+          data: { shopStatus: 'active' },
+        });
+      }
 
       setTimeout(() => {
         router.push('/shop-owner/dashboard');
       }, 5000);
     };
 
-    activateShop();
-  }, [router]);
+    activateShopTier();
+  }, [router, searchParams]);
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
@@ -40,7 +65,8 @@ export default function PaymentSuccessPage() {
 
           <p className="mt-5 text-lg leading-8 text-blue-50">
             Your payment has been received successfully. Your shop owner access
-            is being updated, and you'll be redirected to your dashboard shortly.
+            and product tier are being updated, and you'll be redirected to your
+            dashboard shortly.
           </p>
         </section>
 

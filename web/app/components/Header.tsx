@@ -2,12 +2,16 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [user, setUser] = useState<any>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownButtonRef = useRef<HTMLButtonElement>(null);
+  const menuItemRefs = useRef<Array<HTMLAnchorElement | null>>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,9 +31,79 @@ export default function Header() {
     };
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
+  };
+
+  const focusMenuItem = (index: number) => {
+    const items = menuItemRefs.current.filter(Boolean) as HTMLAnchorElement[];
+    if (items.length === 0) return;
+
+    const nextIndex = (index + items.length) % items.length;
+    items[nextIndex]?.focus();
+  };
+
+  const handleShopOwnerTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      setDropdownOpen(true);
+      requestAnimationFrame(() => focusMenuItem(0));
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setDropdownOpen(true);
+      requestAnimationFrame(() => focusMenuItem(-1));
+    }
+
+    if (event.key === 'Escape') {
+      setDropdownOpen(false);
+    }
+  };
+
+  const handleMenuKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const items = menuItemRefs.current.filter(Boolean) as HTMLAnchorElement[];
+    const currentIndex = items.findIndex((item) => item === document.activeElement);
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      focusMenuItem(currentIndex + 1);
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      focusMenuItem(currentIndex - 1);
+    }
+
+    if (event.key === 'Home') {
+      event.preventDefault();
+      focusMenuItem(0);
+    }
+
+    if (event.key === 'End') {
+      event.preventDefault();
+      focusMenuItem(items.length - 1);
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setDropdownOpen(false);
+      dropdownButtonRef.current?.focus();
+    }
   };
 
   return (
@@ -93,13 +167,71 @@ export default function Header() {
           <span>Account</span>
         </Link>
 
-        <Link
-          href="/shop-owner"
-          className="hover:text-blue-700 transition flex items-center space-x-1"
-        >
-          <span role="img" aria-label="Shop Owner">🏪</span>
-          <span>Shop Owner</span>
-        </Link>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            ref={dropdownButtonRef}
+            type="button"
+            onClick={() => setDropdownOpen((open) => !open)}
+            onKeyDown={handleShopOwnerTriggerKeyDown}
+            className="hover:text-blue-700 transition flex items-center space-x-1 cursor-pointer"
+            aria-expanded={dropdownOpen}
+            aria-haspopup="menu"
+            aria-label="Open Shop Owner menu"
+          >
+            <span role="img" aria-label="Shop Owner">🏪</span>
+            <span>Shop Owner</span>
+            <svg
+              className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {dropdownOpen && (
+            <div
+              className="absolute left-0 mt-2 w-64 rounded-xl bg-white shadow-xl border border-gray-100 py-2 z-50"
+              role="menu"
+              aria-label="Shop Owner submenu"
+              onKeyDown={handleMenuKeyDown}
+            >
+              <Link
+                href="/shop-owner"
+                ref={(el) => {
+                  menuItemRefs.current[0] = el;
+                }}
+                onClick={() => setDropdownOpen(false)}
+                className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-medium transition"
+                role="menuitem"
+              >
+                💼 Shop Owner Portal
+                <span className="block text-xs text-gray-400 font-normal">
+                  Claim, add, or manage your shop listing
+                </span>
+              </Link>
+
+              <div className="border-t border-gray-100 my-1" />
+
+              <Link
+                href="/pricing"
+                ref={(el) => {
+                  menuItemRefs.current[1] = el;
+                }}
+                onClick={() => setDropdownOpen(false)}
+                className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-medium transition"
+                role="menuitem"
+              >
+                🏷️ Pricing & Tiers
+                <span className="block text-xs text-gray-400 font-normal">
+                  View features, slots, and promo codes
+                </span>
+              </Link>
+            </div>
+          )}
+        </div>
 
         <Link
           href="/street-ambassador"

@@ -163,34 +163,53 @@ export default function ClaimShopClient() {
 
     setSubmittingId(shop.id);
 
-    const { data, error } = await supabase
-      .from('shop_claims')
-      .insert([
-        {
-          shop_id: shop.id,
-          user_id: user.id,
-          message: messages[shop.id] || '',
-          status: 'pending',
+    try {
+      const response = await fetch('/api/shop-claims', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      ])
-      .select('id, shop_id, status')
-      .single();
+        body: JSON.stringify({
+          shopId: shop.id,
+          shopName: shop.name,
+          shopAddress: shop.address || null,
+          shopCity: shop.cityName || null,
+          shopStreet: shop.streetName || null,
+          message: messages[shop.id] || '',
+          userId: user.id,
+          userEmail: user.email,
+        }),
+      });
 
-    if (error) {
-      alert(`❌ ${error.message}`);
-      console.error(error);
-    } else if (data) {
-      alert('✅ Claim request submitted! We’ll review it shortly.');
+      const result = await response.json();
 
-      setExistingClaims((prev) => ({
-        ...prev,
-        [shop.id]: data as ExistingClaim,
-      }));
+      if (!response.ok) {
+        alert(`❌ ${result?.error || 'Unable to submit claim request.'}`);
+        return;
+      }
+
+      const claim = result?.claim as ExistingClaim | undefined;
+
+      if (claim) {
+        setExistingClaims((prev) => ({
+          ...prev,
+          [shop.id]: claim,
+        }));
+      }
 
       setMessages((prev) => ({ ...prev, [shop.id]: '' }));
-    }
 
-    setSubmittingId(null);
+      if (result?.alreadyExists) {
+        alert('ℹ️ A claim for this shop is already submitted.');
+      } else {
+        alert('✅ Claim request submitted! We’ll review it shortly.');
+      }
+    } catch (error) {
+      console.error('Claim submit error:', error);
+      alert('❌ Unable to submit claim request right now. Please try again.');
+    } finally {
+      setSubmittingId(null);
+    }
   };
 
   const getClaimButtonText = (shopId: string) => {

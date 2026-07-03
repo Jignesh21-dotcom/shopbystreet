@@ -101,12 +101,21 @@ export default function ProductsClient() {
             </p>
           </div>
 
-          <Link
-            href="/shop-owner/products/add"
-            className="rounded-full bg-blue-700 px-6 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800"
-          >
-            Add New Product
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/shop-owner/dashboard"
+              className="rounded-full border border-blue-200 bg-white px-6 py-3 text-center text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50"
+            >
+              ← Back to Dashboard
+            </Link>
+
+            <Link
+              href="/shop-owner/products/add"
+              className="rounded-full bg-blue-700 px-6 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800"
+            >
+              Add New Product
+            </Link>
+          </div>
         </div>
 
         {loading ? (

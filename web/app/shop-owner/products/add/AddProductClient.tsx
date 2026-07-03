@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function AddProductClient() {
+  const FREE_TIER_LIMIT = 10;
+
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [salePrice, setSalePrice] = useState('');
@@ -17,8 +19,31 @@ export default function AddProductClient() {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState('');
+  const [productCount, setProductCount] = useState(0);
+  const [allowedLimit, setAllowedLimit] = useState<number | null>(FREE_TIER_LIMIT);
+  const [isTierLocked, setIsTierLocked] = useState(false);
 
   const router = useRouter();
+
+  const checkProductLimit = async (shopId: string, limitOverride?: number | null) => {
+    if (!shopId) return;
+
+    const activeLimit = limitOverride !== undefined ? limitOverride : allowedLimit;
+
+    const { count, error: countError } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('shop_id', shopId);
+
+    if (!countError && count !== null) {
+      setProductCount(count);
+      setIsTierLocked(activeLimit !== null && count >= activeLimit);
+      return;
+    }
+
+    setProductCount(0);
+    setIsTierLocked(false);
+  };
 
   useEffect(() => {
     const fetchShops = async () => {
@@ -28,6 +53,23 @@ export default function AddProductClient() {
         router.push('/login');
         return;
       }
+
+      const rawLimit = userData.user.user_metadata?.productLimit;
+      let resolvedLimit: number | null = FREE_TIER_LIMIT;
+
+      if (
+        rawLimit === null ||
+        rawLimit === 'unlimited' ||
+        rawLimit === -1
+      ) {
+        resolvedLimit = null;
+      } else {
+        const parsedLimit = Number(rawLimit);
+        resolvedLimit =
+          Number.isNaN(parsedLimit) || parsedLimit <= 0 ? FREE_TIER_LIMIT : parsedLimit;
+      }
+
+      setAllowedLimit(resolvedLimit);
 
       const { data, error } = await supabase
         .from('shops')
@@ -46,6 +88,7 @@ export default function AddProductClient() {
 
       if (data && data.length > 0) {
         setSelectedShop(data[0].id);
+        await checkProductLimit(data[0].id, resolvedLimit);
       }
 
       setPageLoading(false);
@@ -54,9 +97,19 @@ export default function AddProductClient() {
     fetchShops();
   }, [router]);
 
+  const handleShopChange = async (shopId: string) => {
+    setSelectedShop(shopId);
+    await checkProductLimit(shopId);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (allowedLimit !== null && productCount >= allowedLimit) {
+      setError('Upload limit reached. Please upgrade your account tier to add more products.');
+      return;
+    }
 
     if (!name.trim() || !price || !description.trim() || !selectedShop) {
       setError('Please fill in all required fields.');
@@ -88,12 +141,14 @@ export default function AddProductClient() {
 
     try {
       const { data: userData, error: userError } = await supabase.auth.getUser();
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-      if (userError || !userData.user) {
+      if (userError || !userData.user || sessionError || !sessionData.session?.access_token) {
         throw new Error('Please log in again.');
       }
 
       let imageUrl = null;
+      let uploadedFileName: string | null = null;
 
       if (imageFile) {
         if (imageFile.size > 5 * 1024 * 1024) {
@@ -102,6 +157,7 @@ export default function AddProductClient() {
 
         const fileExt = imageFile.name.split('.').pop();
         const fileName = `${uuidv4()}.${fileExt}`;
+        uploadedFileName = fileName;
 
         const { error: uploadError } = await supabase.storage
           .from('products')
@@ -117,21 +173,39 @@ export default function AddProductClient() {
           ? Math.round(((productPrice - productSalePrice) / productPrice) * 100)
           : null;
 
-      const { error: insertError } = await supabase.from('products').insert([
-        {
+      const response = await fetch('/api/shop-owner/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+        body: JSON.stringify({
+          shopId: selectedShop,
           name: name.trim(),
           price: productPrice,
-          sale_price: productSalePrice,
-          discount_percent: discountPercent,
+          salePrice: productSalePrice,
           description: description.trim(),
-          image_url: imageUrl,
-          owner_id: userData.user.id,
-          shop_id: selectedShop,
-          is_active: true,
-        },
-      ]);
+          imageUrl,
+        }),
+      });
 
-      if (insertError) throw insertError;
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (uploadedFileName) {
+          await supabase.storage.from('products').remove([uploadedFileName]);
+        }
+
+        if (result?.code === 'TIER_LIMIT_REACHED') {
+          const latestCount = Number(result?.count);
+          if (!Number.isNaN(latestCount)) {
+            setProductCount(latestCount);
+          }
+          setIsTierLocked(true);
+        }
+
+        throw new Error(result?.error || 'Unable to save product.');
+      }
 
       router.push('/shop-owner/products');
     } catch (err: any) {
@@ -189,6 +263,28 @@ export default function AddProductClient() {
             </div>
           ) : (
             <>
+              <div
+                className={`mb-6 rounded-2xl border p-4 text-sm flex flex-wrap items-center justify-between gap-4 ${
+                  isTierLocked
+                    ? 'border-red-200 bg-red-50 text-red-800'
+                    : 'border-blue-100 bg-blue-50 text-blue-800'
+                }`}
+              >
+                <div>
+                  <span className="font-bold">Current Usage:</span> {productCount} /{' '}
+                  {allowedLimit === null ? 'Unlimited' : allowedLimit} listing slots filled.
+                </div>
+
+                {isTierLocked && (
+                  <Link
+                    href="/pricing"
+                    className="rounded-full bg-red-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-red-700"
+                  >
+                    Upgrade Tier with Ambassador Code
+                  </Link>
+                )}
+              </div>
+
               {error && (
                 <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700">
                   {error}
@@ -202,9 +298,10 @@ export default function AddProductClient() {
                   </label>
                   <select
                     value={selectedShop}
-                    onChange={(e) => setSelectedShop(e.target.value)}
+                    onChange={(e) => handleShopChange(e.target.value)}
                     required
-                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    disabled={loading}
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-400"
                   >
                     {shops.map((shop) => (
                       <option key={shop.id} value={shop.id}>
@@ -223,8 +320,9 @@ export default function AddProductClient() {
                     placeholder="e.g. Handmade candle"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    disabled={isTierLocked || loading}
                     required
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-400"
                   />
                 </div>
 
@@ -240,8 +338,9 @@ export default function AddProductClient() {
                       placeholder="29.99"
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
+                      disabled={isTierLocked || loading}
                       required
-                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-400"
                     />
                   </div>
 
@@ -256,7 +355,8 @@ export default function AddProductClient() {
                       placeholder="14.99"
                       value={salePrice}
                       onChange={(e) => setSalePrice(e.target.value)}
-                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                      disabled={isTierLocked || loading}
+                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-400"
                     />
                   </div>
                 </div>
@@ -269,9 +369,10 @@ export default function AddProductClient() {
                     placeholder="Describe the product, size, material, pickup details, or anything customers should know."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    disabled={isTierLocked || loading}
                     required
                     rows={5}
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-400"
                   />
                 </div>
 
@@ -283,7 +384,8 @@ export default function AddProductClient() {
                     type="file"
                     accept="image/*"
                     onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-                    className="w-full rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600"
+                    disabled={isTierLocked || loading}
+                    className="w-full rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600 disabled:opacity-60"
                   />
                   <p className="mt-2 text-xs text-slate-500">
                     Max image size: 5 MB.
@@ -292,7 +394,7 @@ export default function AddProductClient() {
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || isTierLocked}
                   className="w-full rounded-full bg-blue-700 px-6 py-4 font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {loading ? 'Saving Product...' : 'Save Product'}

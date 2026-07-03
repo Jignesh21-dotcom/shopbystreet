@@ -112,56 +112,46 @@ export default function AdminClaimsPage() {
 
     setActingId(claim.id);
 
-    const { data: authData } = await supabase.auth.getUser();
-    const adminUserId = authData?.user?.id || null;
+    try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-    const { data: shopUpdateData, error: updateShopError } = await supabase
-      .from('shops')
-      .update({ owner_id: claim.user_id })
-      .eq('id', claim.shop.id)
-      .select('id, name, owner_id');
+      if (sessionError || !sessionData.session?.access_token) {
+        alert('Please log in again as admin and retry.');
+        setActingId(null);
+        return;
+      }
 
-    if (updateShopError) {
-      alert(`Failed to assign shop owner: ${updateShopError.message}`);
+      const response = await fetch('/api/shop-claims/approve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+        body: JSON.stringify({
+          claimId: claim.id,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(`Failed to approve claim: ${result?.error || 'Unknown error.'}`);
+        setActingId(null);
+        return;
+      }
+
+      if (result?.warning) {
+        alert(`✅ Claim approved.\n\n⚠️ ${result.warning}`);
+      } else {
+        alert('✅ Claim approved and notification email sent to the shop owner.');
+      }
+
       setActingId(null);
-      return;
-    }
-
-    if (!shopUpdateData || shopUpdateData.length === 0) {
-      alert(
-        'Shop update returned 0 rows. This usually means RLS is blocking the update or the admin policy is not matching your logged-in account.'
-      );
+      await fetchClaims();
+    } catch (error: any) {
+      alert(`Failed to approve claim: ${error?.message || 'Unknown error.'}`);
       setActingId(null);
-      return;
     }
-
-    const { data: claimUpdateData, error: updateClaimError } = await supabase
-      .from('shop_claims')
-      .update({
-        status: 'approved',
-        reviewed_at: new Date().toISOString(),
-        reviewed_by: adminUserId,
-      })
-      .eq('id', claim.id)
-      .select('id, status, reviewed_at, reviewed_by');
-
-    if (updateClaimError) {
-      alert(`Shop owner assigned, but claim status failed: ${updateClaimError.message}`);
-      setActingId(null);
-      return;
-    }
-
-    if (!claimUpdateData || claimUpdateData.length === 0) {
-      alert(
-        'Claim update returned 0 rows. This usually means RLS is blocking the shop_claims update.'
-      );
-      setActingId(null);
-      return;
-    }
-
-    alert('✅ Claim approved and shop owner assigned.');
-    setActingId(null);
-    await fetchClaims();
   };
 
   const rejectClaim = async (claim: Claim) => {
