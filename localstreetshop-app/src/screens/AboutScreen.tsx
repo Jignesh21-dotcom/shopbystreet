@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import Footer from '../components/Footer';
 
 export default function AboutScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20, backgroundColor: '#FEFCE8' }}>
@@ -56,7 +56,7 @@ export default function AboutScreen() {
 
       {/* ✅ Back to Home Button */}
       <TouchableOpacity
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => navigation.navigate('🏠 Home')}
         style={{ alignSelf: 'center', backgroundColor: '#CA8A04', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 8 }}
       >
         <Text style={{ color: '#fff', fontWeight: 'bold' }}>← Back to Home</Text>

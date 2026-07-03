@@ -1,21 +1,23 @@
 export default function PrivacyPolicyPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 text-sm text-gray-700 leading-relaxed">
-      <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
+      <h1 className="text-3xl font-bold mb-6">Privacy Policy & Terms of Service</h1>
 
-      <p>
+      <p className="mb-6">
         At <strong>LocalStreetShop</strong>, we are committed to protecting your
-        privacy. This Privacy Policy explains how we collect, use, store, and
-        protect your personal information when you use our website and services.
+        privacy and ensuring clear rules for our directory platform. This document explains how we collect, use, store, and protect your personal information, as well as the terms governing the business listings on our website.
       </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
-        1. Information We Collect
+      {/* --- PRIVACY POLICY SECTION --- */}
+      <h2 className="text-2xl font-bold mt-8 mb-4 border-b pb-2 text-gray-900">
+        Part 1: Privacy Policy
       </h2>
 
-      <p>Depending on how you use LocalStreetShop, we may collect:</p>
-
-      <ul className="list-disc ml-5 space-y-1">
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
+        1. Information We Collect
+      </h3>
+      <p className="mb-2">Depending on how you use LocalStreetShop, we may collect:</p>
+      <ul className="list-disc ml-5 space-y-1 mb-4">
         <li>Name, email address, and phone number.</li>
         <li>Business information such as business name, address, category, website, and social media links.</li>
         <li>Product information, pricing, descriptions, and uploaded images.</li>
@@ -25,11 +27,10 @@ export default function PrivacyPolicyPage() {
         <li>Basic analytics, browser type, device information, and IP address to improve our services.</li>
       </ul>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
         2. How We Use Your Information
-      </h2>
-
-      <ul className="list-disc ml-5 space-y-1">
+      </h3>
+      <ul className="list-disc ml-5 space-y-1 mb-4">
         <li>Respond to your questions and inquiries.</li>
         <li>Manage shop owner accounts and claimed businesses.</li>
         <li>Display business information on LocalStreetShop.</li>
@@ -39,93 +40,105 @@ export default function PrivacyPolicyPage() {
         <li>Send important service-related communications.</li>
       </ul>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
         3. Sharing Your Information
-      </h2>
-
-      <p>
-        We do not sell your personal information.
-      </p>
-
-      <p className="mt-2">
-        We may share information only:
-      </p>
-
-      <ul className="list-disc ml-5 space-y-1">
+      </h3>
+      <p className="mb-2">We do not sell your personal information.</p>
+      <p className="mb-2">We may share information only:</p>
+      <ul className="list-disc ml-5 space-y-1 mb-4">
         <li>When required by law.</li>
         <li>With trusted service providers that help operate LocalStreetShop (such as hosting, authentication, storage, payment processing, or email services).</li>
         <li>With your permission.</li>
       </ul>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
         4. Data Security
-      </h2>
-
-      <p>
+      </h3>
+      <p className="mb-4">
         We take reasonable administrative and technical measures to help protect
         your personal information from unauthorized access, disclosure, or misuse.
         While no online system is completely secure, we continuously work to keep
         your information protected.
       </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
         5. Cookies & Analytics
-      </h2>
-
-      <p>
+      </h3>
+      <p className="mb-4">
         LocalStreetShop may use cookies and similar technologies to remember
         preferences, improve website performance, and better understand how
         visitors use our platform.
       </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
         6. Your Rights
-      </h2>
-
-      <p>
-        You may request to:
-      </p>
-
-      <ul className="list-disc ml-5 space-y-1">
+      </h3>
+      <p className="mb-2">You may request to:</p>
+      <ul className="list-disc ml-5 space-y-1 mb-4">
         <li>Access your personal information.</li>
         <li>Correct inaccurate information.</li>
         <li>Request deletion of your personal information, where applicable.</li>
         <li>Withdraw your consent for future communications.</li>
       </ul>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
         7. Children's Privacy
+      </h3>
+      <p className="mb-4">
+        If you are under 18 years of age (the age of majority in Ontario), you must obtain explicit parental or guardian consent before submitting an application to our Street Ambassador program or providing any personal information to our platform.
+      </p>
+
+
+      {/* --- TERMS OF SERVICE SECTION --- */}
+      <h2 className="text-2xl font-bold mt-10 mb-4 border-b pb-2 text-gray-900">
+        Part 2: Terms of Service
       </h2>
 
-      <p>
-        If you apply to our Street Ambassador Program and are under the age of
-        majority in your province or territory, we may require parent or guardian
-        consent before participation where applicable.
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
+        8. Data Accuracy & Directory Listings
+      </h3>
+      <p className="mb-4">
+        LocalStreetShop manually compiles business listings for informational purposes. While we strive for accuracy, we do not guarantee that shop hours, locations, pricing, or product availability listed on our directory are accurate, complete, or current. LocalStreetShop is not liable for any real-world disputes, financial losses, or negative experiences occurring between users and the independent businesses listed on this platform.
       </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
-        8. Changes to This Policy
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
+        9. Intellectual Property & Copyright Compliance
+      </h3>
+      <p className="mb-4">
+        All brand names, logos, and images displayed in our shop directory are the property of their respective owners. LocalStreetShop uses publicly available business contact profiles and imagery for directory identification purposes under fair dealing guidelines. If you are a business owner and wish to modify your information or request the immediate removal of your copyrighted imagery or logo, please contact us, and we will process your request within 48 hours.
+      </p>
+
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
+        10. User-Submitted Content & Image Uploads
+      </h3>
+      <p className="mb-4">
+        By submitting business information, product details, spreadsheets, or photos to LocalStreetShop (including data gathered via our Street Ambassadors), you grant us a non-exclusive, royalty-free license to display this content on our platform. You represent that you own or have the clear legal right to share any files or images you upload to our servers.
+      </p>
+
+
+      {/* --- GENERAL CLOSING SECTIONS --- */}
+      <h2 className="text-2xl font-bold mt-10 mb-4 border-b pb-2 text-gray-900">
+        Part 3: General Information
       </h2>
 
-      <p>
-        We may update this Privacy Policy from time to time. Any changes will be
-        posted on this page with the updated revision date.
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
+        11. Changes to This Policy
+      </h3>
+      <p className="mb-4">
+        We may update this Privacy Policy and Terms of Service from time to time. Any changes will be posted on this page with the updated revision date.
       </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
-        9. Contact Us
-      </h2>
-
-      <p>
-        If you have any questions about this Privacy Policy or your personal
-        information, please contact us at:
+      <h3 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
+        12. Contact Us
+      </h3>
+      <p className="mb-2">
+        If you have any questions about this document, your personal information, or wish to request a listing removal, please contact us at:
+      </p>
+      <p className="mt-2 text-base">
+        <strong>Email:</strong> <a href="mailto:support@localstreetshop.com" className="text-blue-600 hover:underline">support@localstreetshop.com</a>
       </p>
 
-      <p className="mt-2">
-        <strong>Email:</strong> support@localstreetshop.com
-      </p>
-
-      <p className="mt-8 text-gray-500">
+      <p className="mt-12 text-xs text-gray-400">
         Last updated: July 2026
       </p>
     </div>
