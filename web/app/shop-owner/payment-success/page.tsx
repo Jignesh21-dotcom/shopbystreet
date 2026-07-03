@@ -2,16 +2,18 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function PaymentSuccessPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     const activateShopTier = async () => {
-      const sessionId = searchParams.get('session_id');
+      const sessionId =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search).get('session_id')
+          : null;
 
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
@@ -45,7 +47,7 @@ export default function PaymentSuccessPage() {
     };
 
     activateShopTier();
-  }, [router, searchParams]);
+  }, [router]);
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
