@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [user, setUser] = useState<any>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function Header() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setMobileMenuOpen(false);
     router.push('/login');
   };
 
@@ -53,6 +55,32 @@ export default function Header() {
             </p>
           </div>
         </Link>
+
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          className="ml-auto inline-flex items-center rounded-lg border border-gray-200 bg-white p-2 text-gray-700 transition hover:bg-gray-50 lg:hidden"
+          aria-expanded={mobileMenuOpen}
+          aria-label="Toggle navigation menu"
+        >
+          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            {mobileMenuOpen ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
+          </svg>
+        </button>
 
         <nav className="hidden flex-1 items-center justify-center gap-5 font-medium text-gray-700 lg:flex xl:gap-6">
         <Link
@@ -166,6 +194,58 @@ export default function Header() {
         )}
         </div>
       </div>
+
+      {mobileMenuOpen && (
+        <nav className="border-t border-gray-100 bg-white px-4 py-4 shadow-sm lg:hidden">
+          <div className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🏠 Home</Link>
+            <Link href="/live-cities" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🏙️ Live Cities</Link>
+            <Link href="/deals" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🔥 Deals</Link>
+            <Link href="/member" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">👤 Account</Link>
+            <Link href="/shop-owner" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🏪 Shop Owner</Link>
+            <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🏷️ Pricing & Tiers</Link>
+            <Link href="/street-ambassador" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🤝 Ambassador</Link>
+            <Link href="/home-businesses" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🧵 Home Biz</Link>
+
+            {!user ? (
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-2 rounded-full bg-blue-600 px-4 py-2 text-center text-white shadow transition hover:bg-blue-700"
+              >
+                Login
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700"
+                >
+                  👤 {user.user_metadata?.username || user.email}
+                </Link>
+
+                {user.user_metadata?.isAdmin && (
+                  <Link
+                    href="/admin/shops"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="rounded-lg px-3 py-2 font-semibold text-yellow-700 hover:bg-yellow-50"
+                  >
+                    👑 Admin
+                  </Link>
+                )}
+
+                <button
+                  onClick={handleLogout}
+                  className="mt-2 rounded-full bg-red-500 px-4 py-2 text-white shadow transition hover:bg-red-600"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
+        </nav>
+      )}
     </header>
   );
 }
