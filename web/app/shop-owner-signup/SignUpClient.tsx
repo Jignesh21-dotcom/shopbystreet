@@ -25,6 +25,7 @@ export default function SignUpClient() {
       email: cleanEmail,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/login?verified=true`,
         data: {
           username: username.trim(),
           isShopOwner: role === 'owner',

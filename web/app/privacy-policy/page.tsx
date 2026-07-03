@@ -122,7 +122,7 @@ export default function PrivacyPolicyPage() {
       </p>
 
       <p className="mt-2">
-        <strong>Email:</strong> localstreetshops@gmail.com
+        <strong>Email:</strong> support@localstreetshop.com
       </p>
 
       <p className="mt-8 text-gray-500">

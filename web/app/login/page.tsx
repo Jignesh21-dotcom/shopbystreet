@@ -22,6 +22,7 @@ export default function LoginPage() {
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
   const [submittedRole, setSubmittedRole] = useState<'member' | 'owner'>('member');
+  const [verifiedSuccess, setVerifiedSuccess] = useState(false);
 
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
@@ -40,11 +41,18 @@ export default function LoginPage() {
 
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('mode');
+const verified = params.get('verified');
 
-    if (mode === 'signup') {
-      setIsSignUp(true);
-      setShowReset(false);
-    }
+if (mode === 'signup') {
+  setIsSignUp(true);
+  setShowReset(false);
+}
+
+if (verified === 'true') {
+  setVerifiedSuccess(true);
+  setIsSignUp(false);
+  setShowReset(false);
+}
   }, []);
 
   const resetForm = () => {
@@ -90,6 +98,7 @@ export default function LoginPage() {
         email: cleanEmail,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/login?verified=true`,
           data: {
             username: username.trim(),
             isShopOwner: role === 'owner',
@@ -291,6 +300,11 @@ export default function LoginPage() {
                     ? 'Join LocalStreetShop as a shopper or shop owner.'
                     : 'Log in to continue to your account.'}
                 </p>
+                {verifiedSuccess && (
+  <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-semibold text-green-700">
+    ✅ Email verified successfully. You can now log in to your LocalStreetShop account.
+  </div>
+)}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {isSignUp && !showReset && (
