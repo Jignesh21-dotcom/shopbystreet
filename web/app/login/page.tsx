@@ -41,18 +41,18 @@ export default function LoginPage() {
 
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('mode');
-const verified = params.get('verified');
+    const verified = params.get('verified');
 
-if (mode === 'signup') {
-  setIsSignUp(true);
-  setShowReset(false);
-}
+    if (mode === 'signup') {
+      setIsSignUp(true);
+      setShowReset(false);
+    }
 
-if (verified === 'true') {
-  setVerifiedSuccess(true);
-  setIsSignUp(false);
-  setShowReset(false);
-}
+    if (verified === 'true') {
+      setVerifiedSuccess(true);
+      setIsSignUp(false);
+      setShowReset(false);
+    }
   }, []);
 
   const resetForm = () => {
@@ -152,23 +152,23 @@ if (verified === 'true') {
         url="https://www.localstreetshop.com/login"
       />
 
-      <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
+      <main className="min-h-screen bg-gray-50 px-4 py-6 text-gray-900 sm:py-10">
         <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 md:items-center">
           <section className="text-center md:text-left">
             <p className="mb-2 text-sm font-bold uppercase tracking-widest text-blue-700">
               LocalStreetShop Community
             </p>
 
-            <h1 className="mb-4 text-4xl font-extrabold md:text-5xl">
+            <h1 className="mb-3 text-3xl font-extrabold sm:mb-4 sm:text-4xl md:text-5xl">
               Welcome to Canada&apos;s Digital Main Street
             </h1>
 
-            <p className="mb-6 text-lg text-gray-600">
+            <p className="mb-6 text-base leading-7 text-gray-600 sm:text-lg sm:leading-normal">
               Sign in to review local shops, manage your business, access deals,
               and connect with the LocalStreetShop community.
             </p>
 
-            <div className="grid gap-4 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
+            <div className="grid gap-3 sm:gap-4 md:grid-cols-1 lg:grid-cols-3">
               <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 shadow-sm">
                 <h2 className="font-bold text-blue-800">🧭 Shoppers</h2>
                 <p className="mt-1 text-sm text-gray-600">
@@ -192,7 +192,7 @@ if (verified === 'true') {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+          <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8">
             {signupSuccess ? (
               <div className="text-center">
                 <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
@@ -301,10 +301,11 @@ if (verified === 'true') {
                     : 'Log in to continue to your account.'}
                 </p>
                 {verifiedSuccess && (
-  <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-semibold text-green-700">
-    ✅ Email verified successfully. You can now log in to your LocalStreetShop account.
-  </div>
-)}
+                  <div className="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-semibold text-green-700">
+                    ✅ Email verified successfully. You can now log in to your
+                    LocalStreetShop account.
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {isSignUp && !showReset && (
@@ -322,7 +323,7 @@ if (verified === 'true') {
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <button
                           type="button"
                           onClick={() => setRole('member')}

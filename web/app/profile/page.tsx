@@ -48,7 +48,7 @@ export default function ProfilePage() {
     <>
       <SEO title={title} description={description} url={url} />
 
-      <main className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900">
+      <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-900 sm:py-10">
         <div className="mx-auto max-w-5xl">
           <Link
             href="/"
@@ -57,22 +57,22 @@ export default function ProfilePage() {
             ← Back to Home
           </Link>
 
-          <section className="rounded-[2rem] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-6 py-12 text-white shadow-sm sm:px-10">
+          <section className="rounded-[2rem] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-5 py-9 text-white shadow-sm sm:px-10 sm:py-12">
             <p className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-blue-100">
               LocalStreetShop Profile
             </p>
 
-            <h1 className="text-4xl font-extrabold sm:text-5xl">
+            <h1 className="text-3xl font-extrabold sm:text-5xl">
               Welcome to your account
             </h1>
 
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-blue-50">
+            <p className="mt-4 max-w-3xl text-base leading-7 text-blue-50 sm:mt-5 sm:text-lg sm:leading-8">
               Manage your LocalStreetShop profile, access shopper features, or
               continue to your shop owner dashboard.
             </p>
           </section>
 
-          <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <section className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:mt-8 sm:p-8">
             {isLoading ? (
               <p className="text-slate-600">Loading your profile...</p>
             ) : user ? (
@@ -90,7 +90,7 @@ export default function ProfilePage() {
                 </div>
 
                 {isShopOwner ? (
-                  <div className="rounded-3xl border border-blue-100 bg-blue-50 p-6">
+                  <div className="rounded-3xl border border-blue-100 bg-blue-50 p-5 sm:p-6">
                     <h3 className="text-2xl font-extrabold text-blue-800">
                       🏪 Shop Owner Dashboard
                     </h3>
@@ -102,24 +102,24 @@ export default function ProfilePage() {
                       listings, products, claims, and photos.
                     </p>
 
-                    <div className="mt-6 flex flex-wrap gap-3">
+                    <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                       <Link
                         href="/shop-owner"
-                        className="rounded-full bg-blue-700 px-6 py-3 font-bold text-white transition hover:bg-blue-800"
+                        className="w-full rounded-full bg-blue-700 px-6 py-3 text-center font-bold text-white transition hover:bg-blue-800 sm:w-auto"
                       >
                         Go to Shop Owner Area →
                       </Link>
 
                       <Link
                         href="/shop-owner/products"
-                        className="rounded-full border border-blue-200 bg-white px-6 py-3 font-bold text-blue-700 transition hover:bg-blue-50"
+                        className="w-full rounded-full border border-blue-200 bg-white px-6 py-3 text-center font-bold text-blue-700 transition hover:bg-blue-50 sm:w-auto"
                       >
                         Manage Products
                       </Link>
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
                     <h3 className="text-2xl font-extrabold text-slate-950">
                       👤 Shopper Account
                     </h3>
@@ -129,24 +129,24 @@ export default function ProfilePage() {
                       account for future shopper features.
                     </p>
 
-                    <div className="mt-6 flex flex-wrap gap-3">
+                    <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                       <Link
                         href="/live-cities"
-                        className="rounded-full bg-blue-700 px-6 py-3 font-bold text-white transition hover:bg-blue-800"
+                        className="w-full rounded-full bg-blue-700 px-6 py-3 text-center font-bold text-white transition hover:bg-blue-800 sm:w-auto"
                       >
                         Browse Live Cities
                       </Link>
 
                       <Link
                         href="/deals"
-                        className="rounded-full border border-blue-200 bg-white px-6 py-3 font-bold text-blue-700 transition hover:bg-blue-50"
+                        className="w-full rounded-full border border-blue-200 bg-white px-6 py-3 text-center font-bold text-blue-700 transition hover:bg-blue-50 sm:w-auto"
                       >
                         View Deals
                       </Link>
 
                       <Link
                         href="/shop-owner"
-                        className="rounded-full border border-slate-200 bg-white px-6 py-3 font-bold text-slate-700 transition hover:bg-slate-100"
+                        className="w-full rounded-full border border-slate-200 bg-white px-6 py-3 text-center font-bold text-slate-700 transition hover:bg-slate-100 sm:w-auto"
                       >
                         Are you a shop owner?
                       </Link>
@@ -157,7 +157,7 @@ export default function ProfilePage() {
                 <div className="mt-8 border-t border-slate-100 pt-6">
                   <button
                     onClick={handleLogout}
-                    className="rounded-full bg-red-500 px-6 py-3 font-bold text-white transition hover:bg-red-600"
+                    className="w-full rounded-full bg-red-500 px-6 py-3 font-bold text-white transition hover:bg-red-600 sm:w-auto"
                   >
                     Logout
                   </button>
@@ -174,17 +174,17 @@ export default function ProfilePage() {
                   profile.
                 </p>
 
-                <div className="mt-6 flex justify-center gap-3">
+                <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
                   <Link
                     href="/login"
-                    className="rounded-full bg-blue-700 px-6 py-3 font-bold text-white transition hover:bg-blue-800"
+                    className="w-full rounded-full bg-blue-700 px-6 py-3 text-center font-bold text-white transition hover:bg-blue-800 sm:w-auto"
                   >
                     Login
                   </Link>
 
                   <Link
                     href="/signup"
-                    className="rounded-full border border-blue-200 bg-white px-6 py-3 font-bold text-blue-700 transition hover:bg-blue-50"
+                    className="w-full rounded-full border border-blue-200 bg-white px-6 py-3 text-center font-bold text-blue-700 transition hover:bg-blue-50 sm:w-auto"
                   >
                     Create Account
                   </Link>

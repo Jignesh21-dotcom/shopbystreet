@@ -52,15 +52,15 @@ export default function UpdatePasswordPage() {
         url="https://www.localstreetshop.com/update-password"
       />
 
-      <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
-        <section className="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+      <main className="min-h-screen bg-gray-50 px-4 py-6 text-gray-900 sm:py-10">
+        <section className="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8">
           {success ? (
             <div className="text-center">
               <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
                 ✅
               </div>
 
-              <h1 className="mb-3 text-3xl font-extrabold text-gray-950">
+              <h1 className="mb-3 text-2xl font-extrabold text-gray-950 sm:text-3xl">
                 Password Updated
               </h1>
 
@@ -82,7 +82,7 @@ export default function UpdatePasswordPage() {
                 LocalStreetShop Account
               </p>
 
-              <h1 className="mb-3 text-center text-3xl font-extrabold text-gray-950">
+              <h1 className="mb-3 text-center text-2xl font-extrabold text-gray-950 sm:text-3xl">
                 Update Password
               </h1>
 

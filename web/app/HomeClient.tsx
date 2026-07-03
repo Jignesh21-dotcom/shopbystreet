@@ -15,7 +15,7 @@ export default function HomePage() {
           backgroundImage: `url('/background/shopbycity-clean.png')`,
         }}
       >
-        <div className="bg-black bg-opacity-65 min-h-screen w-full px-4 py-20">
+        <div className="min-h-screen w-full bg-black bg-opacity-65 px-4 py-14 sm:py-20">
           <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
             {/* HERO */}
             <section className="space-y-8 max-w-4xl animate-fade-in">
@@ -23,33 +23,33 @@ export default function HomePage() {
                 Local shopping, street by street
               </p>
 
-              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight opacity-0 animate-fade-in-up delay-100 drop-shadow-xl">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight opacity-0 animate-fade-in-up delay-100 drop-shadow-xl">
                 The Digital Main Street of Canada
               </h1>
 
-              <p className="text-xl md:text-2xl font-light opacity-0 animate-fade-in-up delay-200 max-w-3xl mx-auto">
+              <p className="text-base sm:text-xl md:text-2xl font-light opacity-0 animate-fade-in-up delay-200 max-w-3xl mx-auto">
                 Discover local shops, support small businesses, and strengthen
                 communities — one street at a time.
               </p>
 
-              <div className="opacity-0 animate-fade-in-up delay-300 flex flex-col md:flex-row items-center justify-center gap-4">
+              <div className="opacity-0 animate-fade-in-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full">
                 <Link
                   href="/countries/canada"
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
+                  className="inline-block w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
                 >
                   🌎 Explore Streets
                 </Link>
 
                 <Link
                   href="/shop-owner"
-                  className="inline-block bg-white hover:bg-blue-50 text-blue-700 px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
+                  className="inline-block w-full sm:w-auto text-center bg-white hover:bg-blue-50 text-blue-700 px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
                 >
                   🏪 List Your Business
                 </Link>
 
                 <Link
                   href="/street-ambassador"
-                  className="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
+                  className="inline-block w-full sm:w-auto text-center bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition"
                 >
                   🤝 Become an Ambassador
                 </Link>
@@ -57,13 +57,13 @@ export default function HomePage() {
             </section>
 
             {/* MAIN MESSAGE */}
-            <section className="bg-white bg-opacity-95 text-gray-900 rounded-3xl p-6 md:p-8 mt-16 max-w-5xl text-left space-y-6 shadow-2xl animate-fade-in-up delay-500">
+            <section className="bg-white bg-opacity-95 text-gray-900 rounded-3xl p-5 md:p-8 mt-10 sm:mt-16 max-w-5xl text-left space-y-6 shadow-2xl animate-fade-in-up delay-500">
               <div>
                 <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
                   Built for local communities
                 </p>
 
-                <h2 className="text-3xl font-bold">
+                <h2 className="text-2xl sm:text-3xl font-bold">
                   A better way to discover local businesses
                 </h2>
 
@@ -133,12 +133,12 @@ export default function HomePage() {
             </section>
 
             {/* HOW IT WORKS */}
-            <section className="bg-white bg-opacity-95 text-gray-900 rounded-3xl p-6 md:p-8 mt-8 max-w-5xl w-full text-left shadow-2xl">
+            <section className="bg-white bg-opacity-95 text-gray-900 rounded-3xl p-5 md:p-8 mt-8 max-w-5xl w-full text-left shadow-2xl">
               <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
                 How it works
               </p>
 
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-6">
                 Explore Canada street by street
               </h2>
 
@@ -164,14 +164,14 @@ export default function HomePage() {
             </section>
 
             {/* COMMUNITY SECTION */}
-            <section className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl p-6 md:p-8 mt-8 max-w-5xl w-full text-left shadow-2xl">
+            <section className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl p-5 md:p-8 mt-8 max-w-5xl w-full text-left shadow-2xl">
               <div className="grid gap-6 md:grid-cols-2 md:items-center">
                 <div>
                   <p className="text-sm uppercase tracking-widest text-blue-100 font-semibold mb-2">
                     For BIAs, cities, and local business communities
                   </p>
 
-                  <h2 className="text-3xl font-bold mb-3">
+                  <h2 className="text-2xl sm:text-3xl font-bold mb-3">
                     Helping main streets go digital
                   </h2>
 

@@ -225,10 +225,10 @@ export default function MemberPage() {
     <>
       <SEO title={title} description={description} url={url} />
 
-      <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
+      <main className="min-h-screen bg-gray-50 px-4 py-6 text-gray-900 sm:py-10">
         <div className="max-w-4xl mx-auto">
           {user && user.user_metadata?.isShopOwner ? (
-            <div className="bg-white border border-red-100 rounded-2xl shadow-sm p-8 text-center">
+            <div className="rounded-2xl border border-red-100 bg-white p-5 text-center shadow-sm sm:p-8">
               <h1 className="text-2xl font-bold text-red-600 mb-3">
                 Shop Owner Account Detected
               </h1>
@@ -238,39 +238,39 @@ export default function MemberPage() {
                 Owner area to manage your business.
               </p>
 
-              <div className="flex flex-wrap justify-center gap-3">
+              <div className="flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
                 <Link
                   href="/shop-owner"
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold shadow transition"
+                  className="inline-block w-full rounded-full bg-blue-600 px-6 py-3 font-semibold text-white shadow transition hover:bg-blue-700 sm:w-auto"
                 >
                   Go to Shop Owner Area
                 </Link>
 
                 <button
                   onClick={handleLogout}
-                  className="inline-block bg-white text-red-600 border border-red-200 px-6 py-3 rounded-full font-semibold hover:bg-red-50 transition"
+                  className="inline-block w-full rounded-full border border-red-200 bg-white px-6 py-3 font-semibold text-red-600 transition hover:bg-red-50 sm:w-auto"
                 >
                   Logout
                 </button>
               </div>
             </div>
           ) : !user ? (
-            <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 md:p-10 text-center">
+            <section className="rounded-2xl border border-gray-200 bg-white p-5 text-center shadow-sm sm:p-8 md:p-10">
               <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
                 LocalStreetShop Account
               </p>
 
-              <h1 className="text-3xl md:text-4xl font-extrabold mb-4">
+              <h1 className="mb-3 text-2xl font-extrabold sm:mb-4 sm:text-3xl md:text-4xl">
                 Your LocalStreetShop Account
               </h1>
 
-              <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+              <p className="mx-auto mb-7 max-w-2xl text-gray-600 sm:mb-8">
                 Sign in or create an account to review local shops, explore
                 businesses, and access future LocalStreetShop community features.
               </p>
 
-              <div className="grid gap-4 md:grid-cols-3 text-left mb-8">
-                <div className="bg-blue-50 rounded-2xl p-5">
+              <div className="mb-7 grid gap-3 text-left sm:mb-8 md:grid-cols-3 md:gap-4">
+                <div className="rounded-2xl bg-blue-50 p-4 sm:p-5">
                   <h2 className="font-bold text-blue-800 mb-2">
                     🧭 Explore Shops
                   </h2>
@@ -279,7 +279,7 @@ export default function MemberPage() {
                   </p>
                 </div>
 
-                <div className="bg-green-50 rounded-2xl p-5">
+                <div className="rounded-2xl bg-green-50 p-4 sm:p-5">
                   <h2 className="font-bold text-green-800 mb-2">
                     📝 Leave Reviews
                   </h2>
@@ -289,7 +289,7 @@ export default function MemberPage() {
                   </p>
                 </div>
 
-                <div className="bg-purple-50 rounded-2xl p-5">
+                <div className="rounded-2xl bg-purple-50 p-4 sm:p-5">
                   <h2 className="font-bold text-purple-800 mb-2">
                     🔥 Access Deals
                   </h2>
@@ -300,25 +300,25 @@ export default function MemberPage() {
                 </div>
               </div>
 
-              <div className="flex justify-center gap-4 flex-wrap">
+              <div className="flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
                 <Link
                   href="/login"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 font-semibold shadow transition"
+                  className="w-full rounded-full bg-blue-600 px-6 py-3 font-semibold text-white shadow transition hover:bg-blue-700 sm:w-auto"
                 >
                   Log In
                 </Link>
 
                 <Link
                   href="/signup"
-                  className="px-6 py-3 bg-white text-blue-700 border border-blue-200 rounded-full hover:bg-blue-50 font-semibold shadow-sm transition"
+                  className="w-full rounded-full border border-blue-200 bg-white px-6 py-3 font-semibold text-blue-700 shadow-sm transition hover:bg-blue-50 sm:w-auto"
                 >
                   Create Account
                 </Link>
               </div>
             </section>
           ) : (
-            <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 md:p-10">
-              <div className="text-center mb-8">
+            <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8 md:p-10">
+              <div className="mb-8 text-center">
                 <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
                   Welcome Back
                 </p>
@@ -334,24 +334,24 @@ export default function MemberPage() {
                   </span>
                 </p>
 
-                <div className="mt-5 flex flex-wrap justify-center gap-3">
+                <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
                   <Link
                     href="/deals"
-                    className="px-5 py-2.5 bg-blue-50 text-blue-700 rounded-full hover:bg-blue-100 font-semibold transition"
+                    className="w-full rounded-full bg-blue-50 px-5 py-2.5 font-semibold text-blue-700 transition hover:bg-blue-100 sm:w-auto"
                   >
                     View Deals
                   </Link>
 
                   <Link
                     href="/live-cities"
-                    className="px-5 py-2.5 bg-blue-50 text-blue-700 rounded-full hover:bg-blue-100 font-semibold transition"
+                    className="w-full rounded-full bg-blue-50 px-5 py-2.5 font-semibold text-blue-700 transition hover:bg-blue-100 sm:w-auto"
                   >
                     Browse Cities
                   </Link>
 
                   <button
                     onClick={handleLogout}
-                    className="px-5 py-2.5 bg-red-50 text-red-600 rounded-full hover:bg-red-100 font-semibold transition"
+                    className="w-full rounded-full bg-red-50 px-5 py-2.5 font-semibold text-red-600 transition hover:bg-red-100 sm:w-auto"
                   >
                     Logout
                   </button>

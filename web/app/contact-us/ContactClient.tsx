@@ -153,25 +153,25 @@ Thank you!`
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900">
+    <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-900 sm:py-10">
       <div className="mx-auto max-w-5xl">
-        <section className="mb-10 rounded-[2rem] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-6 py-12 text-white shadow-sm sm:px-10">
+        <section className="mb-8 rounded-[2rem] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-5 py-9 text-white shadow-sm sm:mb-10 sm:px-10 sm:py-12">
           <p className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-blue-100">
             Contact LocalStreetShop
           </p>
 
-          <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl">
+          <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">
             How can we help?
           </h1>
 
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-blue-50">
+          <p className="mt-4 max-w-3xl text-base leading-7 text-blue-50 sm:mt-5 sm:text-lg sm:leading-8">
             Send us a message about shop listings, product uploads, business
             claims, partnerships, or general questions.
           </p>
         </section>
 
-        <section className="grid gap-8 lg:grid-cols-[1fr_1.6fr]">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="grid gap-6 lg:grid-cols-[1fr_1.6fr] lg:gap-8">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
             <h2 className="text-2xl font-extrabold text-slate-950">
               Common reasons to contact us
             </h2>
@@ -197,7 +197,7 @@ Thank you!`
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-8">
             {success ? (
               <div className="text-center">
                 <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
@@ -231,7 +231,7 @@ Thank you!`
                     setSuccess(false);
                     setSubmittedEmail('');
                   }}
-                  className="mt-7 rounded-full bg-blue-700 px-6 py-3 font-bold text-white shadow-sm transition hover:bg-blue-800"
+                  className="mt-7 w-full rounded-full bg-blue-700 px-6 py-3 font-bold text-white shadow-sm transition hover:bg-blue-800 sm:w-auto"
                 >
                   Send another message
                 </button>

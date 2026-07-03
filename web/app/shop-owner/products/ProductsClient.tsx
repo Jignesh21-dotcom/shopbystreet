@@ -83,15 +83,15 @@ export default function ProductsClient() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white px-4 py-10 text-gray-900">
-      <section className="mx-auto max-w-5xl rounded-3xl border border-blue-100 bg-white p-6 shadow-sm md:p-8">
+    <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white px-4 py-6 text-gray-900 sm:py-10">
+      <section className="mx-auto max-w-5xl rounded-3xl border border-blue-100 bg-white p-4 shadow-sm sm:p-6 md:p-8">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="mb-2 text-sm font-bold uppercase tracking-widest text-blue-700">
               Shop Owner Dashboard
             </p>
 
-            <h1 className="text-3xl font-extrabold tracking-tight text-gray-950 md:text-4xl">
+            <h1 className="text-2xl font-extrabold tracking-tight text-gray-950 sm:text-3xl md:text-4xl">
               Your Products
             </h1>
 
@@ -104,14 +104,14 @@ export default function ProductsClient() {
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/shop-owner/dashboard"
-              className="rounded-full border border-blue-200 bg-white px-6 py-3 text-center text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50"
+              className="rounded-full border border-blue-200 bg-white px-6 py-3 text-center text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50 max-sm:w-full"
             >
               ← Back to Dashboard
             </Link>
 
             <Link
               href="/shop-owner/products/add"
-              className="rounded-full bg-blue-700 px-6 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800"
+              className="rounded-full bg-blue-700 px-6 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 max-sm:w-full"
             >
               Add New Product
             </Link>
@@ -123,7 +123,7 @@ export default function ProductsClient() {
             Loading your products...
           </div>
         ) : products.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-blue-200 bg-blue-50 p-8 text-center">
+          <div className="rounded-2xl border border-dashed border-blue-200 bg-blue-50 p-6 text-center sm:p-8">
             <h2 className="text-xl font-bold text-blue-900">
               No products listed yet
             </h2>
@@ -183,7 +183,7 @@ export default function ProductsClient() {
                     </p>
                   )}
 
-                  <div className="mt-5 flex items-center gap-4 border-t border-gray-100 pt-4">
+                  <div className="mt-5 flex items-center justify-between gap-4 border-t border-gray-100 pt-4">
                     <Link
                       href={`/shop-owner/products/edit/${product.id}`}
                       className="text-sm font-semibold text-blue-700 hover:underline"

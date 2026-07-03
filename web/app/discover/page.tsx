@@ -8,7 +8,6 @@ type Shop = {
   slug: string;
   parking?: string;
   address?: string;
-  featured?: boolean;
   discount?: string;
   tagline?: string;
   street?: {
@@ -28,9 +27,6 @@ export default async function DiscoverPage() {
       slug,
       parking,
       address,
-      featured,
-      discount,
-      tagline,
       street:street_id (
         slug,
         city:city_id (
@@ -54,9 +50,12 @@ export default async function DiscoverPage() {
     return <div className="p-6 text-red-600">Error loading shops.</div>;
   }
 
-  const featured = shops.find((s) => s.featured && s.street && s.street.city);
-  const discounted = shops.find((s) => s.discount && s.street && s.street.city);
-  const gem = shops.find((s) => s.tagline && s.street && s.street.city);
+  const withLocation = shops.filter((s) => s.street && s.street.city);
+  const discounted = withLocation.find((s) => s.discount);
+  const gem = withLocation.find((s) => s.tagline);
+  const featured = withLocation.find(
+    (s) => s.id !== discounted?.id && s.id !== gem?.id
+  ) || withLocation[0];
 
   const title = 'Discover Local Gems | LocalStreetShop';
   const description = 'Explore featured businesses, hidden gems, and local discounts across Canadian cities. Handpicked highlights from LocalStreetShop.';

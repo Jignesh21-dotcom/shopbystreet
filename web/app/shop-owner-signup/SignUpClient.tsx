@@ -49,10 +49,10 @@ export default function SignUpClient() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white px-4 py-12 text-gray-900">
+    <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white px-4 py-6 text-gray-900 sm:py-10">
       <div className="mx-auto flex min-h-[70vh] max-w-5xl items-center justify-center">
         {success ? (
-          <section className="w-full max-w-md rounded-3xl border border-blue-100 bg-white p-8 text-center shadow-sm">
+          <section className="w-full max-w-md rounded-3xl border border-blue-100 bg-white p-5 text-center shadow-sm sm:p-8">
             <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
               ✅
             </div>
@@ -61,7 +61,7 @@ export default function SignUpClient() {
               Almost there
             </p>
 
-            <h1 className="mb-3 text-3xl font-extrabold text-gray-950">
+            <h1 className="mb-3 text-2xl font-extrabold text-gray-950 sm:text-3xl">
               Check your email
             </h1>
 
@@ -96,12 +96,12 @@ export default function SignUpClient() {
             </div>
           </section>
         ) : (
-          <section className="w-full max-w-md rounded-3xl border border-blue-100 bg-white p-8 shadow-sm">
+          <section className="w-full max-w-md rounded-3xl border border-blue-100 bg-white p-5 shadow-sm sm:p-8">
             <p className="mb-2 text-center text-sm font-bold uppercase tracking-widest text-blue-700">
               LocalStreetShop Account
             </p>
 
-            <h1 className="mb-3 text-center text-3xl font-extrabold text-gray-950">
+            <h1 className="mb-3 text-center text-2xl font-extrabold text-gray-950 sm:text-3xl">
               Create Account
             </h1>
 
@@ -120,7 +120,7 @@ export default function SignUpClient() {
                 className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <button
                   type="button"
                   onClick={() => setRole('member')}

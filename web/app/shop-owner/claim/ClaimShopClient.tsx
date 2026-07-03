@@ -227,7 +227,7 @@ export default function ClaimShopClient() {
     <>
      
 
-      <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
+      <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-900 sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <Link
             href="/shop-owner"
@@ -236,23 +236,23 @@ export default function ClaimShopClient() {
             ← Back to Shop Owner
           </Link>
 
-          <section className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-6 py-12 text-white shadow-sm sm:px-10">
+          <section className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-5 py-9 text-white shadow-sm sm:px-10 sm:py-12">
             <p className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-blue-100">
               Shop Owner Access
             </p>
 
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
+            <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl">
               Claim your business listing
             </h1>
 
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-blue-50">
+            <p className="mt-4 max-w-3xl text-base leading-7 text-blue-50 sm:mt-5 sm:text-lg sm:leading-8">
               Search for your business and submit a claim request. Once approved,
               you can manage your listing, add photos, update details, and add
               products from your Shop Owner dashboard.
             </p>
           </section>
 
-          <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <section className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:mt-8 sm:p-8">
             <div className="mb-6">
               <p className="text-sm font-bold uppercase tracking-[0.2em] text-blue-700">
                 Find your shop
@@ -328,7 +328,7 @@ export default function ClaimShopClient() {
                     return (
                       <div
                         key={shop.id}
-                        className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm"
+                        className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
                       >
                         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                           <div>
@@ -368,7 +368,7 @@ export default function ClaimShopClient() {
                               type="button"
                               onClick={() => handleClaim(shop)}
                               disabled={submittingId === shop.id || alreadyClaimed}
-                              className={`rounded-full px-5 py-3 text-sm font-bold transition disabled:cursor-not-allowed ${
+                              className={`rounded-full px-5 py-3 text-sm font-bold transition disabled:cursor-not-allowed max-sm:w-full ${
                                 alreadyClaimed
                                   ? 'bg-slate-100 text-slate-500'
                                   : 'bg-blue-700 text-white hover:bg-blue-800'

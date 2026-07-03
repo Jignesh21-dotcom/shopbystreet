@@ -3,26 +3,26 @@
 > next build
 
 ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
- We detected multiple lockfiles and selected the directory of C:\Users\Jignesh Chouhan\my-shop-street\package-lock.json as the root directory.
+ We detected multiple lockfiles and selected the directory of c:\Users\Jignesh Chouhan\my-shop-street\package-lock.json as the root directory.
  To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
    See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
  Detected additional lockfiles: 
-   * C:\Users\Jignesh Chouhan\my-shop-street\web\package-lock.json
+   * c:\Users\Jignesh Chouhan\my-shop-street\web\package-lock.json
 
 ▲ Next.js 16.2.7 (Turbopack)
 - Environments: .env.local
 
   Creating an optimized production build ...
-✓ Compiled successfully in 12.8s
+✓ Compiled successfully in 25.2s
   Running TypeScript ...
-  Finished TypeScript in 14.5s ...
+  Finished TypeScript in 62s ...
   Collecting page data using 7 workers ...
-  Generating static pages using 7 workers (0/1051) ...
-  Generating static pages using 7 workers (262/1051) 
-  Generating static pages using 7 workers (525/1051) 
-  Generating static pages using 7 workers (788/1051) 
-Failed to fetch shops: column shops.featured does not exist
-✓ Generating static pages using 7 workers (1051/1051) in 2.4s
+  Generating static pages using 7 workers (0/1053) ...
+  Generating static pages using 7 workers (263/1053) 
+  Generating static pages using 7 workers (526/1053) 
+  Generating static pages using 7 workers (789/1053) 
+Failed to fetch shops: column shops.discount does not exist
+✓ Generating static pages using 7 workers (1053/1053) in 8.9s
   Finalizing page optimization ...
 
 Route (app)                                    Revalidate  Expire
@@ -34,14 +34,17 @@ Route (app)                                    Revalidate  Expire
 ├ ○ /admin/pending-streets
 ├ ○ /admin/shops
 ├ ƒ /api/approve-street
+├ ƒ /api/contact
 ├ ƒ /api/create-checkout-session
-├ ƒ /api/shop-image
-├ ƒ /api/submit-shop
+├ ƒ /api/shop-claims
+├ ƒ /api/shop-claims/approve
+├ ƒ /api/shop-owner/activate-tier
+├ ƒ /api/shop-owner/products
 ├ ƒ /cities/[city]
 ├ ƒ /cities/[city]/[street]
 ├ ƒ /cities/[city]/[street]/[shop]
+├ ƒ /cities/[city]/[street]/[shop]/products
 ├ ƒ /cities/[city]/[street]/address/[address]
-├ ○ /clearance
 ├ ○ /contact-us
 ├ ƒ /countries/[country]
 ├ ƒ /deals
@@ -50,6 +53,7 @@ Route (app)                                    Revalidate  Expire
 ├ ○ /live-cities
 ├ ○ /login
 ├ ○ /member
+├ ○ /pricing
 ├ ○ /privacy-policy
 ├ ○ /profile
 ├ ƒ /provinces/[province]
@@ -61,15 +65,13 @@ Route (app)                                    Revalidate  Expire
 ├ ○ /shop-owner/payment-success
 ├ ○ /shop-owner/products
 ├ ○ /shop-owner/products/add
-├ ○ /shop-owner/products/productform
 ├ ƒ /shop-owner/shops/[id]
 ├ ○ /shop-owner/shops/add
-├ ƒ /shops/[shop]/products
 ├ ○ /signup
 ├ ○ /sitemap.xml                                      10m      1y
 ├ ○ /street-ambassador
-├ ○ /submit-shop
-└ ○ /submit-street
+├ ○ /submit-street
+└ ○ /update-password
 
 
 ○  (Static)   prerendered as static content

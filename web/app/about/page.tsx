@@ -12,31 +12,31 @@ export default function AboutPage() {
         url="https://www.localstreetshop.com/about"
       />
 
-      <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
+      <main className="min-h-screen bg-gray-50 px-4 py-6 text-gray-900 sm:py-12">
         <div className="max-w-5xl mx-auto">
           <Link
             href="/"
-            className="inline-block mb-8 text-sm font-semibold text-blue-700 hover:text-blue-900 transition"
+            className="inline-block mb-6 text-sm font-semibold text-blue-700 transition hover:text-blue-900 sm:mb-8"
           >
             ← Back to Home
           </Link>
 
-          <section className="text-center mb-10">
+          <section className="mb-8 text-center sm:mb-10">
             <p className="text-sm font-bold text-blue-700 uppercase tracking-widest mb-2">
               About LocalStreetShop
             </p>
 
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+            <h1 className="mb-3 text-3xl font-extrabold sm:mb-4 sm:text-4xl md:text-5xl">
               The Digital Main Street of Canada
             </h1>
 
-            <p className="text-gray-600 max-w-3xl mx-auto text-lg">
+            <p className="mx-auto max-w-3xl text-base text-gray-600 sm:text-lg">
               We help Canadians discover local shops, support small businesses,
               and strengthen communities — one street at a time.
             </p>
           </section>
 
-          <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 md:p-10 mb-8">
+          <section className="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:mb-8 sm:p-8 md:p-10">
             <h2 className="text-2xl font-bold text-blue-700 mb-4">
               Our Mission
             </h2>
@@ -62,8 +62,8 @@ export default function AboutPage() {
             </p>
           </section>
 
-          <section className="grid gap-5 md:grid-cols-3 mb-8">
-            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
+          <section className="mb-6 grid gap-4 sm:mb-8 md:grid-cols-3 md:gap-5">
+            <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5 sm:p-6">
               <h3 className="font-bold text-blue-800 mb-2">
                 🛍️ For Shoppers
               </h3>
@@ -73,7 +73,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-green-50 border border-green-100 rounded-2xl p-6">
+            <div className="rounded-2xl border border-green-100 bg-green-50 p-5 sm:p-6">
               <h3 className="font-bold text-green-800 mb-2">
                 🏪 For Businesses
               </h3>
@@ -83,7 +83,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-purple-50 border border-purple-100 rounded-2xl p-6">
+            <div className="rounded-2xl border border-purple-100 bg-purple-50 p-5 sm:p-6">
               <h3 className="font-bold text-purple-800 mb-2">
                 🤝 For Communities
               </h3>
@@ -94,7 +94,7 @@ export default function AboutPage() {
             </div>
           </section>
 
-          <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 md:p-10 mb-8">
+          <section className="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:mb-8 sm:p-8 md:p-10">
             <h2 className="text-2xl font-bold text-blue-700 mb-4">
               Why Streets?
             </h2>
@@ -114,7 +114,7 @@ export default function AboutPage() {
             </p>
           </section>
 
-          <section className="bg-blue-700 text-white rounded-2xl p-8 md:p-10 mb-8">
+          <section className="mb-6 rounded-2xl bg-blue-700 p-5 text-white sm:mb-8 sm:p-8 md:p-10">
             <h2 className="text-2xl font-bold mb-4">
               Building a Community Movement
             </h2>
@@ -133,7 +133,7 @@ export default function AboutPage() {
             </p>
           </section>
 
-          <section className="text-center bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
+          <section className="rounded-2xl border border-gray-200 bg-white p-5 text-center shadow-sm sm:p-8">
             <h2 className="text-2xl font-bold mb-3">
               Join Canada&apos;s Digital Main Street
             </h2>
@@ -143,24 +143,24 @@ export default function AboutPage() {
               future ambassador, you can be part of the LocalStreetShop movement.
             </p>
 
-            <div className="flex justify-center gap-4 flex-wrap">
+            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
               <Link
                 href="/countries/canada"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold shadow transition"
+                className="w-full rounded-full bg-blue-600 px-6 py-3 font-semibold text-white shadow transition hover:bg-blue-700 sm:w-auto"
               >
                 Explore Streets
               </Link>
 
               <Link
                 href="/shop-owner"
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold shadow transition"
+                className="w-full rounded-full bg-green-600 px-6 py-3 font-semibold text-white shadow transition hover:bg-green-700 sm:w-auto"
               >
                 List Your Business
               </Link>
 
               <Link
                 href="/street-ambassador"
-                className="bg-white text-blue-700 border border-blue-200 hover:bg-blue-50 px-6 py-3 rounded-full font-semibold shadow-sm transition"
+                className="w-full rounded-full border border-blue-200 bg-white px-6 py-3 font-semibold text-blue-700 shadow-sm transition hover:bg-blue-50 sm:w-auto"
               >
                 Become an Ambassador
               </Link>
