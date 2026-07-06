@@ -6,6 +6,93 @@ import { supabase } from '@/lib/supabaseClient';
 
 type PaidTier = 'growth' | 'premium';
 
+const benefits = [
+  {
+    icon: '🏪',
+    title: 'Get discovered locally',
+    description:
+      'Help nearby shoppers find your business by city, street, address, and category.',
+  },
+  {
+    icon: '📦',
+    title: 'Showcase your products',
+    description:
+      'Upload products, prices, photos, and descriptions so customers know what you offer.',
+  },
+  {
+    icon: '❤️',
+    title: 'Support local shopping',
+    description:
+      'Become part of Canada’s Digital Main Street and help customers shop closer to home.',
+  },
+];
+
+const includedFeatures = [
+  'Claim your business profile',
+  'Edit business information',
+  'Add storefront photos',
+  'Upload up to 100 products',
+  'Add product prices',
+  'Add product descriptions',
+  'Business hours',
+  'Phone and email',
+  'Website link',
+  'Instagram and Facebook links',
+  'Google Maps location',
+  'City and street discovery',
+];
+
+const roadmap = [
+  {
+    phase: 'Now',
+    title: 'Founding Business Program',
+    items: ['Free business listings', 'Shop owner claims', 'Product showcase', 'Street discovery'],
+  },
+  {
+    phase: 'Next',
+    title: 'Local Marketplace Tools',
+    items: ['Online ordering', 'Click & Collect', 'Payments', 'Customer inquiries'],
+  },
+  {
+    phase: 'Future',
+    title: 'Smarter Local Discovery',
+    items: ['AI shopping assistant', 'Business insights', 'Local promotions', 'Customer rewards'],
+  },
+];
+
+const faqs = [
+  {
+    question: 'Is LocalStreetShop really free during Phase 1?',
+    answer:
+      'Yes. During our Founding Business Program, local businesses can claim their listing, update their profile, and showcase products for free.',
+  },
+  {
+    question: 'How many products can I upload?',
+    answer:
+      'During Phase 1, businesses can upload up to 100 products for free. This gives most shops enough room to build a strong digital storefront.',
+  },
+  {
+    question: 'Do I need my own website?',
+    answer:
+      'No. LocalStreetShop works whether or not you already have a website. If you do have one, you can add your website link to your profile.',
+  },
+  {
+    question: 'What happens after Phase 1?',
+    answer:
+      'Core business profiles will remain available. As the platform grows, optional paid services and marketplace tools may be introduced for businesses that want more support.',
+  },
+  {
+    question: 'Can I get help setting up my shop?',
+    answer:
+      'Yes. The optional Professional Store Setup service is for busy business owners who want help uploading products, organizing details, and improving their listing.',
+  },
+  {
+    question: 'Can customers buy directly on LocalStreetShop?',
+    answer:
+      'Not yet. The current focus is discovery and product showcase. Online ordering, payments, and Click & Collect are part of the future roadmap.',
+  },
+];
+
 export default function PricingPage() {
   const [shopId, setShopId] = useState<string | null>(null);
   const [loadingTier, setLoadingTier] = useState<PaidTier | null>(null);
@@ -45,7 +132,7 @@ export default function PricingPage() {
       }
 
       if (!shopId) {
-        alert('Please register or claim an approved shop profile before subscribing.');
+        alert('Please register or claim an approved shop profile before requesting this service.');
         window.location.href = '/shop-owner';
         return;
       }
@@ -77,189 +164,412 @@ export default function PricingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 text-gray-800 antialiased">
-      <section className="border-b border-gray-100 bg-gradient-to-b from-blue-50 to-gray-50 px-4 py-12 sm:py-16">
-        <div className="max-w-3xl mx-auto text-center">
-          <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
-            Founding Business Program
-          </span>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
-            Simple, Transparent Pricing
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-gray-600 sm:text-lg">
-            Put your local brick-and-mortar storefront on Canada&apos;s digital main street. Choose
-            a tier to showcase your inventory to neighborhood shoppers.
-          </p>
+    <main className="min-h-screen overflow-hidden bg-slate-50 text-slate-900 antialiased">
+      {/* HERO */}
+      <section className="relative border-b border-slate-200 bg-white">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-blue-100 blur-3xl" />
+          <div className="absolute right-0 top-24 h-72 w-72 rounded-full bg-green-100 blur-3xl" />
+        </div>
+
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:px-8 lg:py-24">
+          <div>
+            <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
+              For Business Owners
+            </span>
+
+            <h1 className="mt-6 max-w-3xl text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+              Grow Your Business on Canada&apos;s Digital Main Street
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+              Join LocalStreetShop and make it easier for nearby customers to discover your
+              business, explore your products, and support local shopping in their community.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/shop-owner/claim"
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
+              >
+                Claim Your Shop
+              </Link>
+
+              <Link
+                href="/login?mode=signup"
+                className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-4 text-sm font-bold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50"
+              >
+                Create Free Account
+              </Link>
+            </div>
+
+            <div className="mt-8 grid grid-cols-2 gap-3 text-sm text-slate-600 sm:grid-cols-4">
+              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
+                🇨🇦 <span className="block font-semibold text-slate-900">Built in Canada</span>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
+                🏪 <span className="block font-semibold text-slate-900">Local First</span>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
+                💰 <span className="block font-semibold text-slate-900">Phase 1 Free</span>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
+                ❤️ <span className="block font-semibold text-slate-900">Community Focused</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-2xl shadow-slate-200">
+              <div className="rounded-[1.5rem] bg-gradient-to-br from-blue-600 via-blue-500 to-green-500 p-6 text-white">
+                <div className="rounded-2xl bg-white/15 p-5 backdrop-blur">
+                  <p className="text-sm font-semibold text-blue-50">LocalStreetShop</p>
+                  <h2 className="mt-2 text-2xl font-black">Canada&apos;s Digital Main Street</h2>
+                  <p className="mt-3 text-sm leading-6 text-blue-50">
+                    A place where shoppers discover local businesses street by street.
+                  </p>
+                </div>
+
+                <div className="mt-5 grid gap-3">
+                  {[
+                    ['☕', 'Coffee shops', 'Fresh drinks and local cafés'],
+                    ['👗', 'Boutiques', 'Clothing, gifts, and accessories'],
+                    ['📚', 'Bookstores', 'Books, stationery, and more'],
+                  ].map(([icon, title, text]) => (
+                    <div key={title} className="flex items-center gap-4 rounded-2xl bg-white p-4 text-slate-900 shadow-sm">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
+                        {icon}
+                      </div>
+                      <div>
+                        <p className="font-bold">{title}</p>
+                        <p className="text-sm text-slate-500">{text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute -bottom-6 -left-4 hidden rounded-2xl border border-green-200 bg-white p-4 shadow-xl sm:block">
+              <p className="text-sm font-bold text-green-700">Founding Business Program</p>
+              <p className="text-xs text-slate-500">Free access during Phase 1</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:py-16">
-        {errorMessage && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+      {/* ERROR */}
+      {errorMessage && (
+        <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700">
             {errorMessage}
           </div>
-        )}
+        </section>
+      )}
 
-        <div className="grid items-stretch gap-6 md:grid-cols-3 md:gap-8">
-          <div className="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-gray-300 sm:p-8">
-            <div>
-              <div className="flex justify-between items-start">
+      {/* WHY JOIN */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
+            Why LocalStreetShop?
+          </span>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            One page. One purpose. One action.
+          </h2>
+          <p className="mt-4 text-lg leading-8 text-slate-600">
+            This page has one goal: help local business owners understand why joining
+            LocalStreetShop is worth it.
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {benefits.map((benefit) => (
+            <div
+              key={benefit.title}
+              className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200"
+            >
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-3xl">
+                {benefit.icon}
+              </div>
+              <h3 className="mt-5 text-xl font-black text-slate-950">{benefit.title}</h3>
+              <p className="mt-3 leading-7 text-slate-600">{benefit.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FOUNDING PROGRAM */}
+      <section className="bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+          <div>
+            <span className="inline-flex rounded-full bg-green-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-green-300">
+              Founding Business Program
+            </span>
+            <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
+              Phase 1 is free because local businesses deserve a better online presence.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-300">
+              LocalStreetShop is growing one business at a time. Instead of charging businesses
+              before they see value, we&apos;re helping Canadian communities discover local shops first.
+            </p>
+            <p className="mt-4 leading-7 text-slate-400">
+              As the platform grows, we may introduce optional premium services and marketplace
+              tools. The core mission stays the same: help people discover and support local businesses.
+            </p>
+          </div>
+
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl">
+            <div className="rounded-3xl bg-white p-6 text-slate-900">
+              <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">Basic Directory</h3>
-                  <p className="text-xs text-gray-500 mt-1">Get your store discovered online</p>
+                  <p className="text-sm font-bold uppercase tracking-[0.2em] text-green-600">
+                    Phase 1 Access
+                  </p>
+                  <h3 className="mt-2 text-3xl font-black">FREE</h3>
+                  <p className="mt-2 text-slate-600">For local businesses during the Founding Business Program.</p>
+                </div>
+                <div className="rounded-full bg-green-100 px-4 py-2 text-sm font-bold text-green-700">
+                  $0
                 </div>
               </div>
-              <div className="mt-6 border-b border-gray-100 pb-6">
-                <span className="text-4xl font-extrabold text-gray-900">$0</span>
-                <span className="text-sm font-medium text-gray-500"> / lifetime free</span>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                {includedFeatures.slice(0, 8).map((feature) => (
+                  <div key={feature} className="flex items-start gap-3 rounded-2xl bg-slate-50 p-3 text-sm">
+                    <span className="font-black text-green-600">✓</span>
+                    <span className="font-medium text-slate-700">{feature}</span>
+                  </div>
+                ))}
               </div>
-              <ul className="mt-6 space-y-4 text-sm text-gray-600">
-                <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Complete Business Contact Profile</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Map Location &amp; Directory Category Routing</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Direct Website &amp; Social Media Anchor Links</span>
-                </li>
-                <li className="flex items-start gap-3 text-gray-400 line-through">
-                  <span className="font-bold">✗</span>
-                  <span>Digital Window Product Image Uploads</span>
-                </li>
-              </ul>
-            </div>
-            <div className="mt-8">
+
               <Link
-                href="/shop-owner"
-                className="block text-center w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-xl transition duration-150"
+                href="/shop-owner/claim"
+                className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-green-600 px-6 py-4 text-sm font-bold text-white transition hover:bg-green-700"
               >
-                Claim Free Profile
+                Claim Your Free Shop
               </Link>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="relative flex flex-col justify-between rounded-2xl border-2 border-blue-600 bg-white p-6 shadow-md transition-all duration-200 md:-translate-y-2 sm:p-8">
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-sm">
-              Most Popular
+      {/* EVERYTHING INCLUDED */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div>
+            <span className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
+              Everything Included
+            </span>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              Build your digital storefront for free.
+            </h2>
+          </div>
+          <p className="max-w-2xl text-lg leading-8 text-slate-600">
+            Give customers the information they need before they visit your store.
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {includedFeatures.map((feature) => (
+            <div
+              key={feature}
+              className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-green-100 text-sm font-black text-green-700">
+                ✓
+              </span>
+              <span className="font-semibold text-slate-800">{feature}</span>
             </div>
-            <div>
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Growth Showcase</h3>
-                  <p className="text-xs text-blue-600 font-semibold mt-1">
-                    First 10 products are 100% FREE
-                  </p>
+          ))}
+        </div>
+      </section>
+
+      {/* PROFESSIONAL SETUP */}
+      <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+          <div>
+            <span className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
+              Need a Hand?
+            </span>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              We can help build your storefront for you.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-600">
+              Some business owners are too busy running their shop to upload products, resize
+              images, or organize listings. Professional Store Setup is an optional service for
+              owners who want help getting started.
+            </p>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {[
+                'Product upload help',
+                'Image optimization',
+                'Category organization',
+                'SEO-friendly descriptions',
+                'Business verification',
+                'Priority support',
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-3 rounded-2xl bg-slate-50 p-4">
+                  <span className="text-blue-600">✓</span>
+                  <span className="font-semibold text-slate-700">{item}</span>
                 </div>
-              </div>
-              <div className="mt-6 border-b border-gray-100 pb-6">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold text-gray-900">$15</span>
-                  <span className="text-sm font-medium text-gray-500"> / month</span>
-                </div>
-                
-              </div>
-              <ul className="mt-6 space-y-4 text-sm text-gray-600">
-                <li className="flex items-start gap-3 font-semibold text-blue-900">
-                  <span className="text-blue-600 font-bold">✓</span>
-                  <span>Includes Everything in Basic</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>
-                    <strong>Upload up to 20 Products</strong>
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>High-Res Inventory Photo &amp; Pricing Modules</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Product Descriptions &amp; Variant Tags</span>
-                </li>
-              </ul>
-            </div>
-            <div className="mt-8">
-              <button
-                type="button"
-                onClick={() => triggerCheckout('growth')}
-                disabled={loadingTier !== null}
-                className="block text-center w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-sm transition duration-150 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loadingTier === 'growth' ? 'Redirecting to Checkout...' : 'Choose Growth Showcase'}
-              </button>
+              ))}
             </div>
           </div>
 
-          <div className="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-gray-300 sm:p-8">
-            <div>
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Premium Main Street</h3>
-                  <p className="text-xs text-gray-500 mt-1">Complete digital display window</p>
-                </div>
+          <div className="rounded-[2rem] border border-blue-100 bg-gradient-to-br from-blue-50 to-green-50 p-6 shadow-xl shadow-slate-200">
+            <div className="rounded-3xl bg-white p-7 shadow-sm">
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
+                Optional Service
+              </p>
+              <h3 className="mt-3 text-2xl font-black text-slate-950">Professional Store Setup</h3>
+              <p className="mt-3 leading-7 text-slate-600">
+                A one-time setup service for business owners who want LocalStreetShop to help prepare
+                their shop profile.
+              </p>
+
+              <div className="mt-6 border-y border-slate-100 py-6">
+                <span className="text-5xl font-black text-slate-950">$99</span>
+                <span className="ml-2 text-sm font-semibold text-slate-500">one-time</span>
               </div>
-              <div className="mt-6 border-b border-gray-100 pb-6">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold text-gray-900">$39</span>
-                  <span className="text-sm font-medium text-gray-500"> / month</span>
-                </div>
-                
-              </div>
-              <ul className="mt-6 space-y-4 text-sm text-gray-600">
-                <li className="flex items-start gap-3 font-semibold text-gray-900">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Includes Everything in Growth</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>
-                    <strong>Unlimited Product Image Uploads</strong>
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Priority Featured Placement on Street Pages</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>Verified Business Badge Status</span>
-                </li>
-              </ul>
-            </div>
-            <div className="mt-8">
+
               <button
                 type="button"
                 onClick={() => triggerCheckout('premium')}
                 disabled={loadingTier !== null}
-                className="block text-center w-full bg-gray-900 hover:bg-black text-white font-semibold py-3 px-4 rounded-xl transition duration-150 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-blue-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loadingTier === 'premium' ? 'Redirecting to Checkout...' : 'Choose Premium Main Street'}
+                {loadingTier === 'premium' ? 'Redirecting...' : 'Request Professional Setup'}
               </button>
+
+              <p className="mt-4 text-center text-xs leading-5 text-slate-500">
+                You can also start free and set up your shop yourself.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-4xl px-4 pb-14 sm:pb-20">
-        <div className="flex flex-col items-center justify-between gap-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white shadow-xl md:flex-row md:gap-6 md:p-8">
-          <div className="max-w-xl text-center md:text-left">
-            <h4 className="text-xl font-bold">Met with one of our Street Ambassadors?</h4>
-            <p className="text-sm text-blue-100 mt-2">
-              Enter their unique referral code during listing setup or within your shop dashboard
-              to permanently unlock the locked-in student discount pricing tiers.
-            </p>
+      {/* ROADMAP */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
+            The Road Ahead
+          </span>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            Join early and grow with the platform.
+          </h2>
+          <p className="mt-4 text-lg leading-8 text-slate-600">
+            LocalStreetShop is starting with discovery and product showcase. Over time, we&apos;ll
+            build more tools to help local businesses sell and connect with customers.
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          {roadmap.map((step) => (
+            <div key={step.title} className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+              <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-blue-700">
+                {step.phase}
+              </span>
+              <h3 className="mt-4 text-xl font-black text-slate-950">{step.title}</h3>
+              <ul className="mt-5 space-y-3 text-sm text-slate-600">
+                {step.items.map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="mt-0.5 font-black text-green-600">✓</span>
+                    <span className="font-medium">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* TRUST */}
+      <section className="bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div>
+              <span className="text-sm font-bold uppercase tracking-[0.2em] text-green-300">
+                No Hidden Fees
+              </span>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+                Built to be simple, fair, and local-business friendly.
+              </h2>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                'No monthly fee during Phase 1',
+                'No credit card required to start',
+                'No long-term contracts',
+                'Built for Canadian businesses',
+                'Mobile-friendly shop profiles',
+                'Optional paid services only',
+              ].map((item) => (
+                <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <span className="font-black text-green-300">✓</span>
+                  <span className="ml-3 font-semibold text-slate-100">{item}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="flex-shrink-0">
-            <Link
-              href="/shop-owner"
-              className="inline-block bg-white text-blue-700 hover:bg-blue-50 font-bold px-6 py-3 rounded-full transition duration-150 text-sm"
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <span className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
+            Questions
+          </span>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            Frequently Asked Questions
+          </h2>
+        </div>
+
+        <div className="mt-10 space-y-4">
+          {faqs.map((faq) => (
+            <details
+              key={faq.question}
+              className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
             >
-              Apply Code in Dashboard
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-bold text-slate-950">
+                {faq.question}
+                <span className="text-xl text-blue-600 transition group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-4 leading-7 text-slate-600">{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-blue-600 to-green-500 p-8 text-center text-white shadow-2xl shadow-blue-600/20 sm:p-12">
+          <span className="inline-flex rounded-full bg-white/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-50">
+            Canada&apos;s Digital Main Street
+          </span>
+          <h2 className="mx-auto mt-5 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl">
+            Ready to grow your business locally?
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-blue-50">
+            Claim your shop, showcase your products, and help customers discover what&apos;s available
+            on the streets around them.
+          </p>
+
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link
+              href="/shop-owner/claim"
+              className="inline-flex items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-bold text-blue-700 transition hover:bg-blue-50"
+            >
+              Claim Your Shop
+            </Link>
+            <Link
+              href="/login?mode=signup"
+              className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/10 px-7 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20"
+            >
+              Create Free Account
             </Link>
           </div>
         </div>
