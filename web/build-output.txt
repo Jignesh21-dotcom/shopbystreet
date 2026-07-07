@@ -69,7 +69,7 @@ Route (app)                                    Revalidate  Expire
 ├ ○ /shop-owner/shops/add
 ├ ○ /signup
 ├ ○ /sitemap.xml                                      10m      1y
-├ ○ /street-ambassador
+├ ○ /community-partners
 ├ ○ /submit-street
 └ ○ /update-password
 

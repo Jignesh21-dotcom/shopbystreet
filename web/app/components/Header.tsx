@@ -95,8 +95,8 @@ export default function Header() {
             For Business Owners
           </Link>
 
-          <Link href="/street-ambassador" className="whitespace-nowrap transition hover:text-blue-700">
-            Ambassador
+          <Link href="/community-partners" className="whitespace-nowrap transition hover:text-blue-700">
+            Community Partners
           </Link>
 
           <Link href="/home-businesses" className="whitespace-nowrap transition hover:text-blue-700">

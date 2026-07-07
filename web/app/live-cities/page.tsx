@@ -69,16 +69,16 @@ export default function LiveCitiesPage() {
                 Want to help bring your city online?
               </h2>
               <p className="text-gray-600 text-sm mt-1">
-                Join the LocalStreetShop Ambassador Program and help local
+                Join the LocalStreetShop Community Partner Program and help local
                 businesses get discovered.
               </p>
             </div>
 
             <Link
-              href="/street-ambassador"
+              href="/community-partners"
               className="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-full text-sm font-semibold shadow transition"
             >
-              Become an Ambassador
+              Become a Founding Community Partner
             </Link>
           </section>
 
