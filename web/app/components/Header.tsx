@@ -34,24 +34,30 @@ export default function Header() {
     router.push('/login');
   };
 
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-md">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center space-x-3 transition hover:opacity-90"
-        >
-          <Image src="/lss-logo.png" alt="LocalStreetShop Logo" width={58} height={58} priority />
+        <Link href="/" className="flex shrink-0 items-center gap-3 transition hover:opacity-90">
+          <Image
+            src="/lss-logo.png"
+            alt="LocalStreetShop Logo"
+            width={54}
+            height={54}
+            priority
+            className="rounded-xl"
+          />
 
           <div className="leading-none">
-            <h1 className="text-xl font-extrabold tracking-tight sm:text-2xl">
+            <p className="text-xl font-black tracking-tight sm:text-2xl">
               <span className="text-blue-700">Local</span>
               <span className="text-blue-700">Street</span>
               <span className="text-blue-700">Shop</span>
-            </h1>
+            </p>
 
-            <p className="hidden text-[11px] tracking-wide text-gray-500 lg:block">
-              The Digital Main Street of Canada
+            <p className="hidden text-[11px] font-medium tracking-wide text-slate-500 lg:block">
+              Canada&apos;s Digital Main Street
             </p>
           </div>
         </Link>
@@ -59,177 +65,95 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setMobileMenuOpen((open) => !open)}
-          className="ml-auto inline-flex items-center rounded-lg border border-gray-200 bg-white p-2 text-gray-700 transition hover:bg-gray-50 lg:hidden"
+          className="ml-auto inline-flex items-center rounded-xl border border-slate-200 bg-white p-2 text-slate-700 transition hover:bg-slate-50 lg:hidden"
           aria-expanded={mobileMenuOpen}
           aria-label="Toggle navigation menu"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             {mobileMenuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
             )}
           </svg>
         </button>
 
-        <nav className="hidden flex-1 items-center justify-center gap-5 font-medium text-gray-700 lg:flex xl:gap-6">
-        <Link
-          href="/"
-          className="flex items-center space-x-1 whitespace-nowrap transition hover:text-blue-700"
-        >
-          <span role="img" aria-label="Home">🏠</span>
-          <span>Home</span>
-        </Link>
-
-        <Link
-          href="/live-cities"
-          className="flex items-center space-x-1 whitespace-nowrap transition hover:text-blue-700"
-        >
-          <span role="img" aria-label="Live Cities">🏙️</span>
-          <span>Live Cities</span>
-        </Link>
-
-        <Link
-          href="/deals"
-          className="flex items-center space-x-1 whitespace-nowrap transition hover:text-blue-700"
-        >
-          <span role="img" aria-label="Deals">🔥</span>
-          <span>Deals</span>
-        </Link>
-
-        <Link
-          href="/member"
-          className="flex items-center space-x-1 whitespace-nowrap transition hover:text-blue-700"
-        >
-          <span role="img" aria-label="Member">👤</span>
-          <span>Account</span>
-        </Link>
-
-        <div className="group relative">
-          <Link
-            href="/shop-owner"
-            className="flex items-center space-x-1 whitespace-nowrap transition hover:text-blue-700"
-          >
-            <span role="img" aria-label="Shop Owner">🏪</span>
-            <span>Shop Owner</span>
+        <nav className="hidden flex-1 items-center justify-center gap-5 text-sm font-bold text-slate-700 lg:flex xl:gap-7">
+          <Link href="/" className="whitespace-nowrap transition hover:text-blue-700">
+            Home
           </Link>
 
-          <div className="invisible absolute left-0 top-full z-50 mt-2 w-52 rounded-xl border border-gray-100 bg-white py-2 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-            <Link
-              href="/shop-owner"
-              className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-blue-50 hover:text-blue-700"
-            >
-              💼 Shop Owner Portal
-            </Link>
-            <Link
-              href="/pricing"
-              className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-blue-50 hover:text-blue-700"
-            >
-              🏷️ Pricing & Tiers
-            </Link>
-          </div>
-        </div>
+          <Link href="/live-cities" className="whitespace-nowrap transition hover:text-blue-700">
+            Live Cities
+          </Link>
 
-        <Link
-          href="/street-ambassador"
-          className="flex items-center space-x-1 whitespace-nowrap transition hover:text-blue-700"
-        >
-          <span role="img" aria-label="Street Ambassador">🤝</span>
-          <span>Ambassador</span>
-        </Link>
+          <Link href="/deals" className="whitespace-nowrap transition hover:text-blue-700">
+            Deals
+          </Link>
 
-        <Link
-          href="/home-businesses"
-          className="flex items-center space-x-1 whitespace-nowrap transition hover:text-blue-700"
-        >
-          <span role="img" aria-label="Home Biz">🧵</span>
-          <span>Home Biz</span>
-        </Link>
+          <Link href="/pricing" className="whitespace-nowrap transition hover:text-blue-700">
+            For Business Owners
+          </Link>
+
+          <Link href="/street-ambassador" className="whitespace-nowrap transition hover:text-blue-700">
+            Ambassador
+          </Link>
+
+          <Link href="/home-businesses" className="whitespace-nowrap transition hover:text-blue-700">
+            Home Businesses
+          </Link>
         </nav>
 
-        <div className="hidden shrink-0 items-center space-x-3 lg:flex">
-        {!user ? (
+        <div className="hidden shrink-0 items-center gap-3 lg:flex">
           <Link
-            href="/login"
-            className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition text-sm shadow"
+            href="/countries/canada"
+            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
           >
-            Login
+            Explore Streets
           </Link>
-        ) : (
-          <div className="flex items-center space-x-3">
+
+          {!user ? (
             <Link
-              href="/profile"
-              className="max-w-[120px] truncate text-gray-700 transition hover:text-blue-700 xl:max-w-[170px]"
+              href="/login"
+              className="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-bold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50"
             >
-              👤 {user.user_metadata?.username || user.email}
+              Login
             </Link>
-
-            {user.user_metadata?.isAdmin && (
-              <Link
-                href="/admin/shops"
-                className="text-sm text-yellow-600 hover:text-yellow-800 font-semibold underline transition"
-                title="Go to Admin Panel"
+          ) : (
+            <div className="group relative">
+              <button
+                type="button"
+                className="flex max-w-[170px] items-center gap-2 truncate rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50 hover:text-blue-700"
               >
-                👑 Admin
-              </Link>
-            )}
+                👤 <span className="truncate">{user.user_metadata?.username || user.email}</span>
+              </button>
 
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition text-sm shadow"
-            >
-              Logout
-            </button>
-          </div>
-        )}
-        </div>
-      </div>
-
-      {mobileMenuOpen && (
-        <nav className="border-t border-gray-100 bg-white px-4 py-4 shadow-sm lg:hidden">
-          <div className="flex flex-col gap-2 text-sm font-medium text-gray-700">
-            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🏠 Home</Link>
-            <Link href="/live-cities" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🏙️ Live Cities</Link>
-            <Link href="/deals" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🔥 Deals</Link>
-            <Link href="/member" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">👤 Account</Link>
-            <Link href="/shop-owner" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🏪 Shop Owner</Link>
-            <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🏷️ Pricing & Tiers</Link>
-            <Link href="/street-ambassador" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🤝 Ambassador</Link>
-            <Link href="/home-businesses" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700">🧵 Home Biz</Link>
-
-            {!user ? (
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="mt-2 rounded-full bg-blue-600 px-4 py-2 text-center text-white shadow transition hover:bg-blue-700"
-              >
-                Login
-              </Link>
-            ) : (
-              <>
+              <div className="invisible absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border border-slate-100 bg-white py-2 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                 <Link
                   href="/profile"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700"
+                  className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-blue-50 hover:text-blue-700"
                 >
-                  👤 {user.user_metadata?.username || user.email}
+                  👤 Profile
+                </Link>
+
+                <Link
+                  href="/member"
+                  className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-blue-50 hover:text-blue-700"
+                >
+                  🛍️ Account
+                </Link>
+
+                <Link
+                  href="/shop-owner"
+                  className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-blue-50 hover:text-blue-700"
+                >
+                  🏪 Shop Owner Portal
                 </Link>
 
                 {user.user_metadata?.isAdmin && (
                   <Link
                     href="/admin/shops"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="rounded-lg px-3 py-2 font-semibold text-yellow-700 hover:bg-yellow-50"
+                    className="block px-4 py-2.5 text-sm font-semibold text-yellow-700 transition hover:bg-yellow-50"
                   >
                     👑 Admin
                   </Link>
@@ -237,7 +161,78 @@ export default function Header() {
 
                 <button
                   onClick={handleLogout}
-                  className="mt-2 rounded-full bg-red-500 px-4 py-2 text-white shadow transition hover:bg-red-600"
+                  className="mt-1 block w-full px-4 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {mobileMenuOpen && (
+        <nav className="border-t border-slate-100 bg-white px-4 py-4 shadow-sm lg:hidden">
+          <div className="flex flex-col gap-2 text-sm font-semibold text-slate-700">
+            <Link href="/" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+              Home
+            </Link>
+
+            <Link href="/countries/canada" onClick={closeMobileMenu} className="rounded-xl bg-blue-600 px-3 py-2 text-center text-white shadow transition hover:bg-blue-700">
+              Explore Streets
+            </Link>
+
+            <Link href="/live-cities" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+              Live Cities
+            </Link>
+
+            <Link href="/deals" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+              Deals
+            </Link>
+
+            <Link href="/pricing" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+              For Business Owners
+            </Link>
+
+            <Link href="/shop-owner" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+              Shop Owner Portal
+            </Link>
+
+            <Link href="/street-ambassador" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+              Ambassador
+            </Link>
+
+            <Link href="/home-businesses" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+              Home Businesses
+            </Link>
+
+            <Link href="/member" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+              Account
+            </Link>
+
+            {!user ? (
+              <Link
+                href="/login"
+                onClick={closeMobileMenu}
+                className="mt-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-center font-bold text-slate-800 transition hover:bg-slate-50"
+              >
+                Login
+              </Link>
+            ) : (
+              <>
+                <Link href="/profile" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+                  👤 {user.user_metadata?.username || user.email}
+                </Link>
+
+                {user.user_metadata?.isAdmin && (
+                  <Link href="/admin/shops" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 font-bold text-yellow-700 hover:bg-yellow-50">
+                    👑 Admin
+                  </Link>
+                )}
+
+                <button
+                  onClick={handleLogout}
+                  className="mt-2 rounded-full bg-red-500 px-4 py-2 font-bold text-white shadow transition hover:bg-red-600"
                 >
                   Logout
                 </button>

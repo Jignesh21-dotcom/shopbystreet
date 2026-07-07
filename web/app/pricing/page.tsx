@@ -14,82 +14,87 @@ const benefits = [
       'Help nearby shoppers find your business by city, street, address, and category.',
   },
   {
-    icon: '📦',
-    title: 'Showcase your products',
+    icon: '🌐',
+    title: 'Keep your profile accurate',
     description:
-      'Upload products, prices, photos, and descriptions so customers know what you offer.',
+      'Claim your basic business profile for free and keep your details up to date.',
   },
   {
-    icon: '❤️',
-    title: 'Support local shopping',
+    icon: '📦',
+    title: 'Showcase products during Phase 1',
     description:
-      'Become part of Canada’s Digital Main Street and help customers shop closer to home.',
+      'Add photos, prices, and up to 100 products for free during our Founding Business Program.',
   },
 ];
 
-const includedFeatures = [
+const alwaysFreeFeatures = [
   'Claim your business profile',
-  'Edit business information',
+  'Edit business name and description',
+  'Update address and map location',
+  'Add phone and email',
+  'Add website link',
+  'Add Instagram and Facebook links',
+  'Add business hours',
+  'Appear on city and street pages',
+];
+
+const phaseOneFeatures = [
   'Add storefront photos',
   'Upload up to 100 products',
   'Add product prices',
   'Add product descriptions',
-  'Business hours',
-  'Phone and email',
-  'Website link',
-  'Instagram and Facebook links',
-  'Google Maps location',
-  'City and street discovery',
+  'Build a digital storefront',
+  'Showcase products to nearby shoppers',
 ];
 
 const roadmap = [
   {
-    phase: 'Now',
-    title: 'Founding Business Program',
-    items: ['Free business listings', 'Shop owner claims', 'Product showcase', 'Street discovery'],
+    phase: 'Always',
+    title: 'Free Business Profile',
+    items: ['Claim shop', 'Update contact details', 'Add website and social links', 'Appear in local discovery'],
   },
   {
-    phase: 'Next',
-    title: 'Local Marketplace Tools',
-    items: ['Online ordering', 'Click & Collect', 'Payments', 'Customer inquiries'],
+    phase: 'Phase 1',
+    title: 'Founding Business Program',
+    items: ['Free product showcase', 'Storefront photos', 'Up to 100 products', 'Product descriptions and prices'],
   },
   {
     phase: 'Future',
-    title: 'Smarter Local Discovery',
-    items: ['AI shopping assistant', 'Business insights', 'Local promotions', 'Customer rewards'],
+    title: 'Marketplace Tools',
+    items: ['Online ordering', 'Click & Collect', 'Payments', 'Customer rewards'],
   },
 ];
 
 const faqs = [
   {
-    question: 'Is LocalStreetShop really free during Phase 1?',
+    question: 'Is claiming my business always free?',
     answer:
-      'Yes. During our Founding Business Program, local businesses can claim their listing, update their profile, and showcase products for free.',
+      'Yes. Claiming and managing your basic business profile is always free. This includes your business name, address, contact details, website, social links, hours, and local discovery listing.',
   },
   {
-    question: 'How many products can I upload?',
+    question: 'What is free during Phase 1?',
+    answer:
+      'During Phase 1, businesses can also add storefront photos and showcase up to 100 products for free as part of our Founding Business Program.',
+  },
+  {
+    question: 'What if I already have my own website?',
+    answer:
+      'That is perfectly fine. You can still claim your LocalStreetShop profile for free and link visitors to your existing website, Instagram, Facebook, or contact information.',
+  },
+  {
+    question: 'How many products can I upload during Phase 1?',
     answer:
       'During Phase 1, businesses can upload up to 100 products for free. This gives most shops enough room to build a strong digital storefront.',
   },
   {
-    question: 'Do I need my own website?',
-    answer:
-      'No. LocalStreetShop works whether or not you already have a website. If you do have one, you can add your website link to your profile.',
-  },
-  {
     question: 'What happens after Phase 1?',
     answer:
-      'Core business profiles will remain available. As the platform grows, optional paid services and marketplace tools may be introduced for businesses that want more support.',
+      'Your basic business profile will remain free. In the future, optional paid services and marketplace tools may be introduced for businesses that want additional support.',
   },
   {
     question: 'Can I get help setting up my shop?',
     answer:
       'Yes. The optional Professional Store Setup service is for busy business owners who want help uploading products, organizing details, and improving their listing.',
-  },
-  {
-    question: 'Can customers buy directly on LocalStreetShop?',
-    answer:
-      'Not yet. The current focus is discovery and product showcase. Online ordering, payments, and Click & Collect are part of the future roadmap.',
   },
 ];
 
@@ -111,9 +116,7 @@ export default function PricingPage() {
         .limit(1)
         .single();
 
-      if (data?.id) {
-        setShopId(data.id);
-      }
+      if (data?.id) setShopId(data.id);
     };
 
     fetchUserShop();
@@ -139,9 +142,7 @@ export default function PricingPage() {
 
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: userData.user.email,
           tier,
@@ -165,7 +166,6 @@ export default function PricingPage() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-slate-50 text-slate-900 antialiased">
-      {/* HERO */}
       <section className="relative border-b border-slate-200 bg-white">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-blue-100 blur-3xl" />
@@ -183,8 +183,8 @@ export default function PricingPage() {
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-              Join LocalStreetShop and make it easier for nearby customers to discover your
-              business, explore your products, and support local shopping in their community.
+              Claiming and managing your basic business profile is always free. During Phase 1,
+              businesses can also add photos and showcase up to 100 products for free.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -204,18 +204,17 @@ export default function PricingPage() {
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-3 text-sm text-slate-600 sm:grid-cols-4">
-              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
-                🇨🇦 <span className="block font-semibold text-slate-900">Built in Canada</span>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
-                🏪 <span className="block font-semibold text-slate-900">Local First</span>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
-                💰 <span className="block font-semibold text-slate-900">Phase 1 Free</span>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
-                ❤️ <span className="block font-semibold text-slate-900">Community Focused</span>
-              </div>
+              {[
+                ['🇨🇦', 'Built in Canada'],
+                ['🏪', 'Profile Always Free'],
+                ['📦', 'Phase 1 Products Free'],
+                ['❤️', 'Community Focused'],
+              ].map(([icon, label]) => (
+                <div key={label} className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
+                  <span className="text-xl">{icon}</span>
+                  <span className="mt-1 block font-semibold text-slate-900">{label}</span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -232,13 +231,13 @@ export default function PricingPage() {
 
                 <div className="mt-5 grid gap-3">
                   {[
-                    ['☕', 'Coffee shops', 'Fresh drinks and local cafés'],
-                    ['👗', 'Boutiques', 'Clothing, gifts, and accessories'],
-                    ['📚', 'Bookstores', 'Books, stationery, and more'],
-                  ].map(([icon, title, text]) => (
+                    ['Free', 'Business profile', 'Claim and update your basic listing'],
+                    ['Free', 'Website links', 'Send shoppers to your existing website'],
+                    ['Phase 1', 'Product showcase', 'Add photos and up to 100 products'],
+                  ].map(([label, title, text]) => (
                     <div key={title} className="flex items-center gap-4 rounded-2xl bg-white p-4 text-slate-900 shadow-sm">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
-                        {icon}
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-xs font-black text-blue-700">
+                        {label}
                       </div>
                       <div>
                         <p className="font-bold">{title}</p>
@@ -251,14 +250,13 @@ export default function PricingPage() {
             </div>
 
             <div className="absolute -bottom-6 -left-4 hidden rounded-2xl border border-green-200 bg-white p-4 shadow-xl sm:block">
-              <p className="text-sm font-bold text-green-700">Founding Business Program</p>
-              <p className="text-xs text-slate-500">Free access during Phase 1</p>
+              <p className="text-sm font-bold text-green-700">Always free to claim</p>
+              <p className="text-xs text-slate-500">Products free during Phase 1</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ERROR */}
       {errorMessage && (
         <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
           <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700">
@@ -267,18 +265,17 @@ export default function PricingPage() {
         </section>
       )}
 
-      {/* WHY JOIN */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <span className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
             Why LocalStreetShop?
           </span>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-            One page. One purpose. One action.
+            Help customers find your business online.
           </h2>
           <p className="mt-4 text-lg leading-8 text-slate-600">
-            This page has one goal: help local business owners understand why joining
-            LocalStreetShop is worth it.
+            Whether you already have a website or not, LocalStreetShop helps your business appear
+            where nearby shoppers are exploring.
           </p>
         </div>
 
@@ -298,93 +295,54 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FOUNDING PROGRAM */}
       <section className="bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-          <div>
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2">
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6">
             <span className="inline-flex rounded-full bg-green-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-green-300">
-              Founding Business Program
+              Always Free
             </span>
-            <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-              Phase 1 is free because local businesses deserve a better online presence.
+            <h2 className="mt-5 text-3xl font-black tracking-tight">
+              Business profile
             </h2>
-            <p className="mt-5 text-lg leading-8 text-slate-300">
-              LocalStreetShop is growing one business at a time. Instead of charging businesses
-              before they see value, we&apos;re helping Canadian communities discover local shops first.
+            <p className="mt-4 leading-7 text-slate-300">
+              Claiming and managing your basic business profile is always free, even after Phase 1.
+              This is perfect for businesses that already have their own website.
             </p>
-            <p className="mt-4 leading-7 text-slate-400">
-              As the platform grows, we may introduce optional premium services and marketplace
-              tools. The core mission stays the same: help people discover and support local businesses.
-            </p>
+
+            <div className="mt-6 grid gap-3">
+              {alwaysFreeFeatures.map((feature) => (
+                <div key={feature} className="flex items-start gap-3 rounded-2xl bg-white/5 p-3 text-sm">
+                  <span className="font-black text-green-300">✓</span>
+                  <span className="font-medium text-slate-100">{feature}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl">
-            <div className="rounded-3xl bg-white p-6 text-slate-900">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.2em] text-green-600">
-                    Phase 1 Access
-                  </p>
-                  <h3 className="mt-2 text-3xl font-black">FREE</h3>
-                  <p className="mt-2 text-slate-600">For local businesses during the Founding Business Program.</p>
-                </div>
-                <div className="rounded-full bg-green-100 px-4 py-2 text-sm font-bold text-green-700">
-                  $0
-                </div>
-              </div>
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6">
+            <span className="inline-flex rounded-full bg-blue-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-300">
+              Free During Phase 1
+            </span>
+            <h2 className="mt-5 text-3xl font-black tracking-tight">
+              Product showcase
+            </h2>
+            <p className="mt-4 leading-7 text-slate-300">
+              During the Founding Business Program, businesses can also add photos and showcase
+              up to 100 products for free.
+            </p>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                {includedFeatures.slice(0, 8).map((feature) => (
-                  <div key={feature} className="flex items-start gap-3 rounded-2xl bg-slate-50 p-3 text-sm">
-                    <span className="font-black text-green-600">✓</span>
-                    <span className="font-medium text-slate-700">{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <Link
-                href="/shop-owner/claim"
-                className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-green-600 px-6 py-4 text-sm font-bold text-white transition hover:bg-green-700"
-              >
-                Claim Your Free Shop
-              </Link>
+            <div className="mt-6 grid gap-3">
+              {phaseOneFeatures.map((feature) => (
+                <div key={feature} className="flex items-start gap-3 rounded-2xl bg-white/5 p-3 text-sm">
+                  <span className="font-black text-blue-300">✓</span>
+                  <span className="font-medium text-slate-100">{feature}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* EVERYTHING INCLUDED */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <div>
-            <span className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
-              Everything Included
-            </span>
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Build your digital storefront for free.
-            </h2>
-          </div>
-          <p className="max-w-2xl text-lg leading-8 text-slate-600">
-            Give customers the information they need before they visit your store.
-          </p>
-        </div>
-
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {includedFeatures.map((feature) => (
-            <div
-              key={feature}
-              className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-            >
-              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-green-100 text-sm font-black text-green-700">
-                ✓
-              </span>
-              <span className="font-semibold text-slate-800">{feature}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* PROFESSIONAL SETUP */}
       <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center">
           <div>
@@ -425,7 +383,7 @@ export default function PricingPage() {
               <h3 className="mt-3 text-2xl font-black text-slate-950">Professional Store Setup</h3>
               <p className="mt-3 leading-7 text-slate-600">
                 A one-time setup service for business owners who want LocalStreetShop to help prepare
-                their shop profile.
+                their shop profile and product showcase.
               </p>
 
               <div className="mt-6 border-y border-slate-100 py-6">
@@ -443,25 +401,24 @@ export default function PricingPage() {
               </button>
 
               <p className="mt-4 text-center text-xs leading-5 text-slate-500">
-                You can also start free and set up your shop yourself.
+                You can also claim your profile for free and set it up yourself.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ROADMAP */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <span className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
             The Road Ahead
           </span>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-            Join early and grow with the platform.
+            Free profile first. Optional tools as we grow.
           </h2>
           <p className="mt-4 text-lg leading-8 text-slate-600">
-            LocalStreetShop is starting with discovery and product showcase. Over time, we&apos;ll
-            build more tools to help local businesses sell and connect with customers.
+            LocalStreetShop starts with local discovery. As the platform grows, businesses can choose
+            optional services and marketplace tools that help them do more.
           </p>
         </div>
 
@@ -485,27 +442,26 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* TRUST */}
       <section className="bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div>
               <span className="text-sm font-bold uppercase tracking-[0.2em] text-green-300">
-                No Hidden Fees
+                Simple and Fair
               </span>
               <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-                Built to be simple, fair, and local-business friendly.
+                Built for businesses with or without their own website.
               </h2>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               {[
-                'No monthly fee during Phase 1',
-                'No credit card required to start',
-                'No long-term contracts',
-                'Built for Canadian businesses',
-                'Mobile-friendly shop profiles',
+                'Business profile is always free',
+                'No credit card required to claim',
+                'Website owners can link out',
+                'Product tools free during Phase 1',
                 'Optional paid services only',
+                'Built for Canadian local businesses',
               ].map((item) => (
                 <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-5">
                   <span className="font-black text-green-300">✓</span>
@@ -517,7 +473,6 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center">
           <span className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
@@ -530,10 +485,7 @@ export default function PricingPage() {
 
         <div className="mt-10 space-y-4">
           {faqs.map((faq) => (
-            <details
-              key={faq.question}
-              className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-            >
+            <details key={faq.question} className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-bold text-slate-950">
                 {faq.question}
                 <span className="text-xl text-blue-600 transition group-open:rotate-45">+</span>
@@ -544,18 +496,17 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
       <section className="px-4 pb-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-blue-600 to-green-500 p-8 text-center text-white shadow-2xl shadow-blue-600/20 sm:p-12">
           <span className="inline-flex rounded-full bg-white/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-50">
             Canada&apos;s Digital Main Street
           </span>
           <h2 className="mx-auto mt-5 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl">
-            Ready to grow your business locally?
+            Ready to claim your business profile?
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-blue-50">
-            Claim your shop, showcase your products, and help customers discover what&apos;s available
-            on the streets around them.
+            Claiming your basic profile is always free. Keep your details up to date and help
+            customers discover your business locally.
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
