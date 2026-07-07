@@ -1,59 +1,133 @@
-// app/components/Footer.tsx
-
-import Link from 'next/link';
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-white border-t border-gray-200 shadow-inner mt-12">
-      <div className="max-w-7xl mx-auto px-6 py-10">
+    <footer className="mt-20 border-t border-slate-200 bg-slate-50">
+      <div className="mx-auto max-w-7xl px-6 py-14">
 
-        {/* Brand */}
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-bold text-blue-700">
-            LocalStreetShop
-          </h2>
+        <div className="grid gap-12 lg:grid-cols-4">
 
-          <p className="text-sm text-gray-500 mt-1">
-            The Digital Main Street of Canada
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/lss-logo.png"
+                alt="LocalStreetShop"
+                width={52}
+                height={52}
+              />
+
+              <div>
+                <h2 className="text-2xl font-black text-blue-700">
+                  LocalStreetShop
+                </h2>
+
+                <p className="text-sm text-slate-500">
+                  Canada's Digital Main Street
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-5 text-sm leading-7 text-slate-600">
+              Helping Canadians discover and support local businesses,
+              one street at a time.
+            </p>
+          </div>
+
+          {/* Explore */}
+          <div>
+            <h3 className="mb-5 text-lg font-bold text-slate-900">
+              Explore
+            </h3>
+
+            <div className="space-y-3 text-slate-600">
+
+              <Link href="/" className="block hover:text-blue-700">
+                Home
+              </Link>
+
+              <Link href="/live-cities" className="block hover:text-blue-700">
+                Live Cities
+              </Link>
+
+              <Link href="/deals" className="block hover:text-blue-700">
+                Deals
+              </Link>
+
+              <Link href="/about" className="block hover:text-blue-700">
+                About
+              </Link>
+
+            </div>
+          </div>
+
+          {/* Business */}
+          <div>
+            <h3 className="mb-5 text-lg font-bold text-slate-900">
+              Business Owners
+            </h3>
+
+            <div className="space-y-3 text-slate-600">
+
+              <Link href="/pricing" className="block hover:text-blue-700">
+                For Business Owners
+              </Link>
+
+              <Link href="/shop-owner/claim" className="block hover:text-blue-700">
+                Claim Your Shop
+              </Link>
+
+              <Link href="/shop-owner" className="block hover:text-blue-700">
+                Shop Owner Portal
+              </Link>
+
+              <Link href="/home-businesses" className="block hover:text-blue-700">
+                Home Businesses
+              </Link>
+
+            </div>
+          </div>
+
+          {/* Community */}
+          <div>
+            <h3 className="mb-5 text-lg font-bold text-slate-900">
+              Community
+            </h3>
+
+            <div className="space-y-3 text-slate-600">
+
+              <Link href="/street-ambassador" className="block hover:text-blue-700">
+                Street Ambassador
+              </Link>
+
+              <Link href="/contact-us" className="block hover:text-blue-700">
+                Contact
+              </Link>
+
+              <Link href="/privacy-policy" className="block hover:text-blue-700">
+                Privacy Policy
+              </Link>
+
+            </div>
+          </div>
+
+        </div>
+
+        <div className="mt-12 border-t border-slate-200 pt-8 text-center">
+
+          <p className="text-sm text-slate-500">
+            Built with ❤️ for Canadian communities.
           </p>
-        </div>
 
-        {/* Navigation */}
-        <div className="flex flex-wrap justify-center gap-6 text-sm font-medium text-gray-600 mb-6">
+          <p className="mt-2 text-sm text-slate-500">
+            © {new Date().getFullYear()}{" "}
+            <span className="font-semibold text-slate-700">
+              LocalStreetShop™
+            </span>
+            . All rights reserved.
+          </p>
 
-          <Link href="/about" className="hover:text-blue-700 transition">
-            About
-          </Link>
-
-          <Link href="/contact-us" className="hover:text-blue-700 transition">
-            Contact
-          </Link>
-
-          <Link href="/privacy-policy" className="hover:text-blue-700 transition">
-            Privacy Policy
-          </Link>
-
-          <Link href="/shop-owner" className="hover:text-blue-700 transition">
-            Shop Owner
-          </Link>
-
-          <Link href="/street-ambassador" className="hover:text-blue-700 transition">
-            Street Ambassador
-          </Link>
-
-          <Link href="/home-businesses" className="hover:text-blue-700 transition">
-            Home Businesses
-          </Link>
-
-        </div>
-
-        {/* Copyright */}
-        <div className="border-t pt-5 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()}{' '}
-          <span className="font-semibold">
-            LocalStreetShop™
-          </span>
-          . All rights reserved.
         </div>
 
       </div>
