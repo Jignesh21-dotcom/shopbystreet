@@ -117,7 +117,22 @@ export default function ProductsClient() {
             </Link>
           </div>
         </div>
+        <div className="mb-8 rounded-2xl border border-green-200 bg-green-50 p-5">
+  <h2 className="text-lg font-bold text-green-800">
+    🎉 Phase 1: Showcase Up to 100 Products Free
+  </h2>
 
+  <p className="mt-2 text-sm leading-6 text-green-900">
+    During Phase 1, founding businesses can add and showcase up to 100 products
+    on LocalStreetShop for free. This helps customers discover what local shops
+    offer before visiting or contacting the business.
+  </p>
+
+  <p className="mt-2 text-sm leading-6 text-green-900">
+    Future optional services may include Professional Store Setup and
+    marketplace tools, but claiming your business profile remains free.
+  </p>
+</div>
         {loading ? (
           <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6 text-center text-gray-600">
             Loading your products...
@@ -129,9 +144,9 @@ export default function ProductsClient() {
             </h2>
 
             <p className="mx-auto mt-2 max-w-xl text-gray-600">
-              Start by adding your first product. During Phase 1,
-              LocalStreetShop is helping founding businesses build their online
-              storefront presence.
+              Start by adding your first product. During Phase 1, founding businesses can
+  showcase up to 100 products for free and start building their online
+  storefront presence.
             </p>
 
             <Link

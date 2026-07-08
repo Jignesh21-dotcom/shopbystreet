@@ -40,7 +40,7 @@ function FoundingProgramBanner() {
       </p>
 
       <p className="text-sm text-gray-700 mb-2">
-        During Phase 1, businesses can claim their shop, update their business information, and showcase up to 10 products with images completely free.
+        During Phase 1, businesses can claim their shop, update their business information, and showcase up to 100 products with images completely free.
       </p>
 
       <p className="text-sm text-gray-700 mb-2">
@@ -90,7 +90,7 @@ function TierNotice({ usageText, borderClassName }: TierNoticeProps) {
         href="/business-owners"
         className="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1 bg-white hover:bg-blue-50 px-3 py-1 rounded-lg border border-blue-200 shadow-sm transition"
       >
-        🎁 Have an Ambassador Code? Upgrade Account
+        Learn About Business Owner Program
       </Link>
     </div>
   );
@@ -203,7 +203,7 @@ export default function ShopOwnerDashboardClient() {
               </div>
 
               <TierNotice
-                usageText="Claim a shop to unlock 10 free uploads."
+                usageText="Claim a shop to unlock 100 free uploads."
                 borderClassName="border-yellow-300"
               />
 
@@ -256,11 +256,11 @@ export default function ShopOwnerDashboardClient() {
                       </Link>
 
                       <Link
-                        href="/business-owners"
-                        className="rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-blue-700 max-sm:w-full max-sm:text-center"
-                      >
-                        ⚡ Upgrade Plan
-                      </Link>
+  href="/business-owners"
+  className="rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-blue-700 max-sm:w-full max-sm:text-center"
+>
+  🏪 Business Owner Program
+</Link>
 
                       <Link
                         href="/shop-owner/products"
@@ -279,18 +279,16 @@ export default function ShopOwnerDashboardClient() {
                         </Link>
                       )}
 
-                      <a
-                        href="https://buy.stripe.com/cNi3cu9mk2tk7I899N4ow00"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 max-sm:w-full max-sm:text-center"
-                      >
-                        💚 Support LocalStreetShop
-                      </a>
+                     <Link
+  href="/support"
+  className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 max-sm:w-full max-sm:text-center"
+>
+  💚 Support the Project
+</Link>
                     </div>
 
                     <TierNotice
-                      usageText="You currently have access to 10 free product uploads."
+                      usageText="You currently have access to 100 free product uploads."
                       borderClassName="border-green-200"
                     />
                   </div>

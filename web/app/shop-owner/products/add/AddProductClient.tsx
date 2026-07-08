@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function AddProductClient() {
-  const FREE_TIER_LIMIT = 10;
+  const FREE_TIER_LIMIT = 100;
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
@@ -107,7 +107,7 @@ export default function AddProductClient() {
     setError('');
 
     if (allowedLimit !== null && productCount >= allowedLimit) {
-      setError('Upload limit reached. Please upgrade your account tier to add more products.');
+      setError('You have reached the Phase 1 limit of 100 free product uploads.');
       return;
     }
 
@@ -270,9 +270,16 @@ export default function AddProductClient() {
                     : 'border-blue-100 bg-blue-50 text-blue-800'
                 }`}
               >
+                <div className="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm text-green-900">
+  <p className="font-bold">🎉 Phase 1 Product Showcase</p>
+  <p className="mt-1">
+    During Phase 1, you can showcase up to 100 products for free. Claiming your
+    business profile remains free.
+  </p>
+</div>
                 <div>
                   <span className="font-bold">Current Usage:</span> {productCount} /{' '}
-                  {allowedLimit === null ? 'Unlimited' : allowedLimit} listing slots filled.
+                  {allowedLimit === null ? 'Unlimited' : allowedLimit} product showcase slots filled.
                 </div>
 
                 {isTierLocked && (
@@ -280,7 +287,7 @@ export default function AddProductClient() {
                     href="/business-owners"
                     className="rounded-full bg-red-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-red-700"
                   >
-                    Upgrade Tier with Ambassador Code
+                    Business Owner Program
                   </Link>
                 )}
               </div>
