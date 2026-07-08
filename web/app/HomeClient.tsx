@@ -43,7 +43,7 @@ const communityCards = [
     icon: '🏪',
     description:
       'Claim your shop, showcase products, and grow your local visibility.',
-    href: '/pricing',
+    href: '/business-owners',
     cta: 'For Business Owners',
   },
   {
@@ -278,7 +278,7 @@ export default function HomeClient() {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/pricing"
+                href="/business-owners"
                 className="inline-flex items-center justify-center rounded-full bg-blue-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
               >
                 Learn More

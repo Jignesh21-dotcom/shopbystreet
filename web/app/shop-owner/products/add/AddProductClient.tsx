@@ -277,7 +277,7 @@ export default function AddProductClient() {
 
                 {isTierLocked && (
                   <Link
-                    href="/pricing"
+                    href="/business-owners"
                     className="rounded-full bg-red-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-red-700"
                   >
                     Upgrade Tier with Ambassador Code

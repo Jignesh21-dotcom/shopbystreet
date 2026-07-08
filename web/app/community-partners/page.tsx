@@ -125,7 +125,7 @@ export default function FoundingCommunityPartnersPage() {
               </Link>
 
               <Link
-                href="/pricing"
+                href="/business-owners"
                 className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-4 text-sm font-bold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50"
               >
                 For Business Owners
@@ -397,7 +397,7 @@ export default function FoundingCommunityPartnersPage() {
             </Link>
 
             <Link
-              href="/pricing"
+              href="/business-owners"
               className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/10 px-7 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20"
             >
               For Business Owners

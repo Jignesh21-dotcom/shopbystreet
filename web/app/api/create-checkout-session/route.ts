@@ -15,7 +15,7 @@ const growthShowcasePriceId = isLiveMode
 const premiumMainStreetPriceId = isLiveMode
   ? process.env.STRIPE_PREMIUM_MAIN_STREET_PRICE_ID_LIVE ||
     process.env.STRIPE_PREMIUM_MAIN_STREET_PRICE_ID ||
-    'price_1TpAwUBZgvjk1IFcYfFLGV8e'
+    'price_1Tr2S2BZgvjk1IFcbnAg7ClC'
   : process.env.STRIPE_PREMIUM_MAIN_STREET_PRICE_ID_TEST ||
     process.env.STRIPE_PREMIUM_MAIN_STREET_PRICE_ID;
 
@@ -166,7 +166,7 @@ export async function POST(req: Request) {
           tierConfig.productLimit === null ? 'unlimited' : `${tierConfig.productLimit}`,
       },
       success_url: `${siteUrl}/shop-owner/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/pricing`,
+      cancel_url: `${siteUrl}/business-owners`,
     });
 
     return NextResponse.json({ url: session.url });

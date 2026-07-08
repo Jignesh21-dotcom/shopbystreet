@@ -30,8 +30,9 @@ export default function Footer() {
             </div>
 
             <p className="mt-5 text-sm leading-7 text-slate-600">
-              Helping Canadians discover and support local businesses,
-              one street at a time.
+              Discover local businesses by exploring real streets across
+              Canada. Helping communities and small businesses thrive
+              together.
             </p>
           </div>
 
@@ -70,7 +71,7 @@ export default function Footer() {
 
             <div className="space-y-3 text-slate-600">
 
-              <Link href="/pricing" className="block hover:text-blue-700">
+              <Link href="/business-owners" className="block hover:text-blue-700">
                 For Business Owners
               </Link>
 
@@ -101,6 +102,10 @@ export default function Footer() {
                 Community Partners
               </Link>
 
+              <Link href="/support" className="block hover:text-blue-700">
+                Support the Project
+              </Link>
+
               <Link href="/contact-us" className="block hover:text-blue-700">
                 Contact
               </Link>
@@ -117,10 +122,15 @@ export default function Footer() {
         <div className="mt-12 border-t border-slate-200 pt-8 text-center">
 
           <p className="text-sm text-slate-500">
-            Built with ❤️ for Canadian communities.
+            Building Canada's Digital Main Street — one street, one shop, one
+            community at a time.
           </p>
 
           <p className="mt-2 text-sm text-slate-500">
+            Independent. Community-first. Proudly Canadian 🇨🇦
+          </p>
+
+          <p className="mt-3 text-sm text-slate-500">
             © {new Date().getFullYear()}{" "}
             <span className="font-semibold text-slate-700">
               LocalStreetShop™

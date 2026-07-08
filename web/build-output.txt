@@ -53,7 +53,7 @@ Route (app)                                    Revalidate  Expire
 ├ ○ /live-cities
 ├ ○ /login
 ├ ○ /member
-├ ○ /pricing
+├ ○ //business-owners
 ├ ○ /privacy-policy
 ├ ○ /profile
 ├ ƒ /provinces/[province]

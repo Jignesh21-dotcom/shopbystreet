@@ -91,7 +91,7 @@ export default function Header() {
             Deals
           </Link>
 
-          <Link href="/pricing" className="whitespace-nowrap transition hover:text-blue-700">
+          <Link href="/business-owners" className="whitespace-nowrap transition hover:text-blue-700">
             For Business Owners
           </Link>
 
@@ -190,7 +190,7 @@ export default function Header() {
               Deals
             </Link>
 
-            <Link href="/pricing" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+            <Link href="/business-owners" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
               For Business Owners
             </Link>
 

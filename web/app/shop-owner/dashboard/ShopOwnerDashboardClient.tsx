@@ -87,7 +87,7 @@ function TierNotice({ usageText, borderClassName }: TierNoticeProps) {
       </div>
 
       <Link
-        href="/pricing"
+        href="/business-owners"
         className="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1 bg-white hover:bg-blue-50 px-3 py-1 rounded-lg border border-blue-200 shadow-sm transition"
       >
         🎁 Have an Ambassador Code? Upgrade Account
@@ -256,7 +256,7 @@ export default function ShopOwnerDashboardClient() {
                       </Link>
 
                       <Link
-                        href="/pricing"
+                        href="/business-owners"
                         className="rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-blue-700 max-sm:w-full max-sm:text-center"
                       >
                         ⚡ Upgrade Plan
