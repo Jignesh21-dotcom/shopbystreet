@@ -159,10 +159,10 @@ export default function AboutPage() {
               </Link>
 
               <Link
-                href="/street-ambassador"
+                href="/community-partners"
                 className="w-full rounded-full border border-blue-200 bg-white px-6 py-3 font-semibold text-blue-700 shadow-sm transition hover:bg-blue-50 sm:w-auto"
               >
-                Become an Ambassador
+                Become a Community Partner
               </Link>
             </div>
           </section>

@@ -97,8 +97,8 @@ export default function Footer() {
 
             <div className="space-y-3 text-slate-600">
 
-              <Link href="/street-ambassador" className="block hover:text-blue-700">
-                Street Ambassador
+              <Link href="/community-partners" className="block hover:text-blue-700">
+                Community Partners
               </Link>
 
               <Link href="/contact-us" className="block hover:text-blue-700">

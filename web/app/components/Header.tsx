@@ -198,8 +198,8 @@ export default function Header() {
               Shop Owner Portal
             </Link>
 
-            <Link href="/street-ambassador" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
-              Ambassador
+            <Link href="/community-partners" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
+              Community Partners
             </Link>
 
             <Link href="/home-businesses" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
