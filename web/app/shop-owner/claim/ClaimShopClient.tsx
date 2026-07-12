@@ -29,6 +29,22 @@ const slugify = (text: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)+/g, '');
 
+const getClaimButtonText = (claim: ExistingClaim | undefined) => {
+  if (!claim) {
+    return 'Claim this business';
+  }
+
+  if (claim.status === 'approved') {
+    return 'Claim approved';
+  }
+
+  if (claim.status === 'rejected') {
+    return 'Claim rejected';
+  }
+
+  return 'Claim pending';
+};
+
 export default function ClaimShopClient() {
   const [user, setUser] = useState<any>(null);
   const [search, setSearch] = useState('');
@@ -158,70 +174,72 @@ export default function ClaimShopClient() {
   };
 
   const handleClaim = async (shop: ClaimResult) => {
-    if (!user) return;
-    if (existingClaims[shop.id]) return;
+  if (!user) return;
+  if (existingClaims[shop.id]) return;
 
-    setSubmittingId(shop.id);
+  setSubmittingId(shop.id);
 
-    try {
-      const response = await fetch('/api/shop-claims', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          shopId: shop.id,
-          shopName: shop.name,
-          shopAddress: shop.address || null,
-          shopCity: shop.cityName || null,
-          shopStreet: shop.streetName || null,
-          message: messages[shop.id] || '',
-          userId: user.id,
-          userEmail: user.email,
-        }),
-      });
+  try {
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        alert(`❌ ${result?.error || 'Unable to submit claim request.'}`);
-        return;
-      }
-
-      const claim = result?.claim as ExistingClaim | undefined;
-
-      if (claim) {
-        setExistingClaims((prev) => ({
-          ...prev,
-          [shop.id]: claim,
-        }));
-      }
-
-      setMessages((prev) => ({ ...prev, [shop.id]: '' }));
-
-      if (result?.alreadyExists) {
-        alert('ℹ️ A claim for this shop is already submitted.');
-      } else {
-        alert('✅ Claim request submitted! We’ll review it shortly.');
-      }
-    } catch (error) {
-      console.error('Claim submit error:', error);
-      alert('❌ Unable to submit claim request right now. Please try again.');
-    } finally {
-      setSubmittingId(null);
+    if (sessionError || !session?.access_token) {
+      alert('❌ Your session has expired. Please log in again.');
+      router.push('/login');
+      return;
     }
-  };
 
-  const getClaimButtonText = (shopId: string) => {
-    const claim = existingClaims[shopId];
+    const response = await fetch('/api/shop-claims', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        shopId: shop.id,
+        shopName: shop.name,
+        shopAddress: shop.address || null,
+        shopCity: shop.cityName || null,
+        shopStreet: shop.streetName || null,
+        message: messages[shop.id]?.trim() || '',
+      }),
+    });
 
-    if (!claim) return 'Request Access';
+    const result = await response.json();
 
-    if (claim.status === 'approved') return 'Claim Approved';
-    if (claim.status === 'rejected') return 'Claim Rejected';
+    if (!response.ok) {
+      alert(`❌ ${result?.error || 'Unable to submit claim request.'}`);
+      return;
+    }
 
-    return 'Claim Submitted';
-  };
+    const claim = result?.claim as ExistingClaim | undefined;
+
+    if (claim) {
+      setExistingClaims((prev) => ({
+        ...prev,
+        [shop.id]: claim,
+      }));
+    }
+
+    setMessages((prev) => ({
+      ...prev,
+      [shop.id]: '',
+    }));
+
+    if (result?.alreadyExists) {
+      alert('ℹ️ A claim for this shop is already submitted.');
+    } else {
+      alert('✅ Claim request submitted! We’ll review it shortly.');
+    }
+  } catch (error) {
+    console.error('Claim submit error:', error);
+    alert('❌ Unable to submit claim request right now. Please try again.');
+  } finally {
+    setSubmittingId(null);
+  }
+};
 
   return (
     <>
@@ -376,7 +394,7 @@ export default function ClaimShopClient() {
                             >
                               {submittingId === shop.id
                                 ? 'Submitting...'
-                                : getClaimButtonText(shop.id)}
+                                : getClaimButtonText(claim)}
                             </button>
                           </div>
                         </div>

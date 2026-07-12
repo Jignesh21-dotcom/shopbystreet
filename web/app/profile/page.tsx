@@ -8,6 +8,7 @@ import SEO from '@/app/components/SEO';
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [ownedShopCount, setOwnedShopCount] = useState(0);
+  const [activeOrderRequestCount, setActiveOrderRequestCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const title = 'Your Profile | LocalStreetShop';
@@ -22,12 +23,24 @@ export default function ProfilePage() {
       if (data?.user) {
         setUser(data.user);
 
-        const { count } = await supabase
-          .from('shops')
-          .select('id', { count: 'exact', head: true })
-          .eq('owner_id', data.user.id);
+        const [
+          { count: shopCount },
+          { count: orderRequestCount },
+        ] = await Promise.all([
+          supabase
+            .from('shops')
+            .select('id', { count: 'exact', head: true })
+            .eq('owner_id', data.user.id),
 
-        setOwnedShopCount(count || 0);
+          supabase
+            .from('order_requests')
+            .select('id', { count: 'exact', head: true })
+            .eq('customer_user_id', data.user.id)
+            .in('status', ['pending', 'accepted']),
+        ]);
+
+        setOwnedShopCount(shopCount || 0);
+        setActiveOrderRequestCount(orderRequestCount || 0);
       }
 
       setIsLoading(false);
@@ -89,6 +102,32 @@ export default function ProfilePage() {
                   <p className="mt-2 text-slate-600">{user.email}</p>
                 </div>
 
+                <div className="mb-6 rounded-3xl border border-green-100 bg-green-50 p-5 sm:p-6">
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm font-bold uppercase tracking-[0.18em] text-green-700">
+                        Shopper
+                      </p>
+
+                      <h3 className="mt-2 text-2xl font-extrabold text-green-950">
+                        🛍️ My Order Requests ({activeOrderRequestCount})
+                      </h3>
+
+                      <p className="mt-3 max-w-2xl text-slate-700">
+                        View your active and previous Order Requests and track
+                        each request securely.
+                      </p>
+                    </div>
+
+                    <Link
+                      href="/my-order-requests"
+                      className="w-full shrink-0 rounded-full bg-green-600 px-6 py-3 text-center font-bold text-white transition hover:bg-green-700 sm:w-auto"
+                    >
+                      View My Requests →
+                    </Link>
+                  </div>
+                </div>
+
                 {isShopOwner ? (
                   <div className="rounded-3xl border border-blue-100 bg-blue-50 p-5 sm:p-6">
                     <h3 className="text-2xl font-extrabold text-blue-800">
@@ -125,8 +164,8 @@ export default function ProfilePage() {
                     </h3>
 
                     <p className="mt-3 text-slate-700">
-                      Browse local businesses, discover deals, and use your
-                      account for future shopper features.
+                      Browse local businesses, discover deals, and manage your
+                      LocalStreetShop shopping activity.
                     </p>
 
                     <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">

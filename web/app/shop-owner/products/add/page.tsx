@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import AddProductClient from '@/app/shop-owner/products/add/AddProductClient';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'Add Product | Shop Owner | LocalStreetShop',
   description:
