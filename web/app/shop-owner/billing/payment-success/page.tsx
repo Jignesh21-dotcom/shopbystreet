@@ -2,14 +2,21 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 
 export default function BillingPaymentSuccessPage() {
-  const searchParams = useSearchParams();
-  const sessionId = searchParams.get('session_id');
+  const [sessionId, setSessionId] =
+    useState<string | null>(null);
 
   const [secondsRemaining, setSecondsRemaining] =
     useState(4);
+
+  useEffect(() => {
+    const params = new URLSearchParams(
+      window.location.search,
+    );
+
+    setSessionId(params.get('session_id'));
+  }, []);
 
   useEffect(() => {
     if (secondsRemaining <= 0) {
