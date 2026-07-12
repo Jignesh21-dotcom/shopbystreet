@@ -15,8 +15,9 @@ const discoveryCards = [
   },
   {
     icon: '🏪',
-    title: 'Visit local shops',
-    description: 'View business profiles, products, contact details, maps, and more.',
+    title: 'Explore and request',
+    description:
+      'View shop profiles and products, then send an Order Request directly to participating businesses.',
   },
 ];
 
@@ -24,9 +25,9 @@ const shopperBenefits = [
   'Discover shops by city and street',
   'Explore businesses before visiting',
   'Find local products and deals',
-  'Support small businesses nearby',
-  'Browse storefronts from your phone',
-  'Experience local shopping street by street',
+  'Send Order Requests to participating shops',
+  'Track requests securely from your account or private link',
+  'Receive shop responses and status updates by email',
 ];
 
 const communityCards = [
@@ -34,7 +35,7 @@ const communityCards = [
     title: 'For Shoppers',
     icon: '🛍️',
     description:
-      'Explore Canadian streets online and find local businesses worth visiting.',
+      'Explore Canadian streets, discover products, and request items from participating local shops.',
     href: '/countries/canada',
     cta: 'Start Exploring',
   },
@@ -42,7 +43,7 @@ const communityCards = [
     title: 'For Business Owners',
     icon: '🏪',
     description:
-      'Claim your shop, showcase products, and grow your local visibility.',
+      'Claim your shop, showcase products, receive customer requests, and manage transparent marketplace billing.',
     href: '/business-owners',
     cta: 'For Business Owners',
   },
@@ -78,8 +79,9 @@ export default function HomeClient() {
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-              Discover local shops, explore Canadian streets, find nearby products, and support
-              small businesses in the communities around you.
+              Discover local shops, explore Canadian streets, find nearby products, and send
+              Order Requests directly to participating businesses — all while supporting the
+              communities around you.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -102,7 +104,7 @@ export default function HomeClient() {
               {[
                 ['🇨🇦', 'Built for Canada'],
                 ['🏪', 'Local Shops'],
-                ['🛣️', 'Street Discovery'],
+                ['📦', 'Product Requests'],
                 ['❤️', 'Support Local'],
               ].map(([icon, label]) => (
                 <div
@@ -133,7 +135,7 @@ export default function HomeClient() {
                   {[
                     ['1', 'Choose a city', 'Start with places across Canada'],
                     ['2', 'Pick a street', 'Explore real local streets'],
-                    ['3', 'Discover shops', 'Find businesses, products, and maps'],
+                    ['3', 'Request products', 'Send secure requests to participating shops'],
                   ].map(([number, title, text]) => (
                     <div
                       key={title}
@@ -191,6 +193,94 @@ export default function HomeClient() {
         </div>
       </section>
 
+      {/* MARKETPLACE */}
+      <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-blue-100 bg-slate-50 shadow-xl shadow-slate-200">
+          <div className="bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-6 py-10 text-white sm:px-10">
+            <span className="inline-flex rounded-full bg-white/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-50">
+              LocalStreetShop Marketplace
+            </span>
+
+            <h2 className="mt-5 max-w-4xl text-3xl font-black tracking-tight sm:text-5xl">
+              Find a product locally. Send a request. Hear directly from the shop.
+            </h2>
+
+            <p className="mt-5 max-w-3xl text-lg leading-8 text-blue-50">
+              LocalStreetShop connects shoppers with nearby businesses through a simple
+              Order Request system. No payment is collected from shoppers by
+              LocalStreetShop — the shop reviews the request and arranges payment and
+              fulfillment directly.
+            </p>
+          </div>
+
+          <div className="grid gap-5 p-6 sm:p-8 lg:grid-cols-4">
+            {[
+              {
+                icon: '🔎',
+                title: 'Discover',
+                description:
+                  'Browse products from local businesses by city, street, and storefront.',
+              },
+              {
+                icon: '📨',
+                title: 'Request',
+                description:
+                  'Choose a quantity and fulfillment method, then send the request securely.',
+              },
+              {
+                icon: '🏪',
+                title: 'Shop Responds',
+                description:
+                  'The business accepts or declines and can include a personal response message.',
+              },
+              {
+                icon: '🔐',
+                title: 'Track',
+                description:
+                  'Follow the status through your shopper account or a private secure tracking link.',
+              },
+            ].map((step) => (
+              <div
+                key={step.title}
+                className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+              >
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-3xl">
+                  {step.icon}
+                </div>
+
+                <h3 className="mt-5 text-xl font-black text-slate-950">
+                  {step.title}
+                </h3>
+
+                <p className="mt-3 leading-7 text-slate-600">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-6 border-t border-slate-200 bg-white p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <h3 className="text-2xl font-black text-slate-950">
+                Already have a LocalStreetShop account?
+              </h3>
+
+              <p className="mt-2 leading-7 text-slate-600">
+                View all requests linked to your account, open secure tracking pages,
+                and see the latest response from each shop.
+              </p>
+            </div>
+
+            <Link
+              href="/profile"
+              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
+            >
+              Open Shopper Profile
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* SHOPPER VALUE */}
       <section className="bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
@@ -199,11 +289,12 @@ export default function HomeClient() {
               Built for local discovery
             </span>
             <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-              Find what&apos;s around you before you step outside.
+              Discover locally, request securely, and shop with confidence.
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-300">
-              LocalStreetShop helps shoppers discover local businesses the way people actually
-              experience their communities — by city, street, address, and storefront.
+              Explore local businesses the way communities are experienced — by city, street,
+              address, and storefront — then request participating products and track each
+              response securely.
             </p>
           </div>
 
@@ -272,8 +363,9 @@ export default function HomeClient() {
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-600">
   Claiming and managing your basic business profile is always free. During
-  Phase 1, businesses can also add photos and showcase up to 100 products
-  for free as part of our Founding Business Program.
+  Phase 1, businesses can add photos, showcase up to 100 products, receive
+  customer Order Requests, respond directly, and manage billing from one
+  transparent dashboard.
 </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -300,16 +392,18 @@ export default function HomeClient() {
   Always free to claim
 </h3>
             <p className="mt-3 leading-7 text-slate-600">
-  Keep your business name, address, phone, website, hours, and social links
-  up to date for free. Product showcase tools are free during Phase 1.
+  Keep your business information up to date for free, showcase products,
+  receive customer requests, and use the marketplace with your first five
+  accepted requests free.
 </p>
 
             <div className="mt-6 grid gap-3">
               {[
   'Claim profile free forever',
-  'Update contact details',
-  'Add website and social links',
-  'Phase 1 product showcase',
+  'Showcase up to 100 products in Phase 1',
+  'Receive and respond to customer requests',
+  'First 5 accepted requests free',
+  'Transparent pay-anytime or monthly billing',
 ].map(
                 (item) => (
                   <div key={item} className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
@@ -318,6 +412,13 @@ export default function HomeClient() {
                   </div>
                 )
               )}
+            </div>
+
+            <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
+              After the first five accepted requests, the configured marketplace
+              service fee is added only when a request is accepted. Owners can pay
+              their balance anytime or wait for a monthly invoice. Declined requests
+              are never charged.
             </div>
           </div>
         </div>
@@ -391,6 +492,13 @@ export default function HomeClient() {
               className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-4 text-sm font-bold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50"
             >
               Browse Live Cities
+            </Link>
+
+            <Link
+              href="/profile"
+              className="inline-flex items-center justify-center rounded-full border border-blue-200 bg-blue-50 px-7 py-4 text-sm font-bold text-blue-700 transition hover:bg-blue-100"
+            >
+              My Order Requests
             </Link>
           </div>
         </div>

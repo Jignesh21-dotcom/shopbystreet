@@ -8,6 +8,12 @@ const ACCEPTED_LIFECYCLE_STATUSES = [
   'completed',
 ];
 
+type PendingOrderRequestRow = {
+  id: string;
+  shop_id: string;
+  expires_at: string;
+};
+
 function getSupabaseClients() {
   const supabaseUrl =
     process.env.SUPABASE_URL ||
@@ -128,9 +134,12 @@ export async function GET(req: Request) {
       );
     }
 
+    const now = new Date();
+    const nowIso = now.toISOString();
+
     const monthStart = new Date(
-      new Date().getFullYear(),
-      new Date().getMonth(),
+      now.getFullYear(),
+      now.getMonth(),
       1,
     ).toISOString();
 
@@ -142,7 +151,7 @@ export async function GET(req: Request) {
     ] = await Promise.all([
       supabaseServer
         .from('order_requests')
-        .select('shop_id')
+        .select('id, shop_id, expires_at')
         .in('shop_id', shopIds)
         .eq('status', 'pending'),
 
@@ -181,9 +190,63 @@ export async function GET(req: Request) {
       );
     }
 
+    const pendingRequests =
+      (pendingResult.data ||
+        []) as PendingOrderRequestRow[];
+
+    const activePendingRequests =
+      pendingRequests.filter((request) => {
+        const expiresAt =
+          new Date(request.expires_at).getTime();
+
+        return (
+          Number.isFinite(expiresAt) &&
+          expiresAt > now.getTime()
+        );
+      });
+
+    const expiredPendingRequests =
+      pendingRequests.filter((request) => {
+        const expiresAt =
+          new Date(request.expires_at).getTime();
+
+        return (
+          !Number.isFinite(expiresAt) ||
+          expiresAt <= now.getTime()
+        );
+      });
+
+    if (expiredPendingRequests.length > 0) {
+      const expiredRequestIds =
+        expiredPendingRequests.map(
+          (request) => request.id,
+        );
+
+      const { error: expiryError } =
+        await supabaseServer
+          .from('order_requests')
+          .update({
+            status: 'expired',
+            updated_at: nowIso,
+          })
+          .in('id', expiredRequestIds)
+          .eq('status', 'pending');
+
+      if (expiryError) {
+        console.error(
+          'Unable to persist expired Order Requests:',
+          expiryError,
+        );
+      }
+    }
+
     const pendingByShop: Record<string, number> = {};
     const acceptedByShop: Record<string, number> = {};
-    const monthlyAcceptedByShop: Record<string, number> = {};
+    const monthlyAcceptedByShop: Record<
+      string,
+      number
+    > = {};
+
     const pendingFeesByShop: Record<
       string,
       {
@@ -192,7 +255,7 @@ export async function GET(req: Request) {
       }
     > = {};
 
-    for (const row of pendingResult.data || []) {
+    for (const row of activePendingRequests) {
       pendingByShop[row.shop_id] =
         (pendingByShop[row.shop_id] || 0) + 1;
     }
@@ -204,17 +267,20 @@ export async function GET(req: Request) {
 
     for (const row of monthlyLedgerResult.data || []) {
       monthlyAcceptedByShop[row.shop_id] =
-        (monthlyAcceptedByShop[row.shop_id] || 0) + 1;
+        (monthlyAcceptedByShop[row.shop_id] || 0) +
+        1;
     }
 
     for (const row of pendingLedgerResult.data || []) {
-      const current = pendingFeesByShop[row.shop_id] || {
-        count: 0,
-        total: 0,
-      };
+      const current =
+        pendingFeesByShop[row.shop_id] || {
+          count: 0,
+          total: 0,
+        };
 
       current.count += 1;
       current.total += Number(row.amount) || 0;
+
       pendingFeesByShop[row.shop_id] = current;
     }
 
@@ -232,8 +298,10 @@ export async function GET(req: Request) {
         shop_id: shopId,
         pending_order_count:
           pendingByShop[shopId] || 0,
-        pending_fee_count: pendingFees.count,
-        pending_fee_total: pendingFees.total,
+        pending_fee_count:
+          pendingFees.count,
+        pending_fee_total:
+          pendingFees.total,
         accepted_request_count:
           acceptedRequestCount,
         accepted_this_month_count:
