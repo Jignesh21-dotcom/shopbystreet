@@ -362,10 +362,7 @@ export default function HomeClient() {
               Own a local business? Join the Founding Business Program.
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-600">
-  Claiming and managing your basic business profile is always free. During
-  Phase 1, businesses can add photos, showcase up to 100 products, receive
-  customer Order Requests, respond directly, and manage billing from one
-  transparent dashboard.
+  Claim and manage your business profile for free. During our Founding Business Program, showcase up to 100 products, receive customer Order Requests, respond directly from your Business Dashboard, and enjoy simple, transparent marketplace pricing with no subscriptions or sales commissions.
 </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -392,9 +389,7 @@ export default function HomeClient() {
   Always free to claim
 </h3>
             <p className="mt-3 leading-7 text-slate-600">
-  Keep your business information up to date for free, showcase products,
-  receive customer requests, and use the marketplace with your first five
-  accepted requests free.
+  Keep your business information up to date for free, showcase products, receive customer requests, enjoy your first 5 accepted requests free, then pay only a $2 Marketplace Fee per accepted request.
 </p>
 
             <div className="mt-6 grid gap-3">
@@ -403,6 +398,7 @@ export default function HomeClient() {
   'Showcase up to 100 products in Phase 1',
   'Receive and respond to customer requests',
   'First 5 accepted requests free',
+  'Only $2 per accepted request',
   'Transparent pay-anytime or monthly billing',
 ].map(
                 (item) => (
@@ -415,10 +411,7 @@ export default function HomeClient() {
             </div>
 
             <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
-              After the first five accepted requests, the configured marketplace
-              service fee is added only when a request is accepted. Owners can pay
-              their balance anytime or wait for a monthly invoice. Declined requests
-              are never charged.
+              Your first 5 accepted requests are free. After that, only a $2 Marketplace Fee is added per accepted request. Declined, cancelled, and expired requests are never charged. No subscriptions. No sales commissions. Pay anytime or wait for your monthly invoice.
             </div>
           </div>
         </div>

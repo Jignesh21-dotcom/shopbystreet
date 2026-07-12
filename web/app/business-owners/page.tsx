@@ -25,6 +25,12 @@ const benefits = [
     description:
       'Add photos, prices, and up to 100 products for free during our Founding Business Program.',
   },
+  {
+    icon: '📨',
+    title: 'Receive Order Requests',
+    description:
+      'Let customers request products online, respond from your dashboard, and arrange payment and fulfillment directly.',
+  },
 ];
 
 const alwaysFreeFeatures = [
@@ -41,27 +47,42 @@ const alwaysFreeFeatures = [
 const phaseOneFeatures = [
   'Add storefront photos',
   'Upload up to 100 products',
-  'Add product prices',
-  'Add product descriptions',
-  'Build a digital storefront',
-  'Showcase products to nearby shoppers',
+  'Add product prices and descriptions',
+  'Receive customer Order Requests',
+  'Respond from your Business Dashboard',
+  'Track transparent marketplace billing',
 ];
 
 const roadmap = [
   {
     phase: 'Always',
     title: 'Free Business Profile',
-    items: ['Claim shop', 'Update contact details', 'Add website and social links', 'Appear in local discovery'],
+    items: [
+      'Claim your shop',
+      'Update contact details',
+      'Add website and social links',
+      'Appear in local discovery',
+    ],
   },
   {
     phase: 'Phase 1',
     title: 'Founding Business Program',
-    items: ['Free product showcase', 'Storefront photos', 'Up to 100 products', 'Product descriptions and prices'],
+    items: [
+      'Showcase up to 100 products',
+      'Receive customer Order Requests',
+      'First 5 accepted requests free',
+      '$2 per accepted request after that',
+    ],
   },
   {
-    phase: 'Future',
-    title: 'Marketplace Tools',
-    items: ['Online ordering', 'Click & Collect', 'Payments', 'Customer rewards'],
+    phase: 'Phase 2',
+    title: 'Marketplace Growth',
+    items: [
+      'Improved order management',
+      'Customer and owner notifications',
+      'Business growth tools',
+      'Future Street Sale Events',
+    ],
   },
 ];
 
@@ -72,29 +93,59 @@ const faqs = [
       'Yes. Claiming and managing your basic business profile is always free. This includes your business name, address, contact details, website, social links, hours, and local discovery listing.',
   },
   {
-    question: 'What is free during Phase 1?',
+    question: 'What is included during Phase 1?',
     answer:
-      'During Phase 1, businesses can also add storefront photos and showcase up to 100 products for free as part of our Founding Business Program.',
-  },
-  {
-    question: 'What if I already have my own website?',
-    answer:
-      'That is perfectly fine. You can still claim your LocalStreetShop profile for free and link visitors to your existing website, Instagram, Facebook, or contact information.',
+      'During Phase 1, businesses can add storefront photos, showcase up to 100 products, receive customer Order Requests, respond from the Business Dashboard, and use transparent marketplace billing.',
   },
   {
     question: 'How many products can I upload during Phase 1?',
     answer:
-      'During Phase 1, businesses can upload up to 100 products for free. This gives most shops enough room to build a strong digital storefront.',
+      'Businesses can upload up to 100 products during Phase 1. This gives most shops enough room to build a useful digital storefront and showcase products to nearby shoppers.',
+  },
+  {
+    question: 'How do customer Order Requests work?',
+    answer:
+      'A customer chooses a product, quantity, and available fulfillment method, then sends an Order Request. The request appears in your dashboard and is also sent by email. You can review it, accept or decline it, and include a message for the customer.',
+  },
+  {
+    question: 'How much is the Marketplace Fee?',
+    answer:
+      'Your first 5 accepted Order Requests are free. After that, each additional accepted request has a fixed $2 Marketplace Fee. There is no monthly subscription and LocalStreetShop does not take a percentage of the sale.',
+  },
+  {
+    question: 'When is the $2 Marketplace Fee charged?',
+    answer:
+      'The $2 Marketplace Fee is added only when you accept a chargeable Order Request after using your first 5 free accepted requests. Declined, cancelled, and expired requests are never charged.',
+  },
+  {
+    question: 'Does LocalStreetShop collect payment from the customer?',
+    answer:
+      'No. LocalStreetShop does not collect the product payment from the customer. The business and customer arrange payment directly after the request is accepted.',
+  },
+  {
+    question: 'Who handles pickup, delivery, shipping, and fulfillment?',
+    answer:
+      'The business chooses which fulfillment methods it offers and handles the final arrangement directly with the customer. You can provide pickup, local delivery, shipping, or any combination that works for your shop.',
+  },
+  {
+    question: 'How do I pay marketplace fees?',
+    answer:
+      'Your current balance is shown in the Marketplace Billing Center. You can pay securely through Stripe at any time or wait for eligible charges to be grouped into a monthly invoice. No payment is taken automatically.',
+  },
+  {
+    question: 'What if I already have my own website?',
+    answer:
+      'That is perfectly fine. You can still claim your LocalStreetShop profile for free, showcase products, receive local Order Requests, and link visitors to your existing website, Instagram, Facebook, or contact information.',
   },
   {
     question: 'What happens after Phase 1?',
     answer:
-      'Your basic business profile will remain free. In the future, optional paid services and marketplace tools may be introduced for businesses that want additional support.',
+      'Your basic business profile will remain free. Founding Business benefits and future marketplace tools may evolve as LocalStreetShop grows, but any pricing changes will be communicated clearly before they apply.',
   },
   {
     question: 'Can I get help setting up my shop?',
     answer:
-      'Yes. The optional Professional Store Setup service is for busy business owners who want help uploading products, organizing details, and improving their listing.',
+      'Yes. The optional Professional Store Setup service is for busy business owners who want help uploading products, organizing details, optimizing images, and improving their listing.',
   },
 ];
 
@@ -207,8 +258,8 @@ export default function PricingPage() {
               {[
                 ['🇨🇦', 'Built in Canada'],
                 ['🏪', 'Profile Always Free'],
-                ['📦', 'Phase 1 Products Free'],
-                ['❤️', 'Community Focused'],
+                ['📦', '100 Products Included'],
+                ['💳', '$2 Fixed Marketplace Fee'],
               ].map(([icon, label]) => (
                 <div key={label} className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
                   <span className="text-xl">{icon}</span>
@@ -232,8 +283,8 @@ export default function PricingPage() {
                 <div className="mt-5 grid gap-3">
                   {[
                     ['Free', 'Business profile', 'Claim and update your basic listing'],
-                    ['Free', 'Website links', 'Send shoppers to your existing website'],
-                    ['Phase 1', 'Product showcase', 'Add photos and up to 100 products'],
+                    ['100', 'Product showcase', 'Add photos, prices, and product details'],
+                    ['$2', 'Marketplace fee', 'Per accepted request after your first 5 free'],
                   ].map(([label, title, text]) => (
                     <div key={title} className="flex items-center gap-4 rounded-2xl bg-white p-4 text-slate-900 shadow-sm">
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-xs font-black text-blue-700">
@@ -251,7 +302,7 @@ export default function PricingPage() {
 
             <div className="absolute -bottom-6 -left-4 hidden rounded-2xl border border-green-200 bg-white p-4 shadow-xl sm:block">
               <p className="text-sm font-bold text-green-700">Always free to claim</p>
-              <p className="text-xs text-slate-500">Products free during Phase 1</p>
+              <p className="text-xs text-slate-500">First 5 accepted requests free</p>
             </div>
           </div>
         </div>
@@ -279,7 +330,7 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {benefits.map((benefit) => (
             <div
               key={benefit.title}
@@ -339,6 +390,46 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-blue-100 bg-gradient-to-br from-blue-50 to-green-50 p-6 shadow-xl shadow-slate-200 sm:p-10">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex rounded-full bg-blue-100 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
+              Transparent Marketplace Pricing
+            </span>
+
+            <h2 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              No subscriptions. No commissions. Just $2 per accepted request.
+            </h2>
+
+            <p className="mt-5 text-lg leading-8 text-slate-600">
+              Your first 5 accepted Order Requests are free. After that, each additional
+              accepted request adds a fixed $2 Marketplace Fee.
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ['🎉', 'First 5 Free', 'Your first five accepted requests have no marketplace fee.'],
+              ['$2', 'Fixed Fee', 'Only $2 per accepted request after your free allowance.'],
+              ['0%', 'No Commission', 'LocalStreetShop does not take a percentage of your sale.'],
+              ['📅', 'Flexible Billing', 'Pay anytime or wait for your monthly invoice.'],
+            ].map(([icon, title, description]) => (
+              <div key={title} className="rounded-2xl border border-white bg-white p-5 shadow-sm">
+                <div className="text-2xl font-black text-blue-700">{icon}</div>
+                <h3 className="mt-3 text-lg font-black text-slate-950">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mx-auto mt-6 max-w-4xl rounded-2xl border border-blue-200 bg-white px-5 py-4 text-center text-sm leading-6 text-slate-700">
+            <strong className="text-slate-950">You are charged only when you accept a chargeable request.</strong>{' '}
+            Declined, cancelled, and expired requests are never charged. Customer payment and
+            fulfillment are arranged directly between the business and customer.
           </div>
         </div>
       </section>
@@ -414,7 +505,7 @@ export default function PricingPage() {
             The Road Ahead
           </span>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-            Free profile first. Optional tools as we grow.
+            Free profile first. Marketplace tools that grow with you.
           </h2>
           <p className="mt-4 text-lg leading-8 text-slate-600">
             LocalStreetShop starts with local discovery. As the platform grows, businesses can choose
@@ -458,10 +549,10 @@ export default function PricingPage() {
               {[
                 'Business profile is always free',
                 'No credit card required to claim',
-                'Website owners can link out',
-                'Product tools free during Phase 1',
-                'Optional paid services only',
-                'Built for Canadian local businesses',
+                'Up to 100 products during Phase 1',
+                'First 5 accepted requests free',
+                'Only $2 per accepted request after that',
+                'No subscription or sales commission',
               ].map((item) => (
                 <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-5">
                   <span className="font-black text-green-300">✓</span>

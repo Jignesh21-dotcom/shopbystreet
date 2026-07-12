@@ -124,19 +124,20 @@ function MarketplaceOrderRequestBanner() {
             Simple Monthly Billing
           </h3>
           <p className="mt-2 text-sm leading-6 text-amber-800">
-            After the free requests, each accepted request adds the displayed
-            service fee to your pending monthly balance. Declined requests are
-            not charged. Invoices are generated monthly, and no payment is
-            taken automatically.
-          </p>
+  After your first five free accepted requests, each additional accepted
+  request adds a $2 Marketplace Fee to your pending balance. Declined,
+  cancelled, and expired requests are never charged. Pay anytime or wait
+  for your monthly invoice.
+</p>
         </div>
       </div>
 
       <div className="border-t border-blue-100 bg-blue-50 px-5 py-4 text-sm leading-6 text-blue-900 sm:px-7">
-        <strong>Transparent billing:</strong> Your pending balance is shown
-        below and increases only when a chargeable request is accepted.
-        LocalStreetShop will later group pending fees into one monthly invoice.
-      </div>
+  <strong>Transparent billing:</strong> Your first five accepted requests
+  are free. After that, each accepted request adds a $2 Marketplace Fee.
+  Your current balance is always visible below, and you can pay anytime
+  or wait for your monthly invoice.
+</div>
     </section>
   );
 }
@@ -546,16 +547,17 @@ export default function ShopOwnerDashboardClient() {
                           <p className="mt-1 text-xs text-slate-600">
                             {shop.pending_fee_total > 0
                               ? 'One monthly invoice, when fees are due'
-                              : 'Charges appear after the first 5 free requests'}
+                              : '$2 per accepted request after your first 5 free'}
                           </p>
                         </div>
                       </div>
 
                       <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-900">
-                        The first five accepted requests are free. After that,
-                        the configured service fee is added only when you accept
-                        a request. Declined requests are never charged.
-                      </div>
+  <strong>Simple, transparent pricing:</strong> Your first five accepted
+  requests are free. After that, each accepted request adds only a
+  <strong> $2 Marketplace Fee</strong>. Declined, cancelled, and expired
+  requests are never charged. No monthly subscription and no sales commission.
+</div>
 
                       <div className="mt-4 flex justify-end">
                         <Link
