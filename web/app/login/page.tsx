@@ -28,12 +28,40 @@ export default function LoginPage() {
   const [resetEmail, setResetEmail] = useState('');
 
   useEffect(() => {
+    let isMounted = true;
+
     const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user) router.push('/profile');
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (!isMounted || userError || !user) return;
+
+      const { data: adminResult, error: adminError } = await supabase.rpc(
+        'is_admin',
+      );
+
+      if (!isMounted) return;
+
+      if (!adminError && adminResult) {
+        router.replace('/admin');
+        return;
+      }
+
+      if (user.user_metadata?.isShopOwner) {
+        router.replace('/shop-owner/dashboard');
+        return;
+      }
+
+      router.replace('/profile');
     };
 
     checkUser();
+
+    return () => {
+      isMounted = false;
+    };
   }, [router]);
 
   useEffect(() => {
@@ -119,18 +147,49 @@ export default function LoginPage() {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const {
+      data: signInData,
+      error,
+    } = await supabase.auth.signInWithPassword({
       email: cleanEmail,
       password,
     });
 
     if (error) {
       setMessage(`❌ ${error.message}`);
-    } else {
-      setMessage('✅ Logged in successfully! Redirecting...');
-      setTimeout(() => router.push('/profile'), 1200);
+      return;
     }
+
+    const signedInUser = signInData.user;
+
+    if (!signedInUser) {
+      setMessage('❌ Login succeeded, but the user session could not be loaded.');
+      return;
+    }
+
+    setMessage('✅ Logged in successfully! Redirecting...');
+
+    const { data: adminResult, error: adminError } = await supabase.rpc(
+      'is_admin',
+    );
+
+    if (!adminError && adminResult) {
+      router.push('/admin');
+      router.refresh();
+      return;
+    }
+
+    if (signedInUser.user_metadata?.isShopOwner) {
+      router.push('/shop-owner/dashboard');
+      router.refresh();
+      return;
+    }
+
+    router.push('/profile');
+    router.refresh();
   };
+
+  
 
   const pageTitle = showReset
     ? 'Reset Password | LocalStreetShop'
