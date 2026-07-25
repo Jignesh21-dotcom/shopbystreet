@@ -94,7 +94,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
     ? `/cities/${rawCity}/${rawStreet}/address/${slugify(business.address)}`
     : `/cities/${rawCity}/${rawStreet}`;
 
-  const claimHref = `/shop-owner/claim`;
+  const claimHref = `/shop-owner/claim?shopId=${business.id}`;
 
   const mapQuery = `${business.name}, ${
     business.address || streetName

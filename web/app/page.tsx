@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
-import HomeClient from './HomeClient';
+import HomeClientGlobal from './HomeClientGlobal';
 
 export const metadata: Metadata = {
-  title: 'LocalStreetShop | Canada’s Digital Main Street',
+  title: 'LocalStreetShop | Discover Local Shops, Street by Street',
   description:
-    'Explore Canadian streets, discover local shops, find nearby products, and support small businesses with LocalStreetShop.',
+    'Explore local businesses, cities, streets, markets, and products across growing LocalStreetShop communities in Canada and India.',
   alternates: {
     canonical: 'https://www.localstreetshop.com/',
   },
   openGraph: {
-    title: 'LocalStreetShop | Canada’s Digital Main Street',
+    title: 'LocalStreetShop | Discover Local Shops, Street by Street',
     description:
-      'Explore Canadian streets, discover local shops, find nearby products, and support small businesses with LocalStreetShop.',
+      'Explore local businesses, cities, streets, markets, and products across Canada and India.',
     url: 'https://www.localstreetshop.com/',
     siteName: 'LocalStreetShop',
     type: 'website',
@@ -19,5 +19,5 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <HomeClient />;
+  return <HomeClientGlobal />;
 }

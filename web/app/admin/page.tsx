@@ -44,6 +44,15 @@ const adminTools: AdminTool[] = [
     accentClass: 'bg-green-50 border-green-200 text-green-900',
   },
   {
+    title: 'India Business Submissions',
+    description:
+      'Review India business and location submissions, confirm the final street or market, and approve or reject each request.',
+    href: '/admin/india-submissions',
+    icon: '🇮🇳',
+    buttonLabel: 'Review India Submissions',
+    accentClass: 'bg-orange-50 border-orange-200 text-orange-900',
+  },
+  {
     title: 'Add a Deal',
     description:
       'Create marketplace deal content and feature qualifying products for local shoppers.',
@@ -61,6 +70,7 @@ export default function AdminDashboardPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminEmail, setAdminEmail] = useState('');
   const [pendingShopCount, setPendingShopCount] = useState(0);
+  const [pendingIndiaSubmissionCount, setPendingIndiaSubmissionCount] = useState(0);
   const [loadingCounts, setLoadingCounts] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -104,21 +114,53 @@ export default function AdminDashboardPage() {
     setAdminEmail(user.email || '');
     setCheckingAccess(false);
 
-    const { count, error: countError } = await supabase
-      .from('shops')
-      .select('id', {
-        count: 'exact',
-        head: true,
-      })
-      .eq('approved', false);
+    const [
+      { count: shopCount, error: shopCountError },
+      { count: indiaSubmissionCount, error: indiaSubmissionCountError },
+    ] = await Promise.all([
+      supabase
+        .from('shops')
+        .select('id', {
+          count: 'exact',
+          head: true,
+        })
+        .eq('approved', false),
+      supabase
+        .from('india_business_submissions')
+        .select('id', {
+          count: 'exact',
+          head: true,
+        })
+        .eq('status', 'pending'),
+    ]);
 
-    if (countError) {
-      console.error('Unable to load pending shop count:', countError);
-      setErrorMessage(
-        `Admin access is active, but pending shop totals could not be loaded: ${countError.message}`,
+    const countErrors: string[] = [];
+
+    if (shopCountError) {
+      console.error('Unable to load pending shop count:', shopCountError);
+      countErrors.push(`shop submissions: ${shopCountError.message}`);
+    } else {
+      setPendingShopCount(shopCount || 0);
+    }
+
+    if (indiaSubmissionCountError) {
+      console.error(
+        'Unable to load pending India submission count:',
+        indiaSubmissionCountError,
+      );
+      countErrors.push(
+        `India submissions: ${indiaSubmissionCountError.message}`,
       );
     } else {
-      setPendingShopCount(count || 0);
+      setPendingIndiaSubmissionCount(indiaSubmissionCount || 0);
+    }
+
+    if (countErrors.length > 0) {
+      setErrorMessage(
+        `Admin access is active, but some pending totals could not be loaded (${countErrors.join(
+          '; ',
+        )}).`,
+      );
     }
 
     setLoadingCounts(false);
@@ -207,7 +249,7 @@ export default function AdminDashboardPage() {
 
                   <p className="mt-4 max-w-3xl text-lg leading-8 text-blue-50">
                     Review submissions, manage platform content, and protect the
-                    quality of Canada&apos;s Digital Main Street.
+                    quality of LocalStreetShop across Canada and India.
                   </p>
                 </div>
 
@@ -241,7 +283,7 @@ export default function AdminDashboardPage() {
             </div>
           )}
 
-          <section className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <section className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
             <div className="rounded-3xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
               <p className="text-xs font-bold uppercase tracking-wide text-amber-700">
                 Pending Shops
@@ -253,6 +295,20 @@ export default function AdminDashboardPage() {
 
               <p className="mt-2 text-sm text-amber-800">
                 New businesses awaiting approval
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-orange-200 bg-orange-50 p-6 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-wide text-orange-700">
+                India Submissions
+              </p>
+
+              <p className="mt-2 text-4xl font-extrabold text-orange-950">
+                {loadingCounts ? '—' : pendingIndiaSubmissionCount}
+              </p>
+
+              <p className="mt-2 text-sm text-orange-800">
+                India businesses awaiting review
               </p>
             </div>
 
@@ -294,7 +350,7 @@ export default function AdminDashboardPage() {
               </p>
 
               <p className="mt-2 text-sm text-purple-800">
-                Canada&apos;s Digital Main Street
+                Canada and India
               </p>
             </div>
           </section>
@@ -337,6 +393,16 @@ export default function AdminDashboardPage() {
                           {pendingShopCount === 1
                             ? 'submission waiting'
                             : 'submissions waiting'}
+                        </span>
+                      )}
+
+                    {tool.href === '/admin/india-submissions' &&
+                      pendingIndiaSubmissionCount > 0 && (
+                        <span className="mt-4 inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-orange-800">
+                          {pendingIndiaSubmissionCount}{' '}
+                          {pendingIndiaSubmissionCount === 1
+                            ? 'India submission waiting'
+                            : 'India submissions waiting'}
                         </span>
                       )}
                   </div>
