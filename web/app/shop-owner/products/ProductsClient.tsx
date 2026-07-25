@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { formatCurrency } from '@/lib/currency';
 
 type Product = {
   id: string;
@@ -11,6 +12,8 @@ type Product = {
   price: number | null;
   description?: string | null;
   image_url?: string | null;
+  shop_id: string;
+  countrySlug?: string;
 };
 
 export default function ProductsClient() {
@@ -32,7 +35,18 @@ export default function ProductsClient() {
 
       const { data: shops, error: shopError } = await supabase
         .from('shops')
-        .select('id')
+        .select(`
+          id,
+          street:street_id (
+            city:city_id (
+              province:province_id (
+                country:country_id (
+                  slug
+                )
+              )
+            )
+          )
+        `)
         .eq('owner_id', userId);
 
       if (shopError || !shops?.length) {
@@ -41,7 +55,25 @@ export default function ProductsClient() {
         return;
       }
 
-      const shopIds = shops.map((shop) => shop.id);
+      const shopIds = shops.map((shop: any) => shop.id);
+      const countryByShopId = new Map<string, string>(
+        shops.map((shop: any) => {
+          const street = Array.isArray(shop.street)
+            ? shop.street[0]
+            : shop.street;
+          const city = Array.isArray(street?.city)
+            ? street.city[0]
+            : street?.city;
+          const province = Array.isArray(city?.province)
+            ? city.province[0]
+            : city?.province;
+          const country = Array.isArray(province?.country)
+            ? province.country[0]
+            : province?.country;
+
+          return [shop.id, country?.slug || 'canada'];
+        }),
+      );
 
       const { data, error } = await supabase
         .from('products')
@@ -53,7 +85,12 @@ export default function ProductsClient() {
         console.error('Failed to fetch products:', error);
         setProducts([]);
       } else {
-        setProducts(data || []);
+        setProducts(
+          (data || []).map((product) => ({
+            ...product,
+            countrySlug: countryByShopId.get(product.shop_id) || 'canada',
+          })),
+        );
       }
 
       setLoading(false);
@@ -186,7 +223,7 @@ export default function ProductsClient() {
 
                   <p className="mt-1 text-sm font-semibold text-blue-700">
                     {product.price !== null
-                      ? `$${product.price.toFixed(2)}`
+                      ? formatCurrency(product.price, product.countrySlug)
                       : 'Price not added'}
                   </p>
 

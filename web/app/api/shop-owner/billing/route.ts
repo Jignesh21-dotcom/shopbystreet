@@ -3,6 +3,30 @@ import { createClient } from '@supabase/supabase-js';
 
 const BALANCE_STATUSES = ['pending', 'invoiced'];
 
+type ShopLocationRow = {
+  id: string;
+  name: string;
+  street?: {
+    city?: {
+      state?: {
+        country?: {
+          slug?: string | null;
+        } | null;
+      } | null;
+    } | null;
+  } | null;
+};
+
+function getShopCountrySlug(shop: ShopLocationRow) {
+  const slug =
+    shop.street?.city?.state?.country?.slug;
+
+  return String(slug || 'canada')
+    .toLowerCase()
+    .trim();
+}
+
+
 function getSupabaseClients() {
   const supabaseUrl =
     process.env.SUPABASE_URL ||
@@ -95,7 +119,17 @@ export async function GET(req: Request) {
     const { data: shops, error: shopsError } =
       await supabaseServer
         .from('shops')
-        .select('id, name')
+        .select(`
+          id,
+          name,
+          street:streets!inner(
+            city:cities!inner(
+              state:provinces!inner(
+                country:countries!inner(slug)
+              )
+            )
+          )
+        `)
         .eq('owner_id', user.id)
         .eq('approved', true)
         .order('name', { ascending: true });
@@ -107,9 +141,17 @@ export async function GET(req: Request) {
       );
     }
 
-    const ownedShops = shops || [];
+    const ownedShopRows =
+      (shops || []) as unknown as ShopLocationRow[];
+
+    const ownedShops = ownedShopRows.map((shop) => ({
+      id: shop.id,
+      name: shop.name,
+      countrySlug: getShopCountrySlug(shop),
+    }));
+
     const shopIds = ownedShops.map(
-      (shop: { id: string }) => shop.id,
+      (shop) => shop.id,
     );
 
     if (shopIds.length === 0) {
@@ -117,6 +159,7 @@ export async function GET(req: Request) {
         {
           shops: [],
           entries: [],
+          countrySlug: 'canada',
           summary: {
             currentBalance: 0,
             pendingAmount: 0,
@@ -237,6 +280,17 @@ export async function GET(req: Request) {
       return result;
     }, {});
 
+    const normalizedCountries = Array.from(
+      new Set(
+        ownedShops.map((shop) => shop.countrySlug),
+      ),
+    );
+
+    const countrySlug =
+      normalizedCountries.length === 1
+        ? normalizedCountries[0]
+        : 'mixed';
+
     let pendingAmount = 0;
     let invoicedAmount = 0;
     let paidAmount = 0;
@@ -285,6 +339,7 @@ export async function GET(req: Request) {
     return NextResponse.json(
       {
         shops: ownedShops,
+        countrySlug,
         entries,
         summary: {
           currentBalance:

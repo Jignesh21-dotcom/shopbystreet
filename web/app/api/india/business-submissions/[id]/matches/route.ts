@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { findMatchingStreet } from '@/lib/indiaLocationMatching';
 
 const slugify = (value: string) =>
   value
@@ -87,14 +88,23 @@ export async function POST(
       : { data: null };
 
     const streetSlug = streetName && citySlug ? `${citySlug}-${slugify(streetName)}` : '';
-    const { data: street } = city && streetSlug
-      ? await adminClient
-          .from('streets')
-          .select('id, name, slug')
-          .eq('city_id', city.id)
-          .eq('slug', streetSlug)
-          .maybeSingle()
-      : { data: null };
+    let street = null;
+
+    if (city && streetName) {
+      const existingStreets = await adminClient
+        .from('streets')
+        .select('id, name, slug')
+        .eq('city_id', city.id);
+
+      if (existingStreets.error) {
+        return NextResponse.json(
+          { error: existingStreets.error.message },
+          { status: 500 },
+        );
+      }
+
+      street = findMatchingStreet(existingStreets.data || [], streetName);
+    }
 
     const { data: locations } = street
       ? await adminClient

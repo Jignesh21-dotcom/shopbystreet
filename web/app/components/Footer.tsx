@@ -24,15 +24,15 @@ export default function Footer() {
                 </h2>
 
                 <p className="text-sm text-slate-500">
-                  Canada's Digital Main Street
+                  Local Shopping, Street by Street
                 </p>
               </div>
             </div>
 
             <p className="mt-5 text-sm leading-7 text-slate-600">
               Discover local businesses by exploring real streets across
-              Canada. Helping communities and small businesses thrive
-              together.
+              Canada and India. Helping communities and independent businesses
+              thrive together.
             </p>
           </div>
 
@@ -48,8 +48,12 @@ export default function Footer() {
                 Home
               </Link>
 
-              <Link href="/live-cities" className="block hover:text-blue-700">
-                Live Cities
+              <Link href="/live-cities?country=canada" className="block hover:text-blue-700">
+                Canada Live Cities
+              </Link>
+
+              <Link href="/live-cities?country=india" className="block hover:text-orange-700">
+                India Live Cities
               </Link>
 
               <Link href="/deals" className="block hover:text-blue-700">
@@ -72,7 +76,11 @@ export default function Footer() {
             <div className="space-y-3 text-slate-600">
 
               <Link href="/business-owners" className="block hover:text-blue-700">
-                For Business Owners
+                Business Owners — Canada
+              </Link>
+
+              <Link href="/countries/india/business-owners" className="block hover:text-orange-700">
+                Business Owners — India
               </Link>
 
               <Link href="/shop-owner/claim" className="block hover:text-blue-700">
@@ -122,12 +130,12 @@ export default function Footer() {
         <div className="mt-12 border-t border-slate-200 pt-8 text-center">
 
           <p className="text-sm text-slate-500">
-            Building Canada's Digital Main Street — one street, one shop, one
+            Building a global digital main street — one street, one shop, one
             community at a time.
           </p>
 
           <p className="mt-2 text-sm text-slate-500">
-            Independent. Community-first. Proudly Canadian 🇨🇦
+            Independent. Community-first. Growing across Canada 🇨🇦 and India 🇮🇳
           </p>
 
           <p className="mt-3 text-sm text-slate-500">

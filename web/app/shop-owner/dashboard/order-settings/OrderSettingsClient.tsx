@@ -5,9 +5,34 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
+type Country = {
+  name: string;
+  slug: string;
+};
+
+type Province = {
+  name: string;
+  slug: string;
+  country: Country | Country[] | null;
+};
+
+type City = {
+  name: string;
+  slug: string;
+  province: Province | Province[] | null;
+};
+
+type Street = {
+  name: string;
+  slug: string;
+  city: City | City[] | null;
+};
+
 type Shop = {
   id: string;
   name: string;
+  street: Street | Street[] | null;
+  countrySlug: string;
 };
 
 type OrderSettingsRow = {
@@ -69,6 +94,7 @@ export default function OrderSettingsClient() {
   const [form, setForm] = useState<FormState>(DEFAULT_FORM_STATE);
 
   const [serviceFeeAmount, setServiceFeeAmount] = useState('2.00');
+  const [countrySlug, setCountrySlug] = useState('canada');
   const [introductoryFreeRequestLimit, setIntroductoryFreeRequestLimit] =
     useState(5);
 
@@ -113,7 +139,26 @@ export default function OrderSettingsClient() {
 
       const { data: shopData, error: shopError } = await supabase
         .from('shops')
-        .select('id, name')
+        .select(`
+          id,
+          name,
+          street:street_id (
+            name,
+            slug,
+            city:city_id (
+              name,
+              slug,
+              province:province_id (
+                name,
+                slug,
+                country:country_id (
+                  name,
+                  slug
+                )
+              )
+            )
+          )
+        `)
         .eq('id', shopId)
         .eq('owner_id', authData.user.id)
         .eq('approved', true)
@@ -135,7 +180,29 @@ export default function OrderSettingsClient() {
         return;
       }
 
-      setShop(shopData as Shop);
+      const rawShop = shopData as Omit<Shop, 'countrySlug'>;
+      const street = Array.isArray(rawShop.street)
+        ? rawShop.street[0] || null
+        : rawShop.street || null;
+      const cityRaw = street?.city;
+      const city = Array.isArray(cityRaw) ? cityRaw[0] || null : cityRaw || null;
+      const provinceRaw = city?.province;
+      const province = Array.isArray(provinceRaw)
+        ? provinceRaw[0] || null
+        : provinceRaw || null;
+      const countryRaw = province?.country;
+      const country = Array.isArray(countryRaw)
+        ? countryRaw[0] || null
+        : countryRaw || null;
+      const resolvedCountrySlug = country?.slug?.toLowerCase() || 'canada';
+      const countryServiceFee = resolvedCountrySlug === 'india' ? '39.00' : '2.00';
+
+      setCountrySlug(resolvedCountrySlug);
+      setServiceFeeAmount(countryServiceFee);
+      setShop({
+        ...rawShop,
+        countrySlug: resolvedCountrySlug,
+      });
 
       const { data: settingsData, error: settingsError } = await supabase
         .from('shop_order_settings')
@@ -193,8 +260,12 @@ export default function OrderSettingsClient() {
           requestInstructions: settings.request_instructions ?? '',
         });
 
+        // Pricing is country-based. This also corrects older India rows
+        // that were created with the Canadian default fee.
         setServiceFeeAmount(
-          Number(settings.service_fee_amount).toFixed(2),
+          resolvedCountrySlug === 'india'
+            ? '39.00'
+            : Number(settings.service_fee_amount || 2).toFixed(2),
         );
 
         setIntroductoryFreeRequestLimit(
@@ -301,6 +372,8 @@ export default function OrderSettingsClient() {
         ? form.shippingNotes.trim() || null
         : null,
       request_instructions: form.requestInstructions.trim() || null,
+      service_fee_amount: countrySlug === 'india' ? 39 : 2,
+      introductory_free_request_limit: introductoryFreeRequestLimit,
       updated_at: new Date().toISOString(),
     };
 
@@ -333,6 +406,43 @@ export default function OrderSettingsClient() {
       setSaving(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
+    }
+
+    /*
+     * Backward-compatible product activation:
+     *
+     * Products created before the Order Request feature have all product-level
+     * request flags set to false. When a shop enables Order Requests, activate
+     * only those still-unconfigured legacy products and inherit the shop's
+     * selected fulfillment methods.
+     *
+     * Products that have already been configured by the owner are left alone,
+     * so per-product settings can still be managed independently afterward.
+     */
+    if (form.acceptsOrderRequests) {
+      const { error: productActivationError } = await supabase
+        .from('products')
+        .update({
+          accepts_order_requests: true,
+          pickup_available: form.offersPickup,
+          local_delivery_available: form.offersLocalDelivery,
+          shipping_available: form.offersShipping,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('shop_id', shopId)
+        .eq('accepts_order_requests', false)
+        .eq('pickup_available', false)
+        .eq('local_delivery_available', false)
+        .eq('shipping_available', false);
+
+      if (productActivationError) {
+        setErrorMessage(
+          `Order settings were saved, but existing products could not be enabled: ${productActivationError.message}`,
+        );
+        setSaving(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
     }
 
     setSuccessMessage('Order request settings saved successfully.');
@@ -721,7 +831,7 @@ export default function OrderSettingsClient() {
 
                   <div className="relative max-w-sm">
                     <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">
-                      $
+                      {countrySlug === 'india' ? '₹' : '$'}
                     </span>
 
                     <input
@@ -788,7 +898,11 @@ export default function OrderSettingsClient() {
                     onChange={(event) =>
                       updateForm('shippingNotes', event.target.value)
                     }
-                    placeholder="Example: Shipping is available across Canada. Rates depend on destination."
+                    placeholder={
+                      countrySlug === 'india'
+                        ? 'Example: Shipping is available across India. Rates depend on destination.'
+                        : 'Example: Shipping is available across Canada. Rates depend on destination.'
+                    }
                     className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   />
                 </section>
@@ -835,7 +949,12 @@ export default function OrderSettingsClient() {
 
                 <p className="mt-2 text-sm text-green-800">
                   After the introductory period, the current service fee is{' '}
-                  <strong>${serviceFeeAmount}</strong> per accepted request.
+                  <strong>
+                    {countrySlug === 'india'
+                      ? `₹${Number(serviceFeeAmount).toFixed(0)}`
+                      : `$${Number(serviceFeeAmount).toFixed(2)}`}
+                  </strong>{' '}
+                  per accepted request.
                   Declined requests are free.
                 </p>
 

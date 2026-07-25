@@ -90,7 +90,9 @@ export default function IndiaSubmissionReviewPage() {
 
       setSubmission(data);
       setNotes(data?.admin_notes || '');
-      setStreetName(data?.street_or_market || '');
+      // India browsing is area-first. Prefer an existing locality such as Alkapuri
+      // over creating a separate road card such as R.C. Dutt Road.
+      setStreetName(data?.locality || data?.street_or_market || '');
       setLocationName(data?.building_name || '');
       setLocationType(data?.building_name ? 'complex' : 'independent');
       setLoading(false);

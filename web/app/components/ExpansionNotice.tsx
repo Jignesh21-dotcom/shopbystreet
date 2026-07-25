@@ -6,7 +6,7 @@ export default function ExpansionNotice() {
       <p className="text-sm font-medium text-slate-700">
         🇨🇦 LocalStreetShop is expanding across Canada.{' '}
         <Link
-          href="/live-cities"
+          href="/live-cities?country=canada"
           className="font-bold text-blue-700 hover:text-blue-900 hover:underline"
         >
           Browse live cities

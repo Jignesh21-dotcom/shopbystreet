@@ -40,61 +40,44 @@ export default function AdminClaimsPage() {
   const fetchClaims = async () => {
     setLoading(true);
 
-    const { data, error } = await supabase
-      .from('shop_claims')
-      .select(`
-        id,
-        message,
-        status,
-        created_at,
-        reviewed_at,
-        user_id,
-        shop:shop_id (
-          id,
-          name,
-          slug,
-          address,
-          owner_id,
-          street:street_id (
-            name,
-            slug,
-            city:city_id (
-              name,
-              slug
-            )
-          )
-        )
-      `)
-      .eq('status', statusFilter)
-      .order('created_at', { ascending: false });
+    try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-    if (error) {
-      alert(`Failed to fetch claims: ${error.message}`);
+      if (sessionError || !session?.access_token) {
+        alert('Please sign in again as an administrator.');
+        setClaims([]);
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(
+        `/api/shop-claims/admin?status=${encodeURIComponent(statusFilter)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          cache: 'no-store',
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(`Failed to fetch claims: ${result?.error || 'Unknown error.'}`);
+        setClaims([]);
+        setLoading(false);
+        return;
+      }
+
+      setClaims((result?.claims || []) as Claim[]);
+    } catch (error: any) {
+      alert(`Failed to fetch claims: ${error?.message || 'Unknown error.'}`);
       setClaims([]);
-      setLoading(false);
-      return;
     }
 
-    const unwrappedClaims = (data || []).map((claim: any) => {
-      let shop = claim.shop;
-
-      if (Array.isArray(shop)) shop = shop[0] || null;
-
-      if (shop?.street && Array.isArray(shop.street)) {
-        shop.street = shop.street[0] || null;
-      }
-
-      if (shop?.street?.city && Array.isArray(shop.street.city)) {
-        shop.street.city = shop.street.city[0] || null;
-      }
-
-      return {
-        ...claim,
-        shop,
-      };
-    });
-
-    setClaims(unwrappedClaims);
     setLoading(false);
   };
 

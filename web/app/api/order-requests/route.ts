@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { formatCurrency } from '@/lib/currency';
 import { createClient } from '@supabase/supabase-js';
 import {
   sendCustomerOrderRequestConfirmation,
@@ -48,6 +49,7 @@ type ShopRow = {
   name: string;
   approved: boolean;
   owner_id: string | null;
+  street_id: string | null;
 };
 
 type ShopOrderSettingsRow = {
@@ -313,7 +315,7 @@ export async function POST(req: Request) {
     }] = await Promise.all([
       supabaseServer
         .from('shops')
-        .select('id, name, approved, owner_id')
+        .select('id, name, approved, owner_id, street_id')
         .eq('id', product.shop_id)
         .maybeSingle(),
 
@@ -359,6 +361,18 @@ export async function POST(req: Request) {
     const shop = shopData as ShopRow;
     const settings =
       settingsData as ShopOrderSettingsRow;
+
+    let countrySlug: string | null = null;
+
+    if (shop.street_id) {
+      const { data: streetLocation } = await supabaseServer
+        .from('streets')
+        .select('country')
+        .eq('id', shop.street_id)
+        .maybeSingle();
+
+      countrySlug = streetLocation?.country || null;
+    }
 
     if (!shop.approved) {
       return NextResponse.json(
@@ -457,9 +471,10 @@ export async function POST(req: Request) {
     ) {
       return NextResponse.json(
         {
-          error: `This shop requires a minimum request amount of $${Number(
+          error: `This shop requires a minimum request amount of ${formatCurrency(
             settings.minimum_order_amount,
-          ).toFixed(2)}.`,
+            countrySlug,
+          )}.`,
         },
         { status: 400 },
       );

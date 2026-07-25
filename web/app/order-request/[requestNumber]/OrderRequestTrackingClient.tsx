@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { formatCurrency } from '@/lib/currency';
 
 type OrderStatus =
   | 'pending'
@@ -47,6 +48,7 @@ type OrderRequest = {
   completed_at: string | null;
   cancelled_at: string | null;
   expires_at: string;
+  country_slug?: string | null;
 };
 
 type Props = {
@@ -427,13 +429,14 @@ export default function OrderRequestTrackingClient({
                 />
                 <DetailRow
                   label="Product price"
-                  value={`$${Number(
+                  value={formatCurrency(
                     request.product_price_snapshot,
-                  ).toFixed(2)}`}
+                    request.country_slug,
+                  )}
                 />
                 <DetailRow
                   label="Estimated total"
-                  value={`$${estimatedTotal.toFixed(2)}`}
+                  value={formatCurrency(estimatedTotal, request.country_slug)}
                   emphasized
                 />
                 <DetailRow

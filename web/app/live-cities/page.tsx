@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
@@ -44,6 +44,14 @@ export default function LiveCitiesPage() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const requestedCountry = normalizeSlug(
+    searchParams.get('country') || 'canada'
+  );
+
+  const activeCountry =
+    requestedCountry === 'india' ? 'india' : 'canada';
 
   useEffect(() => {
     let isMounted = true;
@@ -79,49 +87,33 @@ export default function LiveCitiesPage() {
   }, []);
 
   const groupedCities = useMemo<CountryGroup[]>(() => {
-    const groups = new Map<string, CountryGroup>();
+    const matchingCities = cities.filter(
+      (city) => normalizeSlug(city.country_slug) === activeCountry
+    );
 
-    cities.forEach((city) => {
-      const countrySlug = normalizeSlug(city.country_slug);
-      const existingGroup = groups.get(countrySlug);
+    if (matchingCities.length === 0) return [];
 
-      if (existingGroup) {
-        existingGroup.cities.push(city);
-        return;
-      }
+    const countryName =
+      matchingCities[0]?.country_name ||
+      (activeCountry === 'india' ? 'India' : 'Canada');
 
-      groups.set(countrySlug, {
-        countrySlug,
-        countryName: city.country_name,
-        cities: [city],
-      });
-    });
-
-    const countryOrder: Record<string, number> = {
-      canada: 0,
-      india: 1,
-    };
-
-    return Array.from(groups.values())
-      .map((group) => ({
-        ...group,
-        cities: [...group.cities].sort((a, b) =>
+    return [
+      {
+        countrySlug: activeCountry,
+        countryName,
+        cities: [...matchingCities].sort((a, b) =>
           a.city_name.localeCompare(b.city_name)
         ),
-      }))
-      .sort((a, b) => {
-        const aOrder = countryOrder[a.countrySlug] ?? 99;
-        const bOrder = countryOrder[b.countrySlug] ?? 99;
+      },
+    ];
+  }, [activeCountry, cities]);
 
-        if (aOrder !== bOrder) return aOrder - bOrder;
-        return a.countryName.localeCompare(b.countryName);
-      });
-  }, [cities]);
+  const countryLabel =
+    activeCountry === 'india' ? 'India' : 'Canada';
 
-  const title = 'Explore Live Cities | LocalStreetShop';
-  const description =
-    'Explore cities in Canada and India where local shops are already listed on LocalStreetShop.';
-  const url = 'https://www.localstreetshop.com/live-cities';
+  const title = `${countryLabel} Live Cities | LocalStreetShop`;
+  const description = `Explore live cities in ${countryLabel} where local shops are already listed on LocalStreetShop.`;
+  const url = `https://www.localstreetshop.com/live-cities?country=${activeCountry}`;
 
   return (
     <>
@@ -143,12 +135,12 @@ export default function LiveCitiesPage() {
             </p>
 
             <h1 className="mb-4 text-4xl font-extrabold md:text-5xl">
-              🏙️ Explore Live Cities
+              🏙️ Explore {countryLabel} Live Cities
             </h1>
 
             <p className="mx-auto max-w-2xl text-lg text-gray-600">
-              Browse cities where local shops are already listed, then explore
-              their streets and businesses.
+              Browse live cities in {countryLabel} where local shops are already
+              listed, then explore their streets and businesses.
             </p>
           </section>
 
@@ -201,7 +193,7 @@ export default function LiveCitiesPage() {
                   <div className="mb-5 flex flex-col justify-between gap-2 border-b border-gray-200 pb-4 sm:flex-row sm:items-end">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
-                        Explore by country
+                        Live cities in
                       </p>
                       <h2 className="mt-1 text-3xl font-extrabold text-gray-950">
                         {group.countryName}

@@ -83,17 +83,63 @@ export default function Header() {
             Home
           </Link>
 
-          <Link href="/live-cities" className="whitespace-nowrap transition hover:text-blue-700">
-            Live Cities
-          </Link>
+          <div className="group relative">
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 whitespace-nowrap transition hover:text-blue-700"
+              aria-haspopup="menu"
+            >
+              Live Cities
+              <span className="text-[10px]">▼</span>
+            </button>
+
+            <div className="invisible absolute left-1/2 top-full z-50 mt-2 w-52 -translate-x-1/2 rounded-2xl border border-slate-100 bg-white py-2 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <Link
+                href="/live-cities?country=canada"
+                className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-blue-50 hover:text-blue-700"
+              >
+                🇨🇦 Canada Live Cities
+              </Link>
+
+              <Link
+                href="/live-cities?country=india"
+                className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+              >
+                🇮🇳 India Live Cities
+              </Link>
+            </div>
+          </div>
 
           <Link href="/deals" className="whitespace-nowrap transition hover:text-blue-700">
             Deals
           </Link>
 
-          <Link href="/business-owners" className="whitespace-nowrap transition hover:text-blue-700">
-            For Business Owners
-          </Link>
+          <div className="group relative">
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 whitespace-nowrap transition hover:text-blue-700"
+              aria-haspopup="menu"
+            >
+              For Business Owners
+              <span className="text-[10px]">▼</span>
+            </button>
+
+            <div className="invisible absolute left-1/2 top-full z-50 mt-2 w-52 -translate-x-1/2 rounded-2xl border border-slate-100 bg-white py-2 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <Link
+                href="/business-owners"
+                className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-blue-50 hover:text-blue-700"
+              >
+                🇨🇦 Canada
+              </Link>
+
+              <Link
+                href="/countries/india/business-owners"
+                className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+              >
+                🇮🇳 India
+              </Link>
+            </div>
+          </div>
 
           <Link href="/community-partners" className="whitespace-nowrap transition hover:text-blue-700">
             Community Partners
@@ -182,17 +228,49 @@ export default function Header() {
               Explore Streets
             </Link>
 
-            <Link href="/live-cities" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
-              Live Cities
-            </Link>
+            <div className="rounded-xl border border-slate-100 bg-slate-50 p-2">
+              <p className="px-2 pb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
+                Live Cities
+              </p>
+              <Link
+                href="/live-cities?country=canada"
+                onClick={closeMobileMenu}
+                className="block rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700"
+              >
+                🇨🇦 Canada
+              </Link>
+              <Link
+                href="/live-cities?country=india"
+                onClick={closeMobileMenu}
+                className="block rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-700"
+              >
+                🇮🇳 India
+              </Link>
+            </div>
 
             <Link href="/deals" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
               Deals
             </Link>
 
-            <Link href="/business-owners" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
-              For Business Owners
-            </Link>
+            <div className="rounded-xl border border-slate-100 bg-slate-50 p-2">
+              <p className="px-2 pb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
+                For Business Owners
+              </p>
+              <Link
+                href="/business-owners"
+                onClick={closeMobileMenu}
+                className="block rounded-lg px-3 py-2 hover:bg-blue-50 hover:text-blue-700"
+              >
+                🇨🇦 Canada
+              </Link>
+              <Link
+                href="/countries/india/business-owners"
+                onClick={closeMobileMenu}
+                className="block rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-700"
+              >
+                🇮🇳 India
+              </Link>
+            </div>
 
             <Link href="/shop-owner" onClick={closeMobileMenu} className="rounded-xl px-3 py-2 hover:bg-blue-50 hover:text-blue-700">
               Shop Owner Portal

@@ -368,7 +368,7 @@ export default function RequestOrderClient({
               </p>
 
               <p className="mt-2 text-sm text-slate-700">
-                <strong>Estimated product total:</strong> $
+                <strong>Estimated product total:</strong> ₹
                 {estimatedTotal.toFixed(2)}
               </p>
             </div>
@@ -470,7 +470,7 @@ export default function RequestOrderClient({
               </h2>
 
               <p className="mt-2 text-xl font-extrabold text-blue-700">
-                ${product.price.toFixed(2)}
+                ₹{product.price.toFixed(2)}
               </p>
 
               <div className="mt-4 flex flex-wrap gap-2">
@@ -632,7 +632,7 @@ export default function RequestOrderClient({
                   </p>
 
                   <p className="mt-1 text-2xl font-extrabold text-blue-700">
-                    ${estimatedTotal.toFixed(2)}
+                    ₹{estimatedTotal.toFixed(2)}
                   </p>
 
                   <p className="mt-1 text-xs text-blue-700">
@@ -644,7 +644,7 @@ export default function RequestOrderClient({
 
               {settings.minimumOrderAmount !== null && (
                 <p className="mt-4 text-sm text-slate-600">
-                  Minimum request amount: $
+                  Minimum request amount: ₹
                   {settings.minimumOrderAmount.toFixed(2)}
                 </p>
               )}

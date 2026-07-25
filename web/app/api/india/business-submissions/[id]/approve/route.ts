@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { findMatchingStreet } from '@/lib/indiaLocationMatching';
 
 const slugify = (value: string) =>
   value
@@ -157,17 +158,23 @@ export async function POST(
       city = createdCity.data;
     }
 
-    const streetBaseSlug = slugify(streetName);
-    const streetSlug = `${citySlug}-${streetBaseSlug}`;
-
-    let { data: street, error: streetLookupError } = await adminClient
+    // Load the city's existing browse streets/areas first. The normalized
+    // matcher treats common variants such as Rd/Road and R.C./RC as equal.
+    const existingStreetsResult = await adminClient
       .from('streets')
       .select('id,name,slug')
-      .eq('city_id', city.id)
-      .eq('slug', streetSlug)
-      .maybeSingle();
+      .eq('city_id', city.id);
 
-    if (streetLookupError) return NextResponse.json({ error: streetLookupError.message }, { status: 500 });
+    if (existingStreetsResult.error) {
+      return NextResponse.json(
+        { error: existingStreetsResult.error.message },
+        { status: 500 },
+      );
+    }
+
+    let street = findMatchingStreet(existingStreetsResult.data || [], streetName);
+    const streetBaseSlug = slugify(streetName);
+    const streetSlug = `${citySlug}-${streetBaseSlug}`;
 
     if (!street) {
       const latitude = submission.latitude === null || submission.latitude === ''

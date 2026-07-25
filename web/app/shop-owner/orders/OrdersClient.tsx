@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { formatCurrency } from '@/lib/currency';
 
 type OrderStatus =
   | 'pending'
@@ -17,6 +18,8 @@ type OrderStatus =
 type Shop = {
   id: string;
   name: string;
+  street_id: string | null;
+  country_slug?: string | null;
 };
 
 type OrderRequest = {
@@ -44,6 +47,7 @@ type OrderRequest = {
   status: OrderStatus;
   requested_at: string;
   expires_at: string;
+  country_slug?: string | null;
 };
 
 type StatusFilter = 'all' | OrderStatus;
@@ -160,7 +164,7 @@ export default function OrdersClient() {
       const { data: shopData, error: shopError } =
         await supabase
           .from('shops')
-          .select('id, name')
+          .select('id, name, street_id')
           .eq('owner_id', authData.user.id)
           .eq('approved', true)
           .order('name', { ascending: true });
@@ -175,7 +179,37 @@ export default function OrdersClient() {
         return;
       }
 
-      const ownedShops = (shopData || []) as Shop[];
+      const baseShops = (shopData || []) as Shop[];
+      const streetIds = Array.from(
+        new Set(
+          baseShops
+            .map((shop) => shop.street_id)
+            .filter((value): value is string => Boolean(value)),
+        ),
+      );
+
+      const countryByStreet = new Map<string, string>();
+
+      if (streetIds.length > 0) {
+        const { data: streetData } = await supabase
+          .from('streets')
+          .select('id, country')
+          .in('id', streetIds);
+
+        for (const street of streetData || []) {
+          if (street.id && street.country) {
+            countryByStreet.set(street.id, street.country);
+          }
+        }
+      }
+
+      const ownedShops = baseShops.map((shop) => ({
+        ...shop,
+        country_slug: shop.street_id
+          ? countryByStreet.get(shop.street_id) || null
+          : null,
+      }));
+
       setShops(ownedShops);
 
       if (
@@ -236,7 +270,16 @@ export default function OrdersClient() {
         return;
       }
 
-      setRequests((requestData || []) as OrderRequest[]);
+      const countryByShop = new Map(
+        ownedShops.map((shop) => [shop.id, shop.country_slug || null]),
+      );
+
+      setRequests(
+        ((requestData || []) as OrderRequest[]).map((request) => ({
+          ...request,
+          country_slug: countryByShop.get(request.shop_id) || null,
+        })),
+      );
       setLoading(false);
     };
 
@@ -827,10 +870,10 @@ function RequestCard({
                 Product price
               </dt>
               <dd className="font-bold text-slate-900">
-                $
-                {Number(
+                {formatCurrency(
                   request.product_price_snapshot,
-                ).toFixed(2)}
+                  request.country_slug,
+                )}
               </dd>
             </div>
 
@@ -839,7 +882,7 @@ function RequestCard({
                 Estimated total
               </dt>
               <dd className="font-extrabold text-blue-700">
-                ${estimatedTotal.toFixed(2)}
+                {formatCurrency(estimatedTotal, request.country_slug)}
               </dd>
             </div>
           </dl>

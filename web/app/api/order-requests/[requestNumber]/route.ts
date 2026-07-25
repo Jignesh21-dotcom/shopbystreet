@@ -162,6 +162,24 @@ export async function GET(
       }
     }
 
+    let countrySlug: string | null = null;
+
+    const { data: shopLocation } = await supabaseServer
+      .from('shops')
+      .select('street_id')
+      .eq('id', requestData.shop_id)
+      .maybeSingle();
+
+    if (shopLocation?.street_id) {
+      const { data: streetLocation } = await supabaseServer
+        .from('streets')
+        .select('country')
+        .eq('id', shopLocation.street_id)
+        .maybeSingle();
+
+      countrySlug = streetLocation?.country || null;
+    }
+
     const {
       customer_access_token: _customerAccessToken,
       ...safeRequest
@@ -172,6 +190,7 @@ export async function GET(
         request: {
           ...safeRequest,
           status: effectiveStatus,
+          country_slug: countrySlug,
         },
       },
       {

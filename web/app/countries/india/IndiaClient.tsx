@@ -10,8 +10,6 @@ const launchCities = [
     status: 'Founding City',
     description:
       'Explore Ahmedabad’s local streets, markets, independent retailers, food businesses, and neighbourhood shops.',
-    href: '/countries/india/gujarat/ahmedabad',
-    active: true,
   },
   {
     name: 'Surat',
@@ -20,28 +18,22 @@ const launchCities = [
     status: 'Founding City',
     description:
       'Discover Surat’s textile businesses, shopping districts, local markets, and independent storefronts.',
-    href: '/countries/india/gujarat/surat',
-    active: true,
   },
   {
     name: 'Vadodara',
     slug: 'vadodara',
     icon: '🏛️',
-    status: 'Founding City',
+    status: 'Launching Soon',
     description:
       'Browse local businesses, commercial streets, community markets, and neighbourhood shopping areas.',
-    href: '/countries/india/gujarat/vadodara',
-    active: true,
   },
   {
     name: 'Rajkot',
     slug: 'rajkot',
     icon: '🛍️',
-    status: 'Founding City',
+    status: 'Launching Soon',
     description:
       'Find local retailers, traditional markets, service businesses, and independent shops across Rajkot.',
-    href: '/countries/india/gujarat/rajkot',
-    active: true,
   },
 ];
 
@@ -87,11 +79,11 @@ export default function IndiaClient() {
 
         <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <Link
-            href="/"
+            href="/global-preview"
             className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 transition hover:text-blue-700"
           >
             <span>←</span>
-            Back to LocalStreetShop
+            Back to Global Preview
           </Link>
         </div>
 
@@ -224,12 +216,14 @@ export default function IndiaClient() {
         </div>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2">
-          {launchCities.map((city) => (
-            <div
-              key={city.slug}
-              className="flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
-            >
-              <div className="flex-1 p-7">
+          {launchCities.map((city) => {
+            const isFoundingCity = city.status === 'Founding City';
+
+            return (
+              <div
+                key={city.slug}
+                className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50 text-3xl">
                     {city.icon}
@@ -237,12 +231,12 @@ export default function IndiaClient() {
 
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${
-                      city.active
-                        ? 'bg-green-100 text-green-700'
+                      isFoundingCity
+                        ? 'bg-orange-100 text-orange-700'
                         : 'bg-slate-100 text-slate-600'
                     }`}
                   >
-                    {city.active ? 'Live City' : city.status}
+                    {city.status}
                   </span>
                 </div>
 
@@ -254,28 +248,20 @@ export default function IndiaClient() {
                   {city.description}
                 </p>
 
-                <div className="mt-6 rounded-2xl border border-orange-100 bg-orange-50 p-4 text-sm font-semibold text-orange-800">
-                  Explore local streets, shopping areas, shops, products, and
-                  participating businesses.
+                <div className="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm font-semibold text-slate-500">
+                  Markets, shopping areas, streets, and founding businesses are being
+                  prepared.
                 </div>
-              </div>
 
-              <div className="border-t border-slate-200 bg-slate-50 p-5">
-                {city.active ? (
-                  <Link
-                    href={city.href}
-                    className="inline-flex w-full items-center justify-center rounded-full bg-orange-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-orange-600/20 transition hover:bg-orange-700"
-                  >
-                    Explore {city.name}
-                  </Link>
-                ) : (
-                  <div className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-4 text-sm font-bold text-slate-500">
-                    Launching Soon
-                  </div>
-                )}
+                <Link
+                  href={`/countries/india/gujarat/${city.slug}`}
+                  className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-orange-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-orange-700"
+                >
+                  Explore {city.name}
+                </Link>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -342,7 +328,7 @@ export default function IndiaClient() {
               </Link>
 
               <Link
-                href="/business-owners"
+                href="/countries/india/business-owners"
                 className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-7 py-4 text-sm font-bold text-white transition hover:bg-white/10"
               >
                 Learn About the Platform
@@ -401,7 +387,7 @@ export default function IndiaClient() {
             </Link>
 
             <Link
-              href="/"
+              href="/global-preview"
               className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-4 text-sm font-bold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50"
             >
               Back to Global Homepage

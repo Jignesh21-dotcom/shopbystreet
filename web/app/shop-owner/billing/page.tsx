@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
+import { formatCurrency } from '@/lib/currency';
 
 type Shop = {
   id: string;
   name: string;
+  country?: string | null;
 };
 
 type LedgerStatus =
@@ -51,6 +53,7 @@ type BillingSummary = {
 
 type BillingResponse = {
   shops: Shop[];
+  countrySlug: string;
   entries: BillingEntry[];
   summary: BillingSummary;
 };
@@ -81,15 +84,6 @@ const STATUS_LABELS: Record<LedgerStatus, string> = {
   refunded: 'Refunded',
   cancelled: 'Cancelled',
 };
-
-function formatMoney(value: unknown) {
-  const number = Number(value);
-
-  return new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: 'CAD',
-  }).format(Number.isFinite(number) ? number : 0);
-}
 
 function formatDate(value: string | null) {
   if (!value) return '—';
@@ -225,6 +219,14 @@ export default function ShopOwnerBillingPage() {
     pendingCount: 0,
     invoicedCount: 0,
   };
+
+  const countrySlug =
+    billing?.countrySlug === 'india'
+      ? 'india'
+      : 'canada';
+
+  const formatMoney = (value: unknown) =>
+    formatCurrency(value, countrySlug);
 
   const nextInvoiceDate =
     getNextInvoiceDate();

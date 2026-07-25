@@ -16,6 +16,30 @@ const PAYABLE_LEDGER_STATUSES = [
   'invoiced',
 ];
 
+type ShopLocationRow = {
+  id: string;
+  name: string;
+  street?: {
+    city?: {
+      state?: {
+        country?: {
+          slug?: string | null;
+        } | null;
+      } | null;
+    } | null;
+  } | null;
+};
+
+function getShopCountrySlug(shop: ShopLocationRow) {
+  const slug =
+    shop.street?.city?.state?.country?.slug;
+
+  return String(slug || 'canada')
+    .toLowerCase()
+    .trim();
+}
+
+
 function getSupabaseClients() {
   const supabaseUrl =
     process.env.SUPABASE_URL ||
@@ -136,7 +160,17 @@ export async function POST(req: Request) {
     const { data: ownedShops, error: shopsError } =
       await supabaseServer
         .from('shops')
-        .select('id, name')
+        .select(`
+          id,
+          name,
+          street:streets!inner(
+            city:cities!inner(
+              state:provinces!inner(
+                country:countries!inner(slug)
+              )
+            )
+          )
+        `)
         .eq('owner_id', user.id)
         .eq('approved', true);
 
@@ -147,9 +181,45 @@ export async function POST(req: Request) {
       );
     }
 
-    const shopIds = (ownedShops || []).map(
-      (shop: { id: string }) => shop.id,
+    const ownedShopRows =
+      (ownedShops || []) as unknown as ShopLocationRow[];
+
+    const normalizedOwnedShops =
+      ownedShopRows.map((shop) => ({
+        id: shop.id,
+        name: shop.name,
+        countrySlug: getShopCountrySlug(shop),
+      }));
+
+    const shopIds = normalizedOwnedShops.map(
+      (shop) => shop.id,
     );
+
+    const normalizedCountries = Array.from(
+      new Set(
+        normalizedOwnedShops.map(
+          (shop) => shop.countrySlug,
+        ),
+      ),
+    );
+
+    if (normalizedCountries.length > 1) {
+      return NextResponse.json(
+        {
+          error:
+            'Canadian and Indian marketplace balances must be paid separately.',
+        },
+        { status: 400 },
+      );
+    }
+
+    const countrySlug =
+      normalizedCountries[0] === 'india'
+        ? 'india'
+        : 'canada';
+
+    const stripeCurrency =
+      countrySlug === 'india' ? 'inr' : 'cad';
 
     if (shopIds.length === 0) {
       return NextResponse.json(
@@ -244,7 +314,7 @@ export async function POST(req: Request) {
             ? shopIds[0]
             : null,
         amount,
-        currency: 'cad',
+        currency: stripeCurrency,
         status: 'created',
         ledger_entry_ids: ledgerEntryIds,
         updated_at: new Date().toISOString(),
@@ -275,7 +345,7 @@ export async function POST(req: Request) {
         line_items: [
           {
             price_data: {
-              currency: 'cad',
+              currency: stripeCurrency,
               unit_amount: amountInCents,
               product_data: {
                 name:
@@ -297,6 +367,8 @@ export async function POST(req: Request) {
           ownerUserId: user.id,
           paymentType:
             'marketplace_balance',
+          countrySlug,
+          currency: stripeCurrency,
           ledgerEntryCount:
             String(ledgerEntryIds.length),
         },
