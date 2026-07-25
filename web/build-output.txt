@@ -3,74 +3,116 @@
 > next build
 
 ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
- We detected multiple lockfiles and selected the directory of c:\Users\Jignesh Chouhan\my-shop-street\package-lock.json as the root directory.
+ We detected multiple lockfiles and selected the directory of C:\Users\Jignesh Chouhan\my-shop-street\package-lock.json as the root directory.
  To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
    See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
  Detected additional lockfiles: 
-   * c:\Users\Jignesh Chouhan\my-shop-street\web\package-lock.json
+   * C:\Users\Jignesh Chouhan\my-shop-street\web\package-lock.json
 
 ▲ Next.js 16.2.7 (Turbopack)
 - Environments: .env.local
 
   Creating an optimized production build ...
-✓ Compiled successfully in 25.2s
+✓ Compiled successfully in 17.5s
   Running TypeScript ...
-  Finished TypeScript in 62s ...
+  Finished TypeScript in 25.3s ...
   Collecting page data using 7 workers ...
-  Generating static pages using 7 workers (0/1053) ...
-  Generating static pages using 7 workers (263/1053) 
-  Generating static pages using 7 workers (526/1053) 
-  Generating static pages using 7 workers (789/1053) 
-Failed to fetch shops: column shops.discount does not exist
-✓ Generating static pages using 7 workers (1053/1053) in 8.9s
+  Generating static pages using 7 workers (0/1078) ...
+  Generating static pages using 7 workers (269/1078) 
+  Generating static pages using 7 workers (538/1078) 
+  Generating static pages using 7 workers (808/1078) 
+✓ Generating static pages using 7 workers (1078/1078) in 5.9s
   Finalizing page optimization ...
 
-Route (app)                                    Revalidate  Expire
+Route (app)                                                                             Revalidate  Expire
 ┌ ○ /
 ├ ○ /_not-found
 ├ ○ /about
+├ ○ /admin
 ├ ○ /admin/add-deal
 ├ ○ /admin/claims
+├ ○ /admin/india-submissions
+├ ƒ /admin/india-submissions/[id]
+├ ○ /admin/pending-shop-submission
 ├ ○ /admin/pending-streets
 ├ ○ /admin/shops
 ├ ƒ /api/approve-street
 ├ ƒ /api/contact
 ├ ƒ /api/create-checkout-session
+├ ƒ /api/donations/checkout
+├ ƒ /api/india/business-submissions
+├ ƒ /api/india/business-submissions/[id]/approve
+├ ƒ /api/india/business-submissions/[id]/matches
+├ ƒ /api/india/business-submissions/[id]/reject
+├ ƒ /api/india/professional-setup/checkout
+├ ƒ /api/order-requests
+├ ƒ /api/order-requests/[requestNumber]
 ├ ƒ /api/shop-claims
+├ ƒ /api/shop-claims/admin
 ├ ƒ /api/shop-claims/approve
 ├ ƒ /api/shop-owner/activate-tier
+├ ƒ /api/shop-owner/billing
+├ ƒ /api/shop-owner/billing/checkout
+├ ƒ /api/shop-owner/global-dashboard
+├ ƒ /api/shop-owner/marketplace-summary
+├ ƒ /api/shop-owner/order-requests/[id]
 ├ ƒ /api/shop-owner/products
+├ ƒ /api/shop-owner/products/[id]
+├ ƒ /api/stripe/webhook
+├ ○ /business-owners
 ├ ƒ /cities/[city]
 ├ ƒ /cities/[city]/[street]
 ├ ƒ /cities/[city]/[street]/[shop]
 ├ ƒ /cities/[city]/[street]/[shop]/products
+├ ƒ /cities/[city]/[street]/[shop]/products/[product]/request
 ├ ƒ /cities/[city]/[street]/address/[address]
+├ ○ /community-partners
 ├ ○ /contact-us
 ├ ƒ /countries/[country]
+├ ○ /countries/india
+├ ○ /countries/india/add-business
+├ ○ /countries/india/business-owners
+├ ○ /countries/india/business-owners/payment-success
+├ ○ /countries/india/gujarat
+├ ƒ /countries/india/gujarat/[city]
+├ ƒ /countries/india/gujarat/[city]/streets/[street]
+├ ƒ /countries/india/gujarat/[city]/streets/[street]/[shop]
+├ ƒ /countries/india/gujarat/[city]/streets/[street]/[shop]/products
+├ ƒ /countries/india/gujarat/[city]/streets/[street]/[shop]/products/[product]/request
+├ ƒ /countries/india/gujarat/[city]/streets/[street]/locations/[location]
+├ ○ /countries/india/gujarat/ahmedabad-old
 ├ ƒ /deals
 ├ ○ /discover
+├ ○ /global-preview
 ├ ○ /home-businesses
 ├ ○ /live-cities
 ├ ○ /login
 ├ ○ /member
-├ ○ //business-owners
+├ ○ /my-order-requests
+├ ƒ /order-request/[requestNumber]
 ├ ○ /privacy-policy
 ├ ○ /profile
 ├ ƒ /provinces/[province]
 ├ ○ /shop-owner
 ├ ○ /shop-owner-signup
+├ ○ /shop-owner/billing
+├ ○ /shop-owner/billing/payment-success
+├ ○ /shop-owner/businesses/new
 ├ ○ /shop-owner/claim
 ├ ○ /shop-owner/dashboard
+├ ○ /shop-owner/dashboard/order-settings
 ├ ○ /shop-owner/orders
 ├ ○ /shop-owner/payment-success
 ├ ○ /shop-owner/products
-├ ○ /shop-owner/products/add
+├ ƒ /shop-owner/products/add
+├ ƒ /shop-owner/products/edit/[id]
 ├ ƒ /shop-owner/shops/[id]
 ├ ○ /shop-owner/shops/add
 ├ ○ /signup
-├ ○ /sitemap.xml                                      10m      1y
-├ ○ /community-partners
+├ ○ /sitemap.xml                                                                               10m      1y
 ├ ○ /submit-street
+├ ○ /support
+├ ○ /support/thank-you
 └ ○ /update-password
 
 
