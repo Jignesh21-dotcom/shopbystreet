@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import ClaimShopClient from '@/app/shop-owner/claim/ClaimShopClient';
 
 export const metadata: Metadata = {
@@ -11,5 +12,9 @@ export const metadata: Metadata = {
 };
 
 export default function ClaimShopPage() {
-  return <ClaimShopClient />;
+  return (
+    <Suspense fallback={null}>
+      <ClaimShopClient />
+    </Suspense>
+  );
 }
