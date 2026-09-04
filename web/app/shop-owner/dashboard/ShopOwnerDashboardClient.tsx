@@ -35,6 +35,8 @@ type Shop = {
   name: string;
   slug: string | null;
   address: string | null;
+  approved: boolean;
+  created_at: string | null;
   street: Street | Street[] | null;
   pending_order_count: number;
   pending_fee_count: number;
@@ -296,7 +298,6 @@ export default function ShopOwnerDashboardClient() {
           )
         `)
         .eq('owner_id', authData.user.id)
-        .eq('approved', true)
         .order('name', { ascending: true });
 
       if (!isMounted) return;
@@ -309,9 +310,16 @@ export default function ShopOwnerDashboardClient() {
       }
 
       const ownedShops = normalizeShops(shopData as Shop[]);
+      const approvedShops = ownedShops.filter((shop) => shop.approved);
 
       if (ownedShops.length === 0) {
         setShops([]);
+        setLoading(false);
+        return;
+      }
+
+      if (approvedShops.length === 0) {
+        setShops(ownedShops);
         setLoading(false);
         return;
       }
@@ -418,6 +426,9 @@ export default function ShopOwnerDashboardClient() {
     };
   }, [router]);
 
+  const pendingShops = shops.filter((shop) => !shop.approved);
+  const approvedShops = shops.filter((shop) => shop.approved);
+
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-6 sm:p-8">
       <div className="mx-auto max-w-5xl rounded-xl bg-white p-4 shadow-md sm:p-6">
@@ -469,10 +480,64 @@ export default function ShopOwnerDashboardClient() {
         ) : (
           <>
             <FoundingProgramBanner />
-            <MarketplaceOrderRequestBanner countrySlug={shops[0]?.countrySlug || 'canada'} />
+
+            {pendingShops.length > 0 && (
+              <section className="mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-5">
+                <h2 className="text-xl font-extrabold text-amber-900">
+                  ⏳ Shop submission awaiting approval
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-amber-800">
+                  Your submission is saved and hidden from public pages while
+                  LocalStreetShop reviews it. You will receive an email after
+                  it is approved or if more information is needed.
+                </p>
+
+                <div className="mt-4 space-y-3">
+                  {pendingShops.map((shop) => {
+                    const street = Array.isArray(shop.street)
+                      ? shop.street[0] || null
+                      : shop.street;
+                    const cityRaw = street?.city;
+                    const city = Array.isArray(cityRaw)
+                      ? cityRaw[0] || null
+                      : cityRaw;
+
+                    return (
+                      <div
+                        key={shop.id}
+                        className="rounded-xl border border-amber-200 bg-white p-4"
+                      >
+                        <p className="font-extrabold text-slate-900">
+                          {shop.name}
+                        </p>
+                        <p className="mt-1 text-sm text-slate-600">
+                          {[shop.address, street?.name, city?.name]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </p>
+                        {shop.created_at && (
+                          <p className="mt-2 text-xs font-semibold text-amber-700">
+                            Submitted{' '}
+                            {new Intl.DateTimeFormat('en-CA', {
+                              dateStyle: 'medium',
+                            }).format(new Date(shop.created_at))}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {approvedShops.length > 0 && (
+              <MarketplaceOrderRequestBanner
+                countrySlug={approvedShops[0]?.countrySlug || 'canada'}
+              />
+            )}
 
             <div className="space-y-4">
-              {shops.map((shop) => {
+              {approvedShops.map((shop) => {
                 const street = Array.isArray(shop.street) ? shop.street[0] || null : shop.street;
                 const cityRaw = street?.city;
                 const city = Array.isArray(cityRaw) ? cityRaw[0] || null : cityRaw;

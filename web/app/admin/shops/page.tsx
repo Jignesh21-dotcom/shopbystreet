@@ -191,15 +191,29 @@ export default function AdminShopModeration() {
     setErrorMessage('');
     setSuccessMessage('');
 
-    const { error } = await supabase
-      .from('shops')
-      .update({ approved: true })
-      .eq('id', shop.id)
-      .eq('approved', false);
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-    if (error) {
-      console.error('Failed to approve shop:', error);
-      setErrorMessage(`Unable to approve ${shop.name}: ${error.message}`);
+    if (sessionError || !session?.access_token) {
+      setErrorMessage('Your admin session has expired. Please log in again.');
+      setProcessingShopId(null);
+      return;
+    }
+
+    const response = await fetch(`/api/admin/shops/${shop.id}/approve`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    });
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      setErrorMessage(
+        result?.error || `Unable to approve ${shop.name}. Please try again.`,
+      );
       setProcessingShopId(null);
       return;
     }
@@ -209,15 +223,29 @@ export default function AdminShopModeration() {
     );
 
     setSuccessMessage(
-      `${shop.name} was approved and can now appear publicly.`,
+      result?.warning
+        ? `${shop.name} was approved, but the owner email could not be sent. ${result.warning}`
+        : `${shop.name} was approved and the owner was notified by email.`,
     );
 
     setProcessingShopId(null);
   };
 
   const deleteShop = async (shop: NormalizedShop) => {
+    const reason = window.prompt(
+      `Why is "${shop.name}" being rejected? This message will be emailed to the shop owner.`,
+      'We could not verify the submitted business information. Please review the details and submit again.',
+    );
+
+    if (reason === null) return;
+
+    if (!reason.trim()) {
+      setErrorMessage('Please provide a rejection reason.');
+      return;
+    }
+
     const confirmed = window.confirm(
-      `Permanently delete the pending submission for "${shop.name}"?\n\nUse this only for duplicate, invalid, or rejected submissions. This action cannot be undone.`,
+      `Reject and permanently delete the pending submission for "${shop.name}"? This action cannot be undone.`,
     );
 
     if (!confirmed) return;
@@ -226,15 +254,31 @@ export default function AdminShopModeration() {
     setErrorMessage('');
     setSuccessMessage('');
 
-    const { error } = await supabase
-      .from('shops')
-      .delete()
-      .eq('id', shop.id)
-      .eq('approved', false);
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-    if (error) {
-      console.error('Failed to delete shop:', error);
-      setErrorMessage(`Unable to delete ${shop.name}: ${error.message}`);
+    if (sessionError || !session?.access_token) {
+      setErrorMessage('Your admin session has expired. Please log in again.');
+      setProcessingShopId(null);
+      return;
+    }
+
+    const response = await fetch(`/api/admin/shops/${shop.id}/reject`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ reason: reason.trim() }),
+    });
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      setErrorMessage(
+        result?.error || `Unable to reject ${shop.name}. Please try again.`,
+      );
       setProcessingShopId(null);
       return;
     }
@@ -243,7 +287,11 @@ export default function AdminShopModeration() {
       current.filter((currentShop) => currentShop.id !== shop.id),
     );
 
-    setSuccessMessage(`${shop.name} was removed from pending submissions.`);
+    setSuccessMessage(
+      result?.warning
+        ? `${shop.name} was rejected and removed, but the owner email could not be sent. ${result.warning}`
+        : `${shop.name} was rejected, removed, and the owner was notified by email.`,
+    );
     setProcessingShopId(null);
   };
 

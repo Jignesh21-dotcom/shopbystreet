@@ -4,6 +4,20 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
+const getAuthRedirectBase = () => {
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/+$/, '');
+  }
+
+  if (window.location.hostname === 'localhost') {
+    return window.location.origin;
+  }
+
+  return 'https://www.localstreetshop.com';
+};
+
 export default function SignUpClient() {
   const [email, setEmail] = useState('');
   const [submittedEmail, setSubmittedEmail] = useState('');
@@ -25,7 +39,7 @@ export default function SignUpClient() {
       email: cleanEmail,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/login?verified=true`,
+        emailRedirectTo: `${getAuthRedirectBase()}/login?verified=true`,
         data: {
           username: username.trim(),
           isShopOwner: role === 'owner',

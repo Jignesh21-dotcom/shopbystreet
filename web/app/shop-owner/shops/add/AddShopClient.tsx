@@ -244,79 +244,51 @@ export default function AddShopClient() {
         throw new Error('Please log in before adding a shop.');
       }
 
-      /*
-       * Prevent the same owner from accidentally submitting the same
-       * business more than once on the same street.
-       */
-      const { data: existingSubmission, error: duplicateCheckError } =
-        await supabase
-          .from('shops')
-          .select('id, name, address, approved')
-          .eq('owner_id', userData.user.id)
-          .eq('street_id', selectedStreet)
-          .ilike('name', cleanName)
-          .ilike('address', cleanAddress)
-          .limit(1)
-          .maybeSingle();
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-      if (duplicateCheckError) {
-        throw new Error(
-          `Unable to check existing submissions: ${duplicateCheckError.message}`,
-        );
+      if (sessionError || !session?.access_token) {
+        throw new Error('Your session has expired. Please log in again.');
       }
 
-      if (existingSubmission) {
-        if (existingSubmission.approved) {
-          throw new Error(
-            'This shop has already been submitted and approved. Please manage it from your Shop Owner Dashboard.',
-          );
-        }
-
-        throw new Error(
-          'This shop has already been submitted and is awaiting admin approval. Please do not submit it again.',
-        );
-      }
-
-      /*
-       * A slug may already exist elsewhere because shop names can repeat.
-       * Add a short unique suffix only when the requested slug is taken.
-       */
-      let finalSlug = cleanSlug;
-
-      const { data: existingSlug, error: slugCheckError } = await supabase
-        .from('shops')
-        .select('id')
-        .eq('slug', cleanSlug)
-        .limit(1)
-        .maybeSingle();
-
-      if (slugCheckError) {
-        throw new Error(
-          `Unable to verify the shop URL: ${slugCheckError.message}`,
-        );
-      }
-
-      if (existingSlug) {
-        finalSlug = `${cleanSlug}-${crypto.randomUUID().slice(0, 8)}`;
-      }
-
-      const { error: insertError } = await supabase.from('shops').insert([
-        {
+      const response = await fetch('/api/shop-submissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
           name: cleanName,
-          slug: finalSlug,
-          street_id: selectedStreet,
-          city_id: selectedCity,
-          province_id: selectedProvince,
+          slug: cleanSlug,
           address: cleanAddress,
           description: cleanDescription || null,
           parking: cleanParking || null,
-          owner_id: userData.user.id,
-          approved: false,
-        },
-      ]);
+          countryId: selectedCountry,
+          provinceId: selectedProvince,
+          cityId: selectedCity,
+          streetId: selectedStreet,
+        }),
+      });
 
-      if (insertError) {
-        throw new Error(insertError.message);
+      const responseText = await response.text();
+      let result: { error?: string; warning?: string } | null = null;
+
+      try {
+        result = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        result = null;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          result?.error || 'Unable to submit your shop. Please try again.',
+        );
+      }
+
+      if (result?.warning) {
+        console.warn(result.warning);
       }
 
       setSubmittedShopName(cleanName);

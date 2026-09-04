@@ -6,6 +6,20 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
+const getAuthRedirectBase = () => {
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/+$/, '');
+  }
+
+  if (window.location.hostname === 'localhost') {
+    return window.location.origin;
+  }
+
+  return 'https://www.localstreetshop.com';
+};
+
 export default function LoginPage() {
   const router = useRouter();
 
@@ -107,7 +121,7 @@ export default function LoginPage() {
 
     if (showReset) {
       const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-        redirectTo: `${window.location.origin}/update-password`,
+        redirectTo: `${getAuthRedirectBase()}/update-password`,
       });
 
       if (error) {
@@ -126,7 +140,7 @@ export default function LoginPage() {
         email: cleanEmail,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login?verified=true`,
+          emailRedirectTo: `${getAuthRedirectBase()}/login?verified=true`,
           data: {
             username: username.trim(),
             isShopOwner: role === 'owner',

@@ -37,54 +37,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
 
-    const authClient = createClient(supabaseUrl, supabaseAnonKey);
+    const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
     const { data: authData, error: authError } = await authClient.auth.getUser(token);
 
     if (authError || !authData?.user) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
 
-    const userEmail = (authData.user.email || '').toLowerCase();
-    const configuredAdminEmails = (process.env.ADMIN_APPROVER_EMAILS || '')
-      .split(',')
-      .map((email) => email.trim().toLowerCase())
-      .filter(Boolean);
+    const { data: isAdmin, error: adminError } = await authClient.rpc('is_admin');
 
-    const adminRole = authData.user.app_metadata?.role;
-    const adminRoles = authData.user.app_metadata?.roles;
-    const adminFlagCandidates = [
-      authData.user.user_metadata?.isAdmin,
-      authData.user.user_metadata?.is_admin,
-      authData.user.app_metadata?.isAdmin,
-      authData.user.app_metadata?.is_admin,
-      adminRole,
-    ];
-
-    const hasMetadataAdminAccess = adminFlagCandidates.some((value) =>
-      value === true || value === 1 || value === '1' || value === 'true' || value === 'admin'
-    );
-
-    const hasRolesAdminAccess =
-      Array.isArray(adminRoles) && adminRoles.some((role) => `${role}`.toLowerCase() === 'admin');
-
-    const hasEmailAdminAccess =
-      !!userEmail && configuredAdminEmails.includes(userEmail);
-
-    // If ADMIN_APPROVER_EMAILS is configured, enforce it strictly.
-    if (configuredAdminEmails.length > 0 && !hasEmailAdminAccess) {
+    if (adminError || !isAdmin) {
       return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
-    }
-
-    // Without an explicit allowlist, fall back to authenticated access so
-    // existing admin flows do not break due to metadata shape differences.
-    if (
-      configuredAdminEmails.length === 0 &&
-      !hasMetadataAdminAccess &&
-      !hasRolesAdminAccess
-    ) {
-      console.warn(
-        'Approve claim API: proceeding without explicit admin metadata; configure ADMIN_APPROVER_EMAILS to enforce strict admin allowlist.'
-      );
     }
 
     const body = (await req.json()) as ApproveClaimPayload;
@@ -204,12 +170,13 @@ export async function POST(req: Request) {
     const safeCity = escapeHtml(shop.street?.city?.name || 'Not provided');
     const safeStreet = escapeHtml(shop.street?.name || 'Not provided');
 
-    await transporter.sendMail({
-      from: `"LocalStreetShop Support" <${fromEmail}>`,
-      to: claimantResult.user.email,
-      replyTo: fromEmail,
-      subject: 'Your shop claim has been approved — LocalStreetShop',
-      html: `
+    try {
+      await transporter.sendMail({
+        from: `"LocalStreetShop Support" <${fromEmail}>`,
+        to: claimantResult.user.email,
+        replyTo: fromEmail,
+        subject: 'Your shop claim has been approved — LocalStreetShop',
+        html: `
         <h2>Great news - your claim was approved</h2>
 
         <p>Hi,</p>
@@ -230,8 +197,15 @@ export async function POST(req: Request) {
           Thank you,<br />
           <strong>The LocalStreetShop Team</strong>
         </p>
-      `,
-    });
+        `,
+      });
+    } catch (emailError) {
+      console.error('Claim approval email failed:', emailError);
+      return NextResponse.json({
+        success: true,
+        warning: 'Claim approved, but the approval email could not be sent.',
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

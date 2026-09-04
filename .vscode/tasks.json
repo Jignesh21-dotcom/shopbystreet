@@ -1,0 +1,88 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "production-build-check",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"cd /d web && npm run build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "production-build-check-2",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"cd /d web && npm run build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "find-next-build-processes",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'next build' } | Select-Object ProcessId, Name, CommandLine | Format-List"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "find-next-build-processes-2",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"wmic process where \"CommandLine like '%next build%'\" get ProcessId,Name,CommandLine"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "find-next-build-processes-3",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*next build*' } | Select-Object ProcessId, Name, CommandLine | Format-Table -AutoSize"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "find-next-build-processes-4",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like \"*next build*\" } | Select-Object ProcessId, Name, CommandLine | Format-Table -AutoSize"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "production-build-check-clean",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"cd /d web && npm run build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "production-build-check-after-discover-fix",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"cd /d web && npm run build"
+			],
+			"isBackground": false
+		}
+	]
+}

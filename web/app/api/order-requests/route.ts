@@ -579,7 +579,7 @@ export async function POST(req: Request) {
       )}?token=${encodeURIComponent(returnedAccessToken)}`;
 
     const shopOwnerDashboardUrl =
-      `${siteUrl}/shop-owner/order-requests`;
+      `${siteUrl}/shop-owner/orders`;
 
     try {
       await sendCustomerOrderRequestConfirmation({
