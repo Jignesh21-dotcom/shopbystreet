@@ -352,7 +352,8 @@ export default function AddShopClient() {
                 <div className="mt-4 space-y-3 text-sm leading-6 text-blue-900">
                   <p>
                     <strong>1.</strong> LocalStreetShop will review the shop
-                    information you submitted.
+                    information you submitted and verify its city and public
+                    street placement.
                   </p>
 
                   <p>
@@ -485,7 +486,7 @@ export default function AddShopClient() {
                 htmlFor="shop-address"
                 className="mb-2 block text-sm font-bold text-slate-700"
               >
-                Full Address
+                Full Business Address
               </label>
 
               <input
@@ -495,9 +496,14 @@ export default function AddShopClient() {
                 onChange={(event) => setAddressLabel(event.target.value)}
                 required
                 disabled={loading}
-                placeholder="e.g. 123 Queen St E, Toronto"
+                placeholder="e.g. Unit 6, 497 Woolwich St, Guelph, ON N1H 3X9"
                 className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100"
               />
+
+              <p className="mt-2 text-xs leading-5 text-slate-500">
+                Use the official postal address, including the unit or suite and
+                postal code when applicable. Add alternate entrance details below.
+              </p>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
@@ -594,7 +600,7 @@ export default function AddShopClient() {
                   htmlFor="shop-street"
                   className="mb-2 block text-sm font-bold text-slate-700"
                 >
-                  Street
+                  Suggested Listing Street
                 </label>
 
                 <select
@@ -607,7 +613,7 @@ export default function AddShopClient() {
                   disabled={loading || !selectedCity}
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100"
                 >
-                  <option value="">Select Street</option>
+                  <option value="">Select the closest street</option>
 
                   {streets.map((street) => (
                     <option key={street.id} value={street.id}>
@@ -615,6 +621,11 @@ export default function AddShopClient() {
                     </option>
                   ))}
                 </select>
+
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  Choose the street from the official address. Our team will
+                  verify the final city and street placement before publishing.
+                </p>
               </div>
             </div>
 
@@ -643,7 +654,7 @@ export default function AddShopClient() {
                 htmlFor="shop-parking"
                 className="mb-2 block text-sm font-bold text-slate-700"
               >
-                Parking Information{' '}
+                Entrance, Access &amp; Parking{' '}
                 <span className="font-medium text-slate-500">(optional)</span>
               </label>
 
@@ -653,7 +664,7 @@ export default function AddShopClient() {
                 value={parking}
                 onChange={(event) => setParking(event.target.value)}
                 disabled={loading}
-                placeholder="Street parking, plaza parking, paid parking nearby..."
+                placeholder="e.g. Customer entrance and parking are behind the building on Clarence St."
                 className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100"
               />
             </div>
@@ -666,6 +677,8 @@ export default function AddShopClient() {
               <p className="mt-2 text-sm font-medium leading-6 text-blue-800">
                 After submission, your shop will be sent to LocalStreetShop for
                 review. It will not appear publicly until an admin approves it.
+                The admin may correct its city or street placement using the
+                official address you provide.
                 If the business is already listed, please use the Claim Shop
                 page instead.
               </p>

@@ -534,12 +534,12 @@ export default function AdminShopModeration() {
 
                           <div className="mt-4 rounded-2xl border border-slate-200 p-4">
                             <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
-                              Parking
+                              Entrance, Access &amp; Parking
                             </p>
 
                             <p className="mt-2 leading-7 text-slate-700">
                               {shop.parking ||
-                                'No parking information provided.'}
+                                'No entrance, access, or parking information provided.'}
                             </p>
                           </div>
 
@@ -555,6 +555,13 @@ export default function AdminShopModeration() {
                         </div>
 
                         <div className="flex w-full flex-col gap-3 lg:w-48">
+                          <Link
+                            href={`/admin/shops/${shop.id}`}
+                            className="rounded-full bg-blue-700 px-5 py-3 text-center font-bold text-white transition hover:bg-blue-800"
+                          >
+                            Review &amp; Edit
+                          </Link>
+
                           <button
                             type="button"
                             onClick={() => approveShop(shop)}
