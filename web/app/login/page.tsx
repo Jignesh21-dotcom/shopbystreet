@@ -293,6 +293,12 @@ export default function LoginPage() {
                     ? 'Confirm your email to start claiming your business, managing your storefront, and adding products on LocalStreetShop.'
                     : 'Confirm your email to start discovering local businesses, exploring streets, and supporting shops in your community.'}
                 </p>
+                <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+  <strong>Can&apos;t find the confirmation email?</strong>
+  <br />
+  Please allow a few minutes, then check your Spam or Junk folder.
+  The email will come from LocalStreetShop.
+</div>
 
                 <div className="mt-7 space-y-3">
                   <button
