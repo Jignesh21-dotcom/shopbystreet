@@ -1,11 +1,12 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 type Option = { id: string; name: string };
+type ProvinceOption = Option & { country_id: string | null };
 type ShopRecord = {
   id: string;
   name: string;
@@ -33,7 +34,8 @@ export default function ReviewShopPage() {
   const shopId = params.id;
 
   const [shop, setShop] = useState<ShopRecord | null>(null);
-  const [provinces, setProvinces] = useState<Option[]>([]);
+  const [indiaCountryId, setIndiaCountryId] = useState('');
+  const [provinces, setProvinces] = useState<ProvinceOption[]>([]);
   const [cities, setCities] = useState<Option[]>([]);
   const [streets, setStreets] = useState<Option[]>([]);
   const [name, setName] = useState('');
@@ -44,10 +46,21 @@ export default function ReviewShopPage() {
   const [provinceId, setProvinceId] = useState('');
   const [cityId, setCityId] = useState('');
   const [streetId, setStreetId] = useState('');
+  const [cityName, setCityName] = useState('');
+  const [streetName, setStreetName] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const selectedProvince = useMemo(
+    () => provinces.find((province) => province.id === provinceId) || null,
+    [provinces, provinceId],
+  );
+
+  const isIndia = Boolean(
+    indiaCountryId && selectedProvince?.country_id === indiaCountryId,
+  );
 
   useEffect(() => {
     let active = true;
@@ -68,13 +81,21 @@ export default function ReviewShopPage() {
         return;
       }
 
-      const [shopResult, provinceResult] = await Promise.all([
+      const [shopResult, provinceResult, indiaResult] = await Promise.all([
         supabase
           .from('shops')
           .select('id, name, slug, address, description, parking, province_id, city_id, street_id, approved')
           .eq('id', shopId)
           .maybeSingle(),
-        supabase.from('provinces').select('id, name').order('name'),
+        supabase
+          .from('provinces')
+          .select('id, name, country_id')
+          .order('name'),
+        supabase
+          .from('countries')
+          .select('id')
+          .eq('slug', 'india')
+          .maybeSingle(),
       ]);
 
       if (!active) return;
@@ -85,6 +106,8 @@ export default function ReviewShopPage() {
       }
 
       const record = shopResult.data as ShopRecord;
+      const indiaId = indiaResult.data?.id || '';
+
       setShop(record);
       setName(record.name);
       setSlug(record.slug || '');
@@ -94,7 +117,39 @@ export default function ReviewShopPage() {
       setProvinceId(record.province_id || '');
       setCityId(record.city_id || '');
       setStreetId(record.street_id || '');
-      setProvinces((provinceResult.data || []) as Option[]);
+      setProvinces((provinceResult.data || []) as ProvinceOption[]);
+      setIndiaCountryId(indiaId);
+
+      // Pre-fill the manual India fields from the shop's current assignments
+      // when those records exist. They can then be corrected freely by admin.
+      const lookupTasks: PromiseLike<any>[] = [];
+      if (record.city_id) {
+        lookupTasks.push(
+          supabase
+            .from('cities')
+            .select('name')
+            .eq('id', record.city_id)
+            .maybeSingle(),
+        );
+      } else {
+        lookupTasks.push(Promise.resolve({ data: null }));
+      }
+      if (record.street_id) {
+        lookupTasks.push(
+          supabase
+            .from('streets')
+            .select('name')
+            .eq('id', record.street_id)
+            .maybeSingle(),
+        );
+      } else {
+        lookupTasks.push(Promise.resolve({ data: null }));
+      }
+
+      const [cityLookup, streetLookup] = await Promise.all(lookupTasks);
+      if (!active) return;
+      setCityName(cityLookup?.data?.name || '');
+      setStreetName(streetLookup?.data?.name || '');
       setLoading(false);
     };
 
@@ -106,7 +161,8 @@ export default function ReviewShopPage() {
 
   useEffect(() => {
     let active = true;
-    if (!provinceId) {
+
+    if (!provinceId || isIndia) {
       setCities([]);
       return;
     }
@@ -125,11 +181,12 @@ export default function ReviewShopPage() {
     return () => {
       active = false;
     };
-  }, [provinceId]);
+  }, [provinceId, isIndia]);
 
   useEffect(() => {
     let active = true;
-    if (!cityId) {
+
+    if (!cityId || isIndia) {
       setStreets([]);
       return;
     }
@@ -148,13 +205,28 @@ export default function ReviewShopPage() {
     return () => {
       active = false;
     };
-  }, [cityId]);
+  }, [cityId, isIndia]);
+
+  const handleProvinceChange = (nextProvinceId: string) => {
+    setProvinceId(nextProvinceId);
+    setCityId('');
+    setStreetId('');
+    setCityName('');
+    setStreetName('');
+    setSuccess('');
+  };
 
   const save = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSaving(true);
     setError('');
     setSuccess('');
+
+    if (isIndia && (!cityName.trim() || !streetName.trim())) {
+      setError('For India, enter the city / municipality and public listing street / market.');
+      setSaving(false);
+      return;
+    }
 
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData.session?.access_token;
@@ -177,17 +249,26 @@ export default function ReviewShopPage() {
         description,
         parking,
         provinceId,
-        cityId,
-        streetId,
+        cityId: isIndia ? '' : cityId,
+        streetId: isIndia ? '' : streetId,
+        cityName: isIndia ? cityName : '',
+        streetName: isIndia ? streetName : '',
       }),
     });
+
     const result = await response.json().catch(() => null);
 
     if (!response.ok) {
       setError(result?.error || 'Unable to save the shop.');
     } else {
       setSlug(slugify(slug || name));
-      setSuccess('Shop details saved. You can now return to the review list and approve it.');
+      if (result?.cityId) setCityId(result.cityId);
+      if (result?.streetId) setStreetId(result.streetId);
+      setSuccess(
+        result?.createdCity || result?.createdStreet
+          ? `Shop details saved.${result.createdCity ? ' City created.' : ''}${result.createdStreet ? ' Street / market created.' : ''} You can now return to the review list and approve it.`
+          : 'Shop details saved. You can now return to the review list and approve it.',
+      );
     }
     setSaving(false);
   };
@@ -231,30 +312,69 @@ export default function ReviewShopPage() {
             </div>
 
             <label className="block text-sm font-bold text-slate-700">Official Full Business Address
-              <input value={address} onChange={(event) => setAddress(event.target.value)} required placeholder="Unit, street number and name, city, province, postal code" className={fieldClass} />
+              <input value={address} onChange={(event) => setAddress(event.target.value)} required placeholder="Unit, street number and name, city, province/state, postal code" className={fieldClass} />
               <span className="mt-2 block text-xs font-medium leading-5 text-slate-500">Use the postal address here, even if customers enter from another street.</span>
             </label>
 
             <div className="grid gap-5 md:grid-cols-3">
-              <label className="text-sm font-bold text-slate-700">Province
-                <select value={provinceId} onChange={(event) => { setProvinceId(event.target.value); setCityId(''); setStreetId(''); }} required className={fieldClass}>
-                  <option value="">Select province</option>
+              <label className="text-sm font-bold text-slate-700">
+                {isIndia ? 'State / Union Territory' : 'Province'}
+                <select value={provinceId} onChange={(event) => handleProvinceChange(event.target.value)} required className={fieldClass}>
+                  <option value="">{isIndia ? 'Select state / UT' : 'Select province / state'}</option>
                   {provinces.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
                 </select>
               </label>
-              <label className="text-sm font-bold text-slate-700">City
-                <select value={cityId} onChange={(event) => { setCityId(event.target.value); setStreetId(''); }} required disabled={!provinceId} className={fieldClass}>
-                  <option value="">Select city</option>
-                  {cities.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
-                </select>
-              </label>
-              <label className="text-sm font-bold text-slate-700">Public Listing Street
-                <select value={streetId} onChange={(event) => setStreetId(event.target.value)} required disabled={!cityId} className={fieldClass}>
-                  <option value="">Select street</option>
-                  {streets.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
-                </select>
-              </label>
+
+              {isIndia ? (
+                <label className="text-sm font-bold text-slate-700">City / Municipality
+                  <input
+                    value={cityName}
+                    onChange={(event) => setCityName(event.target.value)}
+                    required
+                    placeholder="e.g. New Delhi"
+                    className={fieldClass}
+                  />
+                  <span className="mt-2 block text-xs font-medium leading-5 text-slate-500">
+                    If it does not exist yet, saving will create it automatically.
+                  </span>
+                </label>
+              ) : (
+                <label className="text-sm font-bold text-slate-700">City
+                  <select value={cityId} onChange={(event) => { setCityId(event.target.value); setStreetId(''); }} required disabled={!provinceId} className={fieldClass}>
+                    <option value="">Select city</option>
+                    {cities.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
+                  </select>
+                </label>
+              )}
+
+              {isIndia ? (
+                <label className="text-sm font-bold text-slate-700">Public Listing Street / Market
+                  <input
+                    value={streetName}
+                    onChange={(event) => setStreetName(event.target.value)}
+                    required
+                    placeholder="e.g. Kirti Nagar"
+                    className={fieldClass}
+                  />
+                  <span className="mt-2 block text-xs font-medium leading-5 text-slate-500">
+                    Existing streets are reused; otherwise a new one is created.
+                  </span>
+                </label>
+              ) : (
+                <label className="text-sm font-bold text-slate-700">Public Listing Street
+                  <select value={streetId} onChange={(event) => setStreetId(event.target.value)} required disabled={!cityId} className={fieldClass}>
+                    <option value="">Select street</option>
+                    {streets.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
+                  </select>
+                </label>
+              )}
             </div>
+
+            {isIndia && (
+              <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm leading-6 text-orange-900">
+                <strong>India automatic location mode:</strong> enter the correct city and street / market. When you save, LocalStreetShop will reuse matching records or create them under the selected State / Union Territory.
+              </div>
+            )}
 
             <label className="block text-sm font-bold text-slate-700">Description
               <textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={6} className={fieldClass} />
@@ -263,11 +383,13 @@ export default function ReviewShopPage() {
               <textarea value={parking} onChange={(event) => setParking(event.target.value)} rows={3} placeholder="Alternate entrance street, unit access, and parking directions" className={fieldClass} />
             </label>
 
-            <div className="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row">
-              <button type="submit" disabled={saving} className="rounded-full bg-blue-700 px-6 py-3 font-bold text-white hover:bg-blue-800 disabled:opacity-60">
-                {saving ? 'Saving...' : 'Save Verified Details'}
+            <div className="flex flex-wrap gap-3 pt-2">
+              <button type="submit" disabled={saving} className="rounded-full bg-blue-700 px-6 py-3 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60">
+                {saving ? 'Saving...' : 'Save Review Changes'}
               </button>
-              <Link href="/admin/shops" className="rounded-full border border-slate-300 px-6 py-3 text-center font-bold text-slate-700 hover:bg-slate-50">Cancel</Link>
+              <Link href="/admin/shops" className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50">
+                Cancel
+              </Link>
             </div>
           </form>
         </section>

@@ -59,6 +59,8 @@ export async function POST(
     }
 
     const body = await request.json();
+    const requestedStateName = String(body.stateName || '').trim();
+    const requestedCityName = String(body.cityName || '').trim();
     const streetName = String(body.streetName || '').trim();
     const locationName = String(body.locationName || '').trim();
     const existingLocationId = String(body.existingLocationId || '').trim() || null;
@@ -114,7 +116,8 @@ export async function POST(
       return NextResponse.json({ error: 'India country record was not found.' }, { status: 400 });
     }
 
-    const stateSlug = slugify(submission.state_name || '');
+    const effectiveStateName = requestedStateName || String(submission.state_name || '').trim();
+    const stateSlug = slugify(effectiveStateName);
     const { data: state, error: stateError } = await adminClient
       .from('provinces')
       .select('id,slug')
@@ -124,12 +127,12 @@ export async function POST(
 
     if (stateError || !state) {
       return NextResponse.json(
-        { error: `State "${submission.state_name}" was not found in provinces.` },
+        { error: `State "${effectiveStateName}" was not found in provinces.` },
         { status: 400 },
       );
     }
 
-    const cityName = String(submission.city_name || '').trim();
+    const cityName = requestedCityName || String(submission.city_name || '').trim();
     const citySlug = slugify(cityName);
     if (!citySlug) return NextResponse.json({ error: 'A valid city is required.' }, { status: 400 });
 
@@ -342,6 +345,8 @@ export async function POST(
       .from('india_business_submissions')
       .update({
         status: 'approved',
+        state_name: effectiveStateName,
+        city_name: cityName,
         reviewed_at: new Date().toISOString(),
         reviewed_by: userData.user.id,
         approved_shop_id: inserted.data.id,

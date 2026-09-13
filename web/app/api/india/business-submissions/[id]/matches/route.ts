@@ -43,6 +43,8 @@ export async function POST(
     }
 
     const body = await request.json();
+    const requestedStateName = String(body.stateName || '').trim();
+    const requestedCityName = String(body.cityName || '').trim();
     const streetName = String(body.streetName || '').trim();
     const locationName = String(body.locationName || '').trim();
 
@@ -67,7 +69,8 @@ export async function POST(
       .eq('slug', 'india')
       .maybeSingle();
 
-    const stateSlug = slugify(submission.state_name || '');
+    const effectiveStateName = requestedStateName || String(submission.state_name || '').trim();
+    const stateSlug = slugify(effectiveStateName);
     const { data: state } = country
       ? await adminClient
           .from('provinces')
@@ -77,7 +80,8 @@ export async function POST(
           .maybeSingle()
       : { data: null };
 
-    const citySlug = slugify(submission.city_name || '');
+    const effectiveCityName = requestedCityName || String(submission.city_name || '').trim();
+    const citySlug = slugify(effectiveCityName);
     const { data: city } = state && citySlug
       ? await adminClient
           .from('cities')

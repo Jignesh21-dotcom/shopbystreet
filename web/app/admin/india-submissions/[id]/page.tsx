@@ -6,6 +6,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 type Submission = Record<string, any>;
+type StateOption = { id: string; name: string; slug: string };
+
 type ExistingLocation = {
   id: string;
   name: string;
@@ -62,6 +64,9 @@ export default function IndiaSubmissionReviewPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [submission, setSubmission] = useState<Submission | null>(null);
+  const [states, setStates] = useState<StateOption[]>([]);
+  const [stateName, setStateName] = useState('');
+  const [cityName, setCityName] = useState('');
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -82,13 +87,31 @@ export default function IndiaSubmissionReviewPage() {
         return;
       }
 
-      const { data } = await supabase
-        .from('india_business_submissions')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle();
+      const [{ data }, { data: indiaCountry }] = await Promise.all([
+        supabase
+          .from('india_business_submissions')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle(),
+        supabase
+          .from('countries')
+          .select('id')
+          .eq('slug', 'india')
+          .maybeSingle(),
+      ]);
+
+      if (indiaCountry?.id) {
+        const { data: stateRows } = await supabase
+          .from('provinces')
+          .select('id, name, slug')
+          .eq('country_id', indiaCountry.id)
+          .order('name');
+        setStates((stateRows || []) as StateOption[]);
+      }
 
       setSubmission(data);
+      setStateName(data?.state_name || '');
+      setCityName(data?.city_name || '');
       setNotes(data?.admin_notes || '');
       // India browsing is area-first. Prefer an existing locality such as Alkapuri
       // over creating a separate road card such as R.C. Dutt Road.
@@ -100,7 +123,7 @@ export default function IndiaSubmissionReviewPage() {
   }, [id]);
 
   useEffect(() => {
-    if (!submission || !streetName.trim()) {
+    if (!submission || !stateName.trim() || !cityName.trim() || !streetName.trim()) {
       setPreview(null);
       return;
     }
@@ -117,7 +140,7 @@ export default function IndiaSubmissionReviewPage() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${data.session?.access_token || ''}`,
           },
-          body: JSON.stringify({ streetName, locationName }),
+          body: JSON.stringify({ stateName, cityName, streetName, locationName }),
         });
 
         const result = await response.json();
@@ -143,7 +166,7 @@ export default function IndiaSubmissionReviewPage() {
     }, 450);
 
     return () => window.clearTimeout(timer);
-  }, [id, submission, streetName, locationName]);
+  }, [id, submission, stateName, cityName, streetName, locationName]);
 
   const existingLocations = preview?.existingLocations || [];
   const selectedLocation = useMemo(
@@ -156,6 +179,10 @@ export default function IndiaSubmissionReviewPage() {
 
   const act = async (kind: 'approve' | 'reject') => {
     if (!submission) return;
+    if (kind === 'approve' && (!stateName.trim() || !cityName.trim() || !streetName.trim())) {
+      alert('State, city and final street / road / market are required before approval.');
+      return;
+    }
     if (kind === 'approve' && approvalBlocked) {
       alert('Review the possible duplicate warning and confirm before approving.');
       return;
@@ -171,6 +198,8 @@ export default function IndiaSubmissionReviewPage() {
         Authorization: `Bearer ${data.session?.access_token || ''}`,
       },
       body: JSON.stringify({
+        stateName,
+        cityName,
         adminNotes: notes,
         streetName,
         locationName: selectedLocation?.name || locationName,
@@ -245,6 +274,40 @@ export default function IndiaSubmissionReviewPage() {
                 <p className="mt-1 whitespace-pre-wrap font-semibold text-slate-900">{String(value)}</p>
               </div>
             ) : null)}
+          </div>
+
+          <div className="mt-7 grid gap-5 rounded-2xl border border-blue-200 bg-blue-50 p-5 md:grid-cols-2">
+            <div>
+              <label className="font-black text-blue-950">Final State / Union Territory</label>
+              <select
+                value={stateName}
+                onChange={(event) => {
+                  setStateName(event.target.value);
+                  setSelectedLocationId('');
+                }}
+                className="mt-3 w-full rounded-xl border border-blue-200 bg-white px-4 py-3"
+              >
+                <option value="">Select state / union territory</option>
+                {states.map((state) => (
+                  <option key={state.id} value={state.name}>{state.name}</option>
+                ))}
+              </select>
+              <p className="mt-2 text-sm text-blue-800">You can correct the owner&apos;s state before approval.</p>
+            </div>
+
+            <div>
+              <label className="font-black text-blue-950">Final city / municipality / village hub</label>
+              <input
+                value={cityName}
+                onChange={(event) => {
+                  setCityName(event.target.value);
+                  setSelectedLocationId('');
+                }}
+                className="mt-3 w-full rounded-xl border border-blue-200 bg-white px-4 py-3"
+                placeholder="New Delhi"
+              />
+              <p className="mt-2 text-sm text-blue-800">Type any city or municipality. If it does not exist yet, approval will create it automatically.</p>
+            </div>
           </div>
 
           <div className="mt-7 grid gap-5 rounded-2xl border border-orange-200 bg-orange-50 p-5 md:grid-cols-2">
