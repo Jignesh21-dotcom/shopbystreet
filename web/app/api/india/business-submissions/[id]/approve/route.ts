@@ -114,7 +114,7 @@ export async function POST(
       return NextResponse.json({ error: 'India country record was not found.' }, { status: 400 });
     }
 
-    const stateSlug = slugify(submission.state_name || 'Gujarat');
+    const stateSlug = slugify(submission.state_name || '');
     const { data: state, error: stateError } = await adminClient
       .from('provinces')
       .select('id,slug')

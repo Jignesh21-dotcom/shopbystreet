@@ -19,13 +19,13 @@ export async function POST(req: Request) {
     const businessName = text(body.businessName, 200);
     const streetOrMarket = text(body.streetOrMarket, 250);
     const cityName = text(body.cityName, 150);
-    const stateName = text(body.stateName, 100) || 'Gujarat';
+    const stateName = text(body.stateName, 100);
     const fullAddress = text(body.fullAddress, 2000);
     const email = text(body.email, 250);
     const phone = text(body.phone, 50);
     const whatsapp = text(body.whatsapp, 50);
 
-    if (!businessName || !streetOrMarket || !cityName || !fullAddress) return NextResponse.json({ error: 'Required business and address fields are missing.' }, { status: 400 });
+    if (!businessName || !streetOrMarket || !cityName || !stateName || !fullAddress) return NextResponse.json({ error: 'Required business and address fields are missing.' }, { status: 400 });
     if (!email && !phone && !whatsapp) return NextResponse.json({ error: 'Provide at least one contact method.' }, { status: 400 });
 
     const admin = createClient(url, service, { auth: { persistSession: false, autoRefreshToken: false } });

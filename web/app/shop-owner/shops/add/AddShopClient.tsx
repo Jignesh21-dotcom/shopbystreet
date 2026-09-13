@@ -44,6 +44,9 @@ export default function AddShopClient() {
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedStreet, setSelectedStreet] = useState('');
 
+  const selectedCountryName = countries.find((country) => country.id === selectedCountry)?.name || '';
+  const isIndia = selectedCountryName.toLowerCase() === 'india';
+
   useEffect(() => {
     let isMounted = true;
 
@@ -539,6 +542,25 @@ export default function AddShopClient() {
                 </select>
               </div>
 
+              {isIndia ? (
+                <div className="md:col-span-2 rounded-2xl border border-orange-200 bg-orange-50 p-5">
+                  <p className="text-sm font-black uppercase tracking-[0.16em] text-orange-700">
+                    India flexible address form
+                  </p>
+                  <p className="mt-2 leading-7 text-slate-700">
+                    Indian addresses often use markets, complexes, localities and roads instead of a preloaded street list.
+                    Use the India form so you can choose any State or Union Territory and enter the city and street/market naturally.
+                    We will create and verify new cities, streets and locations during approval.
+                  </p>
+                  <Link
+                    href="/countries/india/add-business"
+                    className="mt-4 inline-flex rounded-full bg-orange-600 px-5 py-3 font-bold text-white transition hover:bg-orange-700"
+                  >
+                    Continue with India business form →
+                  </Link>
+                </div>
+              ) : (
+                <>
               <div>
                 <label
                   htmlFor="shop-province"
@@ -627,6 +649,8 @@ export default function AddShopClient() {
                   verify the final city and street placement before publishing.
                 </p>
               </div>
+                </>
+              )}
             </div>
 
             <div>
@@ -693,10 +717,10 @@ export default function AddShopClient() {
 
             <button
               type="submit"
-              disabled={loading || loadingLocations}
+              disabled={loading || loadingLocations || isIndia}
               className="w-full rounded-full bg-blue-700 px-6 py-4 font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
-              {loading ? 'Submitting Shop...' : 'Submit Shop for Approval'}
+              {isIndia ? 'Use the India business form above' : loading ? 'Submitting Shop...' : 'Submit Shop for Approval'}
             </button>
           </form>
         </section>

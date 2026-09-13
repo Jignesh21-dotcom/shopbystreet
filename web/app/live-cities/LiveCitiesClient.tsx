@@ -140,14 +140,6 @@ export default function LiveCitiesClient() {
               Browse live cities in {countryLabel} where local shops are already
               listed, then explore their streets and businesses.
             </p>
-
-            <Link
-              href={`/active-shops?country=${activeCountry}`}
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-blue-700 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl"
-            >
-              <span aria-hidden="true">✓</span>
-              Explore Active Shops
-            </Link>
           </section>
 
           <section className="mb-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-blue-100 bg-white p-5 shadow-sm md:flex-row md:p-6">

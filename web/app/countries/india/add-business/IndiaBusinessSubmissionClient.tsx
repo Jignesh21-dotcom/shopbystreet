@@ -27,7 +27,7 @@ const initialForm = {
   villageTown: '',
   cityName: '',
   district: '',
-  stateName: 'Gujarat',
+  stateName: '',
   pinCode: '',
   fullAddress: '',
   googleMapsUrl: '',
@@ -38,6 +38,45 @@ const initialForm = {
 
 type FormState = typeof initialForm;
 type FormFieldKey = keyof FormState;
+
+const INDIA_STATES_AND_UTS = [
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chhattisgarh',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+  'Andaman and Nicobar Islands',
+  'Chandigarh',
+  'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi',
+  'Jammu and Kashmir',
+  'Ladakh',
+  'Lakshadweep',
+  'Puducherry',
+] as const;
 
 type FieldProps = {
   id: FormFieldKey;
@@ -499,15 +538,32 @@ export default function IndiaBusinessSubmissionClient() {
                 disabled={loading}
               />
 
-              <FormField
-                id="stateName"
-                label="State"
-                required
-                value={form.stateName}
-                onChange={update}
-                disabled={loading}
-                autoComplete="address-level1"
-              />
+              <div>
+                <label
+                  htmlFor="stateName"
+                  className="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  State / Union Territory *
+                </label>
+
+                <select
+                  id="stateName"
+                  name="stateName"
+                  value={form.stateName}
+                  onChange={(event) => update('stateName', event.target.value)}
+                  required
+                  disabled={loading}
+                  autoComplete="address-level1"
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-4 focus:ring-orange-100 disabled:cursor-not-allowed disabled:bg-slate-100"
+                >
+                  <option value="">Select State / Union Territory</option>
+                  {INDIA_STATES_AND_UTS.map((state) => (
+                    <option key={state} value={state}>
+                      {state}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <FormField
                 id="pinCode"

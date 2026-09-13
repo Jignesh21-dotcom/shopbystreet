@@ -67,7 +67,7 @@ export async function POST(
       .eq('slug', 'india')
       .maybeSingle();
 
-    const stateSlug = slugify(submission.state_name || 'Gujarat');
+    const stateSlug = slugify(submission.state_name || '');
     const { data: state } = country
       ? await adminClient
           .from('provinces')
