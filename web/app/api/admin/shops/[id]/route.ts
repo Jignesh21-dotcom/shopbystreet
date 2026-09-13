@@ -179,7 +179,6 @@ export async function PATCH(request: Request, context: RouteContext) {
             name: cityName,
             slug: citySlug,
             province_id: province.id,
-            country_id: country.id,
           })
           .select('id, name, slug')
           .single();

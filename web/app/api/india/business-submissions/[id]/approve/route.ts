@@ -148,7 +148,7 @@ export async function POST(
     if (!city) {
       const createdCity = await adminClient
         .from('cities')
-        .insert({ name: cityName, slug: citySlug, province_id: state.id, country_id: country.id })
+        .insert({ name: cityName, slug: citySlug, province_id: state.id })
         .select('id,name,slug')
         .single();
 
