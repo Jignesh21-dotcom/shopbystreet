@@ -27,6 +27,20 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)+/g, '');
 
+const deriveStreetNumber = (address: string, streetName: string) => {
+  let source = address.replace(/\b\d{6}\b/g, ' ');
+  const lowerSource = source.toLowerCase();
+  const lowerStreet = streetName.toLowerCase();
+  const streetIndex = lowerStreet ? lowerSource.lastIndexOf(lowerStreet) : -1;
+  if (streetIndex > 0) source = source.slice(0, streetIndex);
+
+  const matches = [...source.matchAll(/\b(\d{1,5})(?:\s*\/\s*\d{1,4})?[A-Za-z]?\b/g)];
+  if (matches.length === 0) return null;
+
+  const value = Number(matches[matches.length - 1][1]);
+  return Number.isFinite(value) ? value : null;
+};
+
 async function getAdminClient(request: Request) {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -281,6 +295,8 @@ export async function PATCH(request: Request, context: RouteContext) {
       }
     }
 
+    const walkStreetNumber = deriveStreetNumber(address, streetName);
+
     const { data: updated, error: updateError } = await admin
       .from('shops')
       .update({
@@ -292,6 +308,9 @@ export async function PATCH(request: Request, context: RouteContext) {
         province_id: provinceId,
         city_id: cityId,
         street_id: streetId,
+        ...(isIndia && walkStreetNumber !== null
+          ? { street_number: walkStreetNumber }
+          : {}),
       })
       .eq('id', id)
       .select('id, approved')

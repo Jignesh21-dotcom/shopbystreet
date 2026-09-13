@@ -23,6 +23,21 @@ const allowedLocationTypes = new Set([
   'other',
 ]);
 
+
+const deriveStreetNumber = (address: string, streetName: string) => {
+  let source = address.replace(/\b\d{6}\b/g, ' ');
+  const lowerSource = source.toLowerCase();
+  const lowerStreet = streetName.toLowerCase();
+  const streetIndex = lowerStreet ? lowerSource.lastIndexOf(lowerStreet) : -1;
+  if (streetIndex > 0) source = source.slice(0, streetIndex);
+
+  const matches = [...source.matchAll(/\b(\d{1,5})(?:\s*\/\s*\d{1,4})?[A-Za-z]?\b/g)];
+  if (matches.length === 0) return null;
+
+  const value = Number(matches[matches.length - 1][1]);
+  return Number.isFinite(value) ? value : null;
+};
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -319,6 +334,7 @@ export async function POST(
         name: submission.business_name,
         slug: finalShopSlug,
         address: submission.full_address,
+        street_number: deriveStreetNumber(submission.full_address || '', streetName),
         description: submission.description,
         parking: submission.parking,
         category: submission.category,
