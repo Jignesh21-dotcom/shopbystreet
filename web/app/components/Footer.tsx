@@ -31,7 +31,7 @@ export default function Footer() {
 
             <p className="mt-5 text-sm leading-7 text-slate-600">
               Discover local businesses by exploring real streets across
-              Canada and India. Helping communities and independent businesses
+              Canada, India, and the United States. Helping communities and independent businesses
               thrive together.
             </p>
           </div>
@@ -54,6 +54,10 @@ export default function Footer() {
 
               <Link href="/live-cities?country=india" className="block hover:text-orange-700">
                 India Live Cities
+              </Link>
+
+              <Link href="/live-cities?country=united-states" className="block hover:text-red-700">
+                U.S. Live Cities
               </Link>
 
               <Link href="/deals" className="block hover:text-blue-700">
@@ -81,6 +85,10 @@ export default function Footer() {
 
               <Link href="/countries/india/business-owners" className="block hover:text-orange-700">
                 Business Owners — India
+              </Link>
+
+              <Link href="/countries/united-states/add-business" className="block hover:text-red-700">
+                Business Owners — United States
               </Link>
 
               <Link href="/shop-owner/claim" className="block hover:text-blue-700">
@@ -135,7 +143,7 @@ export default function Footer() {
           </p>
 
           <p className="mt-2 text-sm text-slate-500">
-            Independent. Community-first. Growing across Canada 🇨🇦 and India 🇮🇳
+            Independent. Community-first. Growing across Canada 🇨🇦, India 🇮🇳, and the United States 🇺🇸
           </p>
 
           <p className="mt-3 text-sm text-slate-500">

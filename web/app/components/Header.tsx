@@ -57,7 +57,7 @@ export default function Header() {
             </p>
 
             <p className="hidden text-[11px] font-medium tracking-wide text-slate-500 lg:block">
-              Canada&apos;s Digital Main Street
+              Local Shopping, Street by Street
             </p>
           </div>
         </Link>
@@ -107,6 +107,13 @@ export default function Header() {
               >
                 🇮🇳 India Live Cities
               </Link>
+
+              <Link
+                href="/live-cities?country=united-states"
+                className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-red-50 hover:text-red-700"
+              >
+                🇺🇸 U.S. Live Cities
+              </Link>
             </div>
           </div>
 
@@ -138,6 +145,13 @@ export default function Header() {
               >
                 🇮🇳 India
               </Link>
+
+              <Link
+                href="/countries/united-states/add-business"
+                className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-red-50 hover:text-red-700"
+              >
+                🇺🇸 United States
+              </Link>
             </div>
           </div>
 
@@ -152,7 +166,7 @@ export default function Header() {
 
         <div className="hidden shrink-0 items-center gap-3 lg:flex">
           <Link
-            href="/countries/canada"
+            href="/#explore-countries"
             className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
           >
             Explore Streets
@@ -224,7 +238,7 @@ export default function Header() {
               Home
             </Link>
 
-            <Link href="/countries/canada" onClick={closeMobileMenu} className="rounded-xl bg-blue-600 px-3 py-2 text-center text-white shadow transition hover:bg-blue-700">
+            <Link href="/#explore-countries" onClick={closeMobileMenu} className="rounded-xl bg-blue-600 px-3 py-2 text-center text-white shadow transition hover:bg-blue-700">
               Explore Streets
             </Link>
 
@@ -245,6 +259,13 @@ export default function Header() {
                 className="block rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-700"
               >
                 🇮🇳 India
+              </Link>
+              <Link
+                href="/live-cities?country=united-states"
+                onClick={closeMobileMenu}
+                className="block rounded-lg px-3 py-2 hover:bg-red-50 hover:text-red-700"
+              >
+                🇺🇸 United States
               </Link>
             </div>
 
@@ -269,6 +290,13 @@ export default function Header() {
                 className="block rounded-lg px-3 py-2 hover:bg-orange-50 hover:text-orange-700"
               >
                 🇮🇳 India
+              </Link>
+              <Link
+                href="/countries/united-states/add-business"
+                onClick={closeMobileMenu}
+                className="block rounded-lg px-3 py-2 hover:bg-red-50 hover:text-red-700"
+              >
+                🇺🇸 United States
               </Link>
             </div>
 

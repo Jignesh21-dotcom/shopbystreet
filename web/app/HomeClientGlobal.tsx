@@ -18,14 +18,26 @@ const countryCards = [
   {
     name: 'India',
     flag: '🇮🇳',
-    status: 'Live in Gujarat',
+    status: 'Live',
     description:
-      'Explore local markets, shopping streets, complexes, shops, and products in growing Gujarat communities.',
+      'Explore Indian cities, local markets, shopping streets, shops, and products as new communities come online.',
     href: '/countries/india',
     cta: 'Explore India',
     borderClass: 'border-orange-200',
     backgroundClass: 'from-orange-50 to-white',
     badgeClass: 'bg-orange-100 text-orange-700',
+  },
+  {
+    name: 'United States',
+    flag: '🇺🇸',
+    status: 'Live',
+    description:
+      'Explore U.S. cities, streets, local businesses, storefronts, and products as new communities join.',
+    href: '/countries/united-states',
+    cta: 'Explore United States',
+    borderClass: 'border-red-200',
+    backgroundClass: 'from-red-50 to-white',
+    badgeClass: 'bg-red-100 text-red-700',
   },
 ];
 
@@ -71,7 +83,7 @@ const communityCards = [
     icon: '🏪',
     description:
       'Claim your shop, showcase products, receive customer requests, and manage transparent marketplace billing.',
-    href: '/business-owners',
+    href: '/shop-owner/shops/add',
     cta: 'For Business Owners',
   },
   {
@@ -107,7 +119,7 @@ export default function HomeClientGlobal() {
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
               Explore cities, streets, local markets, and independent businesses across growing
-              LocalStreetShop communities in Canada and India.
+              LocalStreetShop communities in Canada, India, and the United States.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -159,7 +171,7 @@ export default function HomeClientGlobal() {
 
                 <div className="mt-5 grid gap-3">
                   {[
-                    ['1', 'Choose a country', 'Start with Canada or India'],
+                    ['1', 'Choose a country', 'Start with Canada, India, or the United States'],
                     ['2', 'Choose a city or market', 'Explore available local communities'],
                     ['3', 'Discover local shops', 'Browse storefronts and participating products'],
                   ].map(([number, title, text]) => (
@@ -203,12 +215,12 @@ export default function HomeClientGlobal() {
           </h2>
 
           <p className="mt-4 text-lg leading-8 text-slate-600">
-            LocalStreetShop is live in Canada and Gujarat, India, with more communities being added over time.
+            LocalStreetShop is growing across Canada, India, and the United States, with new communities added as local businesses join.
             Choose a country to explore available cities, streets, markets, and local businesses.
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {countryCards.map((country) => (
             <Link
               key={country.name}
@@ -260,7 +272,7 @@ export default function HomeClientGlobal() {
           </h2>
           <p className="mt-4 text-lg leading-8 text-slate-600">
             LocalStreetShop turns real streets into simple online discovery experiences,
-            helping you find businesses before you visit in person — whether in Canada or India.
+            helping you find businesses before you visit in person — whether in Canada, India, or the United States.
           </p>
         </div>
 

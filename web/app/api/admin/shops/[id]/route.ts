@@ -155,13 +155,15 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
 
     const isIndia = country.slug === 'india';
+    const isUnitedStates = country.slug === 'united-states';
+    const usesAutomaticLocation = isIndia || isUnitedStates;
     let createdCity = false;
     let createdStreet = false;
 
-    if (isIndia) {
+    if (usesAutomaticLocation) {
       if (!cityName || !streetName) {
         return NextResponse.json(
-          { error: 'For India, city / municipality and public listing street / market are required.' },
+          { error: `For ${isIndia ? 'India' : 'the United States'}, city and public listing street are required.` },
           { status: 400 },
         );
       }
@@ -209,7 +211,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
       cityId = city.id;
 
-      // India streets created by the India approval flow use a city-prefixed slug.
+      // Automatic-location countries use a city-prefixed street slug.
       // First try to reuse by name, then by the standard slug, before creating one.
       let { data: street, error: streetLookupError } = await admin
         .from('streets')
@@ -246,7 +248,7 @@ export async function PATCH(request: Request, context: RouteContext) {
             display_name: streetName,
             slug: standardStreetSlug,
             city_id: city.id,
-            country: 'india',
+            country: country.slug,
             province: province.slug,
             city: citySlug,
           })
@@ -308,7 +310,7 @@ export async function PATCH(request: Request, context: RouteContext) {
         province_id: provinceId,
         city_id: cityId,
         street_id: streetId,
-        ...(isIndia && walkStreetNumber !== null
+        ...(usesAutomaticLocation && walkStreetNumber !== null
           ? { street_number: walkStreetNumber }
           : {}),
       })

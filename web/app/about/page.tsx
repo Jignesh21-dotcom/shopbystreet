@@ -7,8 +7,8 @@ export default function AboutPage() {
   return (
     <>
       <SEO
-        title="About LocalStreetShop | Canada's Digital Main Street"
-        description="Learn why LocalStreetShop was created and how we are building Canada's Digital Main Street to help people discover local businesses one street at a time."
+        title="About LocalStreetShop | Local Shopping, Street by Street"
+        description="Learn why LocalStreetShop was created and how we help people discover local businesses one street at a time across growing communities in Canada, India, and the United States."
         url="https://www.localstreetshop.com/about"
       />
 
@@ -27,11 +27,11 @@ export default function AboutPage() {
             </p>
 
             <h1 className="mb-4 text-3xl font-extrabold sm:text-4xl md:text-5xl">
-              Building Canada&apos;s Digital Main Street
+              Building a Global Digital Main Street
             </h1>
 
             <p className="mx-auto max-w-3xl text-base leading-8 text-gray-600 sm:text-lg">
-              LocalStreetShop helps Canadians discover local businesses by
+              LocalStreetShop helps people discover local businesses by
               exploring real cities, real streets, real addresses, and real
               shops — one community at a time.
             </p>
@@ -43,7 +43,7 @@ export default function AboutPage() {
             </h2>
 
             <p className="mb-5 leading-relaxed text-gray-700">
-              Local businesses are the heart of Canadian communities. They
+              Local businesses are the heart of communities. They
               create jobs, support families, bring character to our streets, and
               make every neighbourhood feel unique.
             </p>
@@ -70,9 +70,9 @@ export default function AboutPage() {
             </h2>
 
             <p className="mb-5 leading-relaxed text-gray-700">
-              Our mission is to build Canada&apos;s Digital Main Street — a
+              Our mission is to build a global digital main street — a
               community-first platform that helps people discover, support, and
-              celebrate local businesses across the country.
+              celebrate local businesses across growing communities.
             </p>
 
             <p className="leading-relaxed text-gray-700">
@@ -128,7 +128,7 @@ export default function AboutPage() {
 
             <p className="leading-relaxed text-gray-700">
               Whether someone is exploring King Street in Waterloo, downtown
-              Kitchener, or a future community anywhere in Canada,
+              Kitchener, Kirti Nagar in New Delhi, Commodore Avenue in Shelton, or another growing community,
               LocalStreetShop helps them discover what is nearby, address by
               address and shop by shop.
             </p>
@@ -149,7 +149,7 @@ export default function AboutPage() {
             <p className="leading-relaxed text-blue-100">
               Our growth is powered by storytelling, trust, and warm
               introductions. When someone shares LocalStreetShop with one local
-              business owner, they help move Canada&apos;s Digital Main Street
+              business owner, they help move the LocalStreetShop community
               one step forward.
             </p>
           </section>
@@ -175,7 +175,7 @@ export default function AboutPage() {
 
           <section className="rounded-2xl border border-gray-200 bg-white p-5 text-center shadow-sm sm:p-8">
             <h2 className="mb-3 text-2xl font-bold">
-              Join Canada&apos;s Digital Main Street
+              Join the LocalStreetShop Community
             </h2>
 
             <p className="mx-auto mb-6 max-w-2xl text-gray-600">
@@ -186,7 +186,7 @@ export default function AboutPage() {
 
             <div className="flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
               <Link
-                href="/countries/canada"
+                href="/#explore-countries"
                 className="w-full rounded-full bg-blue-600 px-6 py-3 font-semibold text-white shadow transition hover:bg-blue-700 sm:w-auto"
               >
                 Explore Streets

@@ -32,8 +32,10 @@ const normalizeSlug = (value: string) =>
   value.toLowerCase().trim().replace(/\s+/g, '-');
 
 const getShopHref = (shop: ActiveShop) => {
-  if (normalizeSlug(shop.country.slug) === 'india') {
-    return `/countries/india/${encodeURIComponent(
+  const countrySlug = normalizeSlug(shop.country.slug);
+
+  if (countrySlug !== 'canada') {
+    return `/countries/${encodeURIComponent(countrySlug)}/${encodeURIComponent(
       shop.region.slug
     )}/${encodeURIComponent(shop.city.slug)}/streets/${encodeURIComponent(
       shop.street.slug
@@ -48,8 +50,16 @@ const getShopHref = (shop: ActiveShop) => {
 export default function ActiveShopsClient() {
   const searchParams = useSearchParams();
   const requestedCountry = normalizeSlug(searchParams.get('country') || 'canada');
-  const activeCountry = requestedCountry === 'india' ? 'india' : 'canada';
-  const countryLabel = activeCountry === 'india' ? 'India' : 'Canada';
+  const supportedCountries = ['canada', 'india', 'united-states'] as const;
+  const activeCountry = supportedCountries.includes(requestedCountry as (typeof supportedCountries)[number])
+    ? requestedCountry
+    : 'canada';
+  const countryLabel =
+    activeCountry === 'india'
+      ? 'India'
+      : activeCountry === 'united-states'
+        ? 'United States'
+        : 'Canada';
 
   const [shops, setShops] = useState<ActiveShop[]>([]);
   const [loading, setLoading] = useState(true);

@@ -50,7 +50,10 @@ export default function LiveCitiesClient() {
     searchParams.get('country') || 'canada'
   );
 
-  const activeCountry = requestedCountry === 'india' ? 'india' : 'canada';
+  const supportedCountries = ['canada', 'india', 'united-states'] as const;
+  const activeCountry = supportedCountries.includes(requestedCountry as (typeof supportedCountries)[number])
+    ? requestedCountry
+    : 'canada';
 
   useEffect(() => {
     let isMounted = true;
@@ -94,7 +97,11 @@ export default function LiveCitiesClient() {
 
     const countryName =
       matchingCities[0]?.country_name ||
-      (activeCountry === 'india' ? 'India' : 'Canada');
+      (activeCountry === 'india'
+        ? 'India'
+        : activeCountry === 'united-states'
+          ? 'United States'
+          : 'Canada');
 
     return [
       {
@@ -107,7 +114,12 @@ export default function LiveCitiesClient() {
     ];
   }, [activeCountry, cities]);
 
-  const countryLabel = activeCountry === 'india' ? 'India' : 'Canada';
+  const countryLabel =
+    activeCountry === 'india'
+      ? 'India'
+      : activeCountry === 'united-states'
+        ? 'United States'
+        : 'Canada';
 
   const title = `${countryLabel} Live Cities | LocalStreetShop`;
   const description = `Explore live cities in ${countryLabel} where local shops are already listed on LocalStreetShop.`;

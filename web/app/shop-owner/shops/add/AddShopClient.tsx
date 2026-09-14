@@ -46,6 +46,7 @@ export default function AddShopClient() {
 
   const selectedCountryName = countries.find((country) => country.id === selectedCountry)?.name || '';
   const isIndia = selectedCountryName.toLowerCase() === 'india';
+  const isUnitedStates = ['united states', 'united states of america', 'usa', 'us'].includes(selectedCountryName.toLowerCase());
 
   useEffect(() => {
     let isMounted = true;
@@ -559,6 +560,18 @@ export default function AddShopClient() {
                     Continue with India business form →
                   </Link>
                 </div>
+              ) : isUnitedStates ? (
+                <div className="md:col-span-2 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+                  <p className="text-sm font-black uppercase tracking-[0.16em] text-blue-700">
+                    United States flexible address form
+                  </p>
+                  <p className="mt-2 leading-7 text-slate-700">
+                    Choose any U.S. state and enter the city and street naturally. New cities and streets are created only after admin verification and approval.
+                  </p>
+                  <Link href="/countries/united-states/add-business" className="mt-4 inline-flex rounded-full bg-blue-700 px-5 py-3 font-bold text-white transition hover:bg-blue-800">
+                    Continue with U.S. business form →
+                  </Link>
+                </div>
               ) : (
                 <>
               <div>
@@ -717,10 +730,10 @@ export default function AddShopClient() {
 
             <button
               type="submit"
-              disabled={loading || loadingLocations || isIndia}
+              disabled={loading || loadingLocations || isIndia || isUnitedStates}
               className="w-full rounded-full bg-blue-700 px-6 py-4 font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
-              {isIndia ? 'Use the India business form above' : loading ? 'Submitting Shop...' : 'Submit Shop for Approval'}
+              {isIndia ? 'Use the India business form above' : isUnitedStates ? 'Use the U.S. business form above' : loading ? 'Submitting Shop...' : 'Submit Shop for Approval'}
             </button>
           </form>
         </section>

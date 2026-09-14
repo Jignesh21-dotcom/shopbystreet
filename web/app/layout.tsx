@@ -14,16 +14,19 @@ export const metadata: Metadata = {
   },
 
   description:
-    'Discover local shops, support independent businesses, and explore cities, streets, and communities across Canada and India.',
+    'Discover local shops, support independent businesses, and explore cities, streets, and communities across Canada, India, and the United States.',
 
   keywords: [
     'LocalStreetShop',
     'shop local',
     'Canadian businesses',
     'Indian businesses',
+    'US businesses',
+    'American local businesses',
     'local shopping',
     'Ontario businesses',
     'Gujarat businesses',
+    'Connecticut businesses',
     'digital main street',
     'small businesses Canada',
     'local business directory',
@@ -41,7 +44,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'LocalStreetShop',
     description:
-      'Discover local shops, support independent businesses, and explore cities, streets, and communities across Canada and India.',
+      'Discover local shops, support independent businesses, and explore cities, streets, and communities across Canada, India, and the United States.',
     url: 'https://www.localstreetshop.com',
     siteName: 'LocalStreetShop',
     locale: 'en_CA',
@@ -52,7 +55,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'LocalStreetShop',
     description:
-      'Discover local shops, support independent businesses, and explore cities, streets, and communities across Canada and India.',
+      'Discover local shops, support independent businesses, and explore cities, streets, and communities across Canada, India, and the United States.',
   },
 
   icons: {

@@ -476,7 +476,7 @@ export default function ClaimShopClient() {
                 </h2>
 
                 <p className="mt-2 text-slate-600">
-                  This shared search works for businesses in both Canada and India.
+                  This shared search works for businesses in Canada, India, and the United States.
                 </p>
               </div>
 

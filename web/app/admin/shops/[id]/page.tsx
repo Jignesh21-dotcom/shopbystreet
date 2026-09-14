@@ -35,6 +35,7 @@ export default function ReviewShopPage() {
 
   const [shop, setShop] = useState<ShopRecord | null>(null);
   const [indiaCountryId, setIndiaCountryId] = useState('');
+  const [usCountryId, setUsCountryId] = useState('');
   const [provinces, setProvinces] = useState<ProvinceOption[]>([]);
   const [cities, setCities] = useState<Option[]>([]);
   const [streets, setStreets] = useState<Option[]>([]);
@@ -58,9 +59,9 @@ export default function ReviewShopPage() {
     [provinces, provinceId],
   );
 
-  const isIndia = Boolean(
-    indiaCountryId && selectedProvince?.country_id === indiaCountryId,
-  );
+  const isIndia = Boolean(indiaCountryId && selectedProvince?.country_id === indiaCountryId);
+  const isUnitedStates = Boolean(usCountryId && selectedProvince?.country_id === usCountryId);
+  const usesAutomaticLocation = isIndia || isUnitedStates;
 
   useEffect(() => {
     let active = true;
@@ -81,7 +82,7 @@ export default function ReviewShopPage() {
         return;
       }
 
-      const [shopResult, provinceResult, indiaResult] = await Promise.all([
+      const [shopResult, provinceResult, indiaResult, usResult] = await Promise.all([
         supabase
           .from('shops')
           .select('id, name, slug, address, description, parking, province_id, city_id, street_id, approved')
@@ -91,11 +92,8 @@ export default function ReviewShopPage() {
           .from('provinces')
           .select('id, name, country_id')
           .order('name'),
-        supabase
-          .from('countries')
-          .select('id')
-          .eq('slug', 'india')
-          .maybeSingle(),
+        supabase.from('countries').select('id').eq('slug', 'india').maybeSingle(),
+        supabase.from('countries').select('id').eq('slug', 'united-states').maybeSingle(),
       ]);
 
       if (!active) return;
@@ -119,6 +117,7 @@ export default function ReviewShopPage() {
       setStreetId(record.street_id || '');
       setProvinces((provinceResult.data || []) as ProvinceOption[]);
       setIndiaCountryId(indiaId);
+      setUsCountryId(usResult.data?.id || '');
 
       // Pre-fill the manual India fields from the shop's current assignments
       // when those records exist. They can then be corrected freely by admin.
@@ -162,7 +161,7 @@ export default function ReviewShopPage() {
   useEffect(() => {
     let active = true;
 
-    if (!provinceId || isIndia) {
+    if (!provinceId || usesAutomaticLocation) {
       setCities([]);
       return;
     }
@@ -181,12 +180,12 @@ export default function ReviewShopPage() {
     return () => {
       active = false;
     };
-  }, [provinceId, isIndia]);
+  }, [provinceId, usesAutomaticLocation]);
 
   useEffect(() => {
     let active = true;
 
-    if (!cityId || isIndia) {
+    if (!cityId || usesAutomaticLocation) {
       setStreets([]);
       return;
     }
@@ -205,7 +204,7 @@ export default function ReviewShopPage() {
     return () => {
       active = false;
     };
-  }, [cityId, isIndia]);
+  }, [cityId, usesAutomaticLocation]);
 
   const handleProvinceChange = (nextProvinceId: string) => {
     setProvinceId(nextProvinceId);
@@ -222,8 +221,8 @@ export default function ReviewShopPage() {
     setError('');
     setSuccess('');
 
-    if (isIndia && (!cityName.trim() || !streetName.trim())) {
-      setError('For India, enter the city / municipality and public listing street / market.');
+    if (usesAutomaticLocation && (!cityName.trim() || !streetName.trim())) {
+      setError(`For ${isIndia ? 'India' : 'the United States'}, enter the city and public listing street / market.`);
       setSaving(false);
       return;
     }
@@ -249,10 +248,10 @@ export default function ReviewShopPage() {
         description,
         parking,
         provinceId,
-        cityId: isIndia ? '' : cityId,
-        streetId: isIndia ? '' : streetId,
-        cityName: isIndia ? cityName : '',
-        streetName: isIndia ? streetName : '',
+        cityId: usesAutomaticLocation ? '' : cityId,
+        streetId: usesAutomaticLocation ? '' : streetId,
+        cityName: usesAutomaticLocation ? cityName : '',
+        streetName: usesAutomaticLocation ? streetName : '',
       }),
     });
 
@@ -318,15 +317,15 @@ export default function ReviewShopPage() {
 
             <div className="grid gap-5 md:grid-cols-3">
               <label className="text-sm font-bold text-slate-700">
-                {isIndia ? 'State / Union Territory' : 'Province'}
+                {isIndia ? 'State / Union Territory' : isUnitedStates ? 'State' : 'Province'}
                 <select value={provinceId} onChange={(event) => handleProvinceChange(event.target.value)} required className={fieldClass}>
-                  <option value="">{isIndia ? 'Select state / UT' : 'Select province / state'}</option>
+                  <option value="">{isIndia ? 'Select state / UT' : isUnitedStates ? 'Select state' : 'Select province / state'}</option>
                   {provinces.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
                 </select>
               </label>
 
-              {isIndia ? (
-                <label className="text-sm font-bold text-slate-700">City / Municipality
+              {usesAutomaticLocation ? (
+                <label className="text-sm font-bold text-slate-700">{isIndia ? 'City / Municipality' : 'City / Town'}
                   <input
                     value={cityName}
                     onChange={(event) => setCityName(event.target.value)}
@@ -347,8 +346,8 @@ export default function ReviewShopPage() {
                 </label>
               )}
 
-              {isIndia ? (
-                <label className="text-sm font-bold text-slate-700">Public Listing Street / Market
+              {usesAutomaticLocation ? (
+                <label className="text-sm font-bold text-slate-700">{isIndia ? 'Public Listing Street / Market' : 'Public Listing Street / Road'}
                   <input
                     value={streetName}
                     onChange={(event) => setStreetName(event.target.value)}
@@ -370,9 +369,9 @@ export default function ReviewShopPage() {
               )}
             </div>
 
-            {isIndia && (
-              <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm leading-6 text-orange-900">
-                <strong>India automatic location mode:</strong> enter the correct city and street / market. When you save, LocalStreetShop will reuse matching records or create them under the selected State / Union Territory.
+            {usesAutomaticLocation && (
+              <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
+                <strong>{isIndia ? 'India' : 'United States'} automatic location mode:</strong> enter the correct city and public street. When you save, LocalStreetShop will reuse matching records or create them under the selected {isIndia ? 'State / Union Territory' : 'State'}.
               </div>
             )}
 
