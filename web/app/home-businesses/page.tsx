@@ -16,6 +16,8 @@ export default function HomeBusinessesPage() {
     const { error } = await supabase.from('home_businesses').insert([
       {
         name: formData.get('name'),
+        country: formData.get('country'),
+        region: formData.get('region'),
         city: formData.get('city'),
         description: formData.get('description'),
         website: formData.get('website'),
@@ -33,7 +35,7 @@ export default function HomeBusinessesPage() {
 
   const title = 'Home & Online Businesses | LocalStreetShop';
   const description =
-    'Submit your home-based or online business to LocalStreetShop and help local entrepreneurs get discovered across Canada.';
+    'Submit your home-based or online business to LocalStreetShop and help local entrepreneurs get discovered across Canada, India, and the United States.';
   const url = 'https://www.localstreetshop.com/home-businesses';
 
   return (
@@ -104,6 +106,32 @@ export default function HomeBusinessesPage() {
                     name="name"
                     type="text"
                     required
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold mb-1">Country</label>
+                  <select
+                    name="country"
+                    required
+                    defaultValue=""
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-white"
+                  >
+                    <option value="" disabled>Choose a country</option>
+                    <option value="Canada">Canada</option>
+                    <option value="India">India</option>
+                    <option value="United States">United States</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold mb-1">Province / State / Region</label>
+                  <input
+                    name="region"
+                    type="text"
+                    required
+                    placeholder="e.g. Ontario, Delhi, Connecticut"
                     className="w-full border border-gray-200 rounded-xl px-4 py-3"
                   />
                 </div>

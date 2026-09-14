@@ -49,7 +49,7 @@ export async function POST(req: Request) {
             currency: "cad",
             product_data: {
               name: "Support LocalStreetShop",
-              description: "Help build Canada's Digital Main Street.",
+              description: "Help build a global digital main street.",
             },
             unit_amount: amountInCents,
           },

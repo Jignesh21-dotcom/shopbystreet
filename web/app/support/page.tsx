@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata = {
   title: "Support the Project | LocalStreetShop",
   description:
-    "Support LocalStreetShop, Canada's Digital Main Street. Help us grow by sharing the platform, introducing business owners, becoming a Community Partner, or supporting the project financially.",
+    "Support LocalStreetShop and help build a global digital main street. Help us grow by sharing the platform, introducing business owners, becoming a Community Partner, or supporting the project financially.",
 };
 
 export default function SupportPage() {
@@ -17,13 +17,13 @@ export default function SupportPage() {
           </p>
 
           <h1 className="text-4xl font-black tracking-tight text-slate-900 md:text-6xl">
-            Help Build Canada&apos;s Digital Main Street
+            Help Build a Global Digital Main Street
           </h1>
 
           <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-slate-600">
-            LocalStreetShop is an independent Canadian project helping people
+            LocalStreetShop is an independent project founded in Canada, helping people
             discover and support local businesses by exploring real streets,
-            real communities, and real neighbourhoods across Canada.
+            real communities and real neighbourhoods across Canada, India, and the United States.
           </p>
         </div>
       </section>
@@ -44,8 +44,7 @@ export default function SupportPage() {
 
           <p className="mt-5 text-lg leading-8 text-slate-600">
             Instead of only searching by business name or category,
-            LocalStreetShop lets people explore Canada the way communities are
-            actually built — by province, city, street, address, and shop.
+            LocalStreetShop lets people explore communities the way they are actually built — by country, region, city, street, address, and shop.
           </p>
         </div>
       </section>
@@ -84,7 +83,7 @@ export default function SupportPage() {
               </h3>
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 Tell friends, family, local businesses, or community groups
-                about Canada&apos;s Digital Main Street.
+                about LocalStreetShop and our global digital main street mission.
               </p>
             </div>
 
@@ -106,7 +105,7 @@ export default function SupportPage() {
               </h3>
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 Contributions help with development, hosting, mapping, and
-                expanding the platform across Canada.
+                expanding the platform across Canada, India, the United States, and future communities.
               </p>
             </div>
           </div>
@@ -121,7 +120,7 @@ export default function SupportPage() {
           </p>
 
           <h2 className="mt-3 text-3xl font-black md:text-4xl">
-            Support Canada&apos;s Digital Main Street
+            Support a Global Digital Main Street
           </h2>
 
           <p className="mx-auto mt-5 max-w-2xl text-blue-50">

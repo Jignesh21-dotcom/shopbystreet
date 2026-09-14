@@ -36,7 +36,7 @@ export default function ShopOwnerLandingClient() {
           <p className="mx-auto max-w-2xl text-base leading-7 text-gray-600 sm:text-lg sm:leading-relaxed">
             Claim your business, manage your storefront, showcase products,
             receive customer Order Requests, and grow your presence on
-            Canada&apos;s Digital Main Street.
+            a growing global digital main street.
           </p>
         </section>
 
@@ -166,7 +166,7 @@ export default function ShopOwnerLandingClient() {
             </div>
 
             <p className="mt-4 text-sm font-semibold text-yellow-900">
-              Join Canada&apos;s Digital Main Street from the beginning.
+              Join LocalStreetShop from the beginning and help shape a global digital main street.
             </p>
           </div>
         </section>

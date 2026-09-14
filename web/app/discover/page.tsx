@@ -58,7 +58,7 @@ export default async function DiscoverPage() {
   ) || withLocation[0];
 
   const title = 'Discover Local Gems | LocalStreetShop';
-  const description = 'Explore featured businesses, hidden gems, and local discounts across Canadian cities. Handpicked highlights from LocalStreetShop.';
+  const description = 'Explore featured businesses, hidden gems, and local discounts across growing LocalStreetShop communities. Handpicked local highlights from Canada, India, and the United States.';
   const url = 'https://www.localstreetshop.com/discover';
 
   return (

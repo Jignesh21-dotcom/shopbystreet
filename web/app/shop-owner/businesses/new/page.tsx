@@ -24,6 +24,14 @@ const countryOptions = [
     claimHref: '/shop-owner/claim',
     accent: 'border-orange-200 bg-orange-50',
   },
+  {
+    name: 'United States',
+    flag: '🇺🇸',
+    description: 'Add a U.S. business and let verified cities and streets grow automatically as businesses join.',
+    addHref: '/countries/united-states/add-business',
+    claimHref: '/shop-owner/claim',
+    accent: 'border-red-200 bg-red-50',
+  },
 ];
 
 export default function ChooseBusinessCountryPage() {
@@ -42,7 +50,7 @@ export default function ChooseBusinessCountryPage() {
           </p>
         </section>
 
-        <div className="mt-8 grid gap-6 md:grid-cols-2">
+        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {countryOptions.map((country) => (
             <section key={country.name} className={`rounded-[2rem] border p-6 shadow-sm ${country.accent}`}>
               <div className="text-5xl" aria-hidden="true">{country.flag}</div>

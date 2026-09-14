@@ -41,7 +41,7 @@ const experienceSteps = [
   {
     number: '1',
     title: 'Choose a city',
-    description: 'Start with a participating Gujarat city.',
+    description: 'Explore participating Indian cities, beginning with our Gujarat launch communities.',
   },
   {
     number: '2',
@@ -123,7 +123,7 @@ export default function IndiaClient() {
             <div className="mt-8 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
               {[
                 ['🇮🇳', 'India Launch'],
-                ['📍', 'Starting in Gujarat'],
+                ['📍', 'Started in Gujarat — expanding across India'],
                 ['🏪', 'Local Businesses'],
                 ['🤝', 'Community Focused'],
               ].map(([icon, label]) => (
@@ -145,7 +145,7 @@ export default function IndiaClient() {
               <div className="rounded-[1.5rem] bg-gradient-to-br from-orange-500 via-white to-green-500 p-1">
                 <div className="rounded-[1.35rem] bg-slate-950 p-6 text-white">
                   <p className="text-sm font-semibold text-orange-300">
-                    Building Gujarat&apos;s Digital Main Street
+                    Building India&apos;s Local Street Network
                   </p>
 
                   <h2 className="mt-2 text-3xl font-black">
@@ -182,7 +182,7 @@ export default function IndiaClient() {
 
             <div className="absolute -bottom-6 -right-4 hidden rounded-2xl border border-green-200 bg-white p-4 shadow-xl sm:block">
               <p className="text-sm font-bold text-green-700">ગુજરાતથી શરૂઆત</p>
-              <p className="text-xs text-slate-500">Beginning with Gujarat</p>
+              <p className="text-xs text-slate-500">Started in Gujarat</p>
             </div>
           </div>
         </div>
@@ -370,7 +370,7 @@ export default function IndiaClient() {
           </span>
 
           <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
-            Building Gujarat&apos;s Digital Main Street.
+            Building India&apos;s Local Street Network.
           </h2>
 
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">

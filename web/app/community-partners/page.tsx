@@ -17,7 +17,7 @@ const waysToHelp = [
     icon: '❤️',
     title: 'Strengthen Local',
     description:
-      'Every business that joins helps shoppers discover more of what is available on Canadian streets.',
+      'Every business that joins helps shoppers discover more of what is available on local streets and in local communities.',
   },
 ];
 
@@ -107,13 +107,13 @@ export default function FoundingCommunityPartnersPage() {
             </span>
 
             <h1 className="mt-6 max-w-3xl text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-              Help Build Canada&apos;s Digital Main Street
+              Help Build a Global Digital Main Street
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
               LocalStreetShop is growing through real community connections. If you know local
-              business owners, you can help introduce them to a platform built to make Canadian
-              streets easier to discover.
+              business owners, you can help introduce them to a platform built to make local
+              streets and communities easier to discover.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -134,7 +134,7 @@ export default function FoundingCommunityPartnersPage() {
 
             <div className="mt-8 grid grid-cols-2 gap-3 text-sm text-slate-600 sm:grid-cols-4">
               {[
-                ['🇨🇦', 'Built for Canada'],
+                ['🌎', 'Growing Globally'],
                 ['🏪', 'Support Local'],
                 ['🤝', 'Warm Introductions'],
                 ['🍁', 'Founding Supporters'],
@@ -197,7 +197,7 @@ export default function FoundingCommunityPartnersPage() {
             Why This Matters
           </span>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-            Every Canadian street has businesses worth discovering.
+            Every local street has businesses worth discovering.
           </h2>
           <p className="mt-4 text-lg leading-8 text-slate-600">
             Many amazing small businesses are still difficult to discover online. LocalStreetShop
@@ -374,7 +374,7 @@ export default function FoundingCommunityPartnersPage() {
       <section className="px-4 pb-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-green-600 via-blue-600 to-indigo-700 p-8 text-center text-white shadow-2xl shadow-blue-600/20 sm:p-12">
           <span className="inline-flex rounded-full bg-white/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-50">
-            Help Build Canada&apos;s Digital Main Street
+            Help Build a Global Digital Main Street
           </span>
 
           <h2 className="mx-auto mt-5 max-w-4xl text-3xl font-black tracking-tight sm:text-5xl">
@@ -383,7 +383,7 @@ export default function FoundingCommunityPartnersPage() {
 
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-blue-50">
             LocalStreetShop is still in its early days, and we&apos;re looking for people who want
-            to help shape Canada&apos;s Digital Main Street from the beginning. Whether you introduce
+            to help shape LocalStreetShop from the beginning. Whether you introduce
             one business or twenty, your support helps strengthen local communities and brings more
             independent businesses online.
           </p>

@@ -220,10 +220,7 @@ export default function ShopOwnerBillingPage() {
     invoicedCount: 0,
   };
 
-  const countrySlug =
-    billing?.countrySlug === 'india'
-      ? 'india'
-      : 'canada';
+  const countrySlug = billing?.countrySlug || 'canada';
 
   const formatMoney = (value: unknown) =>
     formatCurrency(value, countrySlug);

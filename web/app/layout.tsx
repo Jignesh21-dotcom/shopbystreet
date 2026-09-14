@@ -20,6 +20,8 @@ export const metadata: Metadata = {
     'LocalStreetShop',
     'shop local',
     'Canadian businesses',
+    'U.S. local businesses',
+    'Indian local businesses',
     'Indian businesses',
     'US businesses',
     'American local businesses',

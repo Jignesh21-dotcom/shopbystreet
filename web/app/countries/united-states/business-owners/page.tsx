@@ -71,7 +71,7 @@ const roadmap = [
       'Showcase up to 100 products',
       'Receive customer Order Requests',
       'First 5 accepted requests free',
-      '$2 per accepted request after that',
+      '$2 USD per accepted request after that',
     ],
   },
   {
@@ -110,12 +110,12 @@ const faqs = [
   {
     question: 'How much is the Marketplace Fee?',
     answer:
-      'Your first 5 accepted Order Requests are free. After that, each additional accepted request has a fixed $2 Marketplace Fee. There is no monthly subscription and LocalStreetShop does not take a percentage of the sale.',
+      'Your first 5 accepted Order Requests are free. After that, each additional accepted request has a fixed $2 USD Marketplace Fee. There is no monthly subscription and LocalStreetShop does not take a percentage of the sale.',
   },
   {
-    question: 'When is the $2 Marketplace Fee charged?',
+    question: 'When is the $2 USD Marketplace Fee charged?',
     answer:
-      'The $2 Marketplace Fee is added only when you accept a chargeable Order Request after using your first 5 free accepted requests. Declined, cancelled, and expired requests are never charged.',
+      'The $2 USD Marketplace Fee is added only when you accept a chargeable Order Request after using your first 5 free accepted requests. Declined, cancelled, and expired requests are never charged.',
   },
   {
     question: 'Does LocalStreetShop collect payment from the customer?',
@@ -149,7 +149,7 @@ const faqs = [
   },
 ];
 
-export default function PricingPage() {
+export default function UnitedStatesBusinessOwnersPage() {
   const [shopId, setShopId] = useState<string | null>(null);
   const [loadingTier, setLoadingTier] = useState<PaidTier | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -225,17 +225,24 @@ export default function PricingPage() {
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:px-8 lg:py-24">
           <div>
-            <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
-              For Business Owners
+            <Link
+              href="/countries/united-states"
+              className="mb-6 inline-flex text-sm font-bold text-blue-700 hover:underline"
+            >
+              ← Back to Explore United States
+            </Link>
+
+            <span className="block w-fit rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
+              🇺🇸 For U.S. Business Owners
             </span>
 
             <h1 className="mt-6 max-w-3xl text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-              Grow Your Business on LocalStreetShop
+              Grow Your Business on LocalStreetShop in the United States
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
               Claiming and managing your basic business profile is always free. During Phase 1,
-              businesses can also add photos and showcase up to 100 products for free.
+              U.S. businesses can also add photos and showcase up to 100 products for free.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -243,7 +250,14 @@ export default function PricingPage() {
                 href="/shop-owner/claim"
                 className="inline-flex items-center justify-center rounded-full bg-blue-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
               >
-                Claim Your Shop
+                Claim Existing Business
+              </Link>
+
+              <Link
+                href="/countries/united-states/add-business"
+                className="inline-flex items-center justify-center rounded-full bg-green-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-green-600/20 transition hover:bg-green-700"
+              >
+                Add a New Business
               </Link>
 
               <Link
@@ -256,10 +270,10 @@ export default function PricingPage() {
 
             <div className="mt-8 grid grid-cols-2 gap-3 text-sm text-slate-600 sm:grid-cols-4">
               {[
-                ['🌎', 'Founded in Canada, Growing Globally'],
+                ['🇺🇸', 'Now Growing Across the U.S.'],
                 ['🏪', 'Profile Always Free'],
                 ['📦', '100 Products Included'],
-                ['💳', '$2 Fixed Marketplace Fee'],
+                ['💳', '$2 USD Fixed Marketplace Fee'],
               ].map(([icon, label]) => (
                 <div key={label} className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
                   <span className="text-xl">{icon}</span>
@@ -284,7 +298,7 @@ export default function PricingPage() {
                   {[
                     ['Free', 'Business profile', 'Claim and update your basic listing'],
                     ['100', 'Product showcase', 'Add photos, prices, and product details'],
-                    ['$2', 'Marketplace fee', 'Per accepted request after your first 5 free'],
+                    ['$2 USD', 'Marketplace fee', 'Per accepted request after your first 5 free'],
                   ].map(([label, title, text]) => (
                     <div key={title} className="flex items-center gap-4 rounded-2xl bg-white p-4 text-slate-900 shadow-sm">
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-xs font-black text-blue-700">
@@ -325,8 +339,7 @@ export default function PricingPage() {
             Help customers find your business online.
           </h2>
           <p className="mt-4 text-lg leading-8 text-slate-600">
-            Whether you already have a website or not, LocalStreetShop helps your business appear
-            where nearby shoppers are exploring.
+            Whether you already have a website or not, LocalStreetShop helps your business appear where shoppers are exploring U.S. cities and streets.
           </p>
         </div>
 
@@ -402,19 +415,19 @@ export default function PricingPage() {
             </span>
 
             <h2 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              No subscriptions. No commissions. Just $2 per accepted request.
+              No subscriptions. No commissions. Just $2 USD per accepted request.
             </h2>
 
             <p className="mt-5 text-lg leading-8 text-slate-600">
               Your first 5 accepted Order Requests are free. After that, each additional
-              accepted request adds a fixed $2 Marketplace Fee.
+              accepted request adds a fixed $2 USD Marketplace Fee.
             </p>
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               ['🎉', 'First 5 Free', 'Your first five accepted requests have no marketplace fee.'],
-              ['$2', 'Fixed Fee', 'Only $2 per accepted request after your free allowance.'],
+              ['$2', 'Fixed Fee', 'Only $2 USD per accepted request after your free allowance.'],
               ['0%', 'No Commission', 'LocalStreetShop does not take a percentage of your sale.'],
               ['📅', 'Flexible Billing', 'Pay anytime or wait for your monthly invoice.'],
             ].map(([icon, title, description]) => (
@@ -478,7 +491,7 @@ export default function PricingPage() {
               </p>
 
               <div className="mt-6 border-y border-slate-100 py-6">
-                <span className="text-5xl font-black text-slate-950">$99</span>
+                <span className="text-5xl font-black text-slate-950">$99 USD</span>
                 <span className="ml-2 text-sm font-semibold text-slate-500">one-time</span>
               </div>
 
@@ -551,7 +564,7 @@ export default function PricingPage() {
                 'No credit card required to claim',
                 'Up to 100 products during Phase 1',
                 'First 5 accepted requests free',
-                'Only $2 per accepted request after that',
+                'Only $2 USD per accepted request after that',
                 'No subscription or sales commission',
               ].map((item) => (
                 <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-5">

@@ -75,7 +75,7 @@ export default function HomeClient() {
             </span>
 
             <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-              Canada&apos;s Digital Main Street
+              A Global Digital Main Street
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
@@ -133,7 +133,7 @@ export default function HomeClient() {
 
                 <div className="mt-5 grid gap-3">
                   {[
-                    ['1', 'Choose a city', 'Start with places across Canada'],
+                    ['1', 'Choose a city', 'Start with communities across our live countries'],
                     ['2', 'Pick a street', 'Explore real local streets'],
                     ['3', 'Request products', 'Send secure requests to participating shops'],
                   ].map(([number, title, text]) => (
@@ -156,7 +156,7 @@ export default function HomeClient() {
 
             <div className="absolute -bottom-6 -left-4 hidden rounded-2xl border border-green-200 bg-white p-4 shadow-xl sm:block">
               <p className="text-sm font-bold text-green-700">Shop local made easier</p>
-              <p className="text-xs text-slate-500">Canada&apos;s Digital Main Street</p>
+              <p className="text-xs text-slate-500">A Global Digital Main Street</p>
             </div>
           </div>
         </div>

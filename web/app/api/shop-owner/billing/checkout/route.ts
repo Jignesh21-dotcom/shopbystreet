@@ -207,19 +207,20 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error:
-            'Canadian and Indian marketplace balances must be paid separately.',
+            'Marketplace balances from different countries must be paid separately.',
         },
         { status: 400 },
       );
     }
 
-    const countrySlug =
-      normalizedCountries[0] === 'india'
-        ? 'india'
-        : 'canada';
+    const countrySlug = normalizedCountries[0] || 'canada';
 
     const stripeCurrency =
-      countrySlug === 'india' ? 'inr' : 'cad';
+      countrySlug === 'india'
+        ? 'inr'
+        : countrySlug === 'united-states'
+          ? 'usd'
+          : 'cad';
 
     if (shopIds.length === 0) {
       return NextResponse.json(

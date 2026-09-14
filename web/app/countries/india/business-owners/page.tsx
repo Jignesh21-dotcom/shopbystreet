@@ -5,7 +5,7 @@ import IndiaProfessionalSetupButton from './IndiaProfessionalSetupButton';
 export const metadata: Metadata = {
   title: 'For Business Owners in India | LocalStreetShop',
   description:
-    'Claim or add your Indian business, showcase products, and join LocalStreetShop’s founding business program in Gujarat.',
+    'Claim or add your Indian business, showcase products, and join LocalStreetShop as we expand across India.',
   alternates: {
     canonical: 'https://www.localstreetshop.com/countries/india/business-owners',
   },
@@ -132,7 +132,7 @@ const faqs = [
   {
     question: 'Which parts of India are currently available?',
     answer:
-      'The India launch is beginning in Gujarat and expanding carefully city by city, locality by locality, and market by market.',
+      'The India launch began in Gujarat and now supports businesses across all states and Union Territories, growing city by city, locality by locality, and market by market.',
   },
 ];
 
@@ -196,7 +196,7 @@ export default function IndiaBusinessOwnersPage() {
               </p>
               <h2 className="mt-3 text-3xl font-black">Start free. Pay only for optional services.</h2>
               <p className="mt-3 leading-7 text-orange-50">
-                Build your profile and product showcase while LocalStreetShop grows across Gujarat.
+                Build your profile and product showcase while LocalStreetShop grows across India.
               </p>
 
               <div className="mt-6 grid gap-3">
@@ -425,7 +425,7 @@ export default function IndiaBusinessOwnersPage() {
             Ready to bring your business to LocalStreetShop India?
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-orange-50">
-            Claim an existing listing or add your business and help shape the local-shopping experience as we expand across Gujarat.
+            Claim an existing listing or add your business and help shape the local-shopping experience as we expand across India.
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">

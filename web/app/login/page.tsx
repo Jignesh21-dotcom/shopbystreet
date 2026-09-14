@@ -233,7 +233,7 @@ export default function LoginPage() {
             </p>
 
             <h1 className="mb-3 text-3xl font-extrabold sm:mb-4 sm:text-4xl md:text-5xl">
-              Welcome to Canada&apos;s Digital Main Street
+              Welcome to LocalStreetShop
             </h1>
 
             <p className="mb-6 text-base leading-7 text-gray-600 sm:text-lg sm:leading-normal">

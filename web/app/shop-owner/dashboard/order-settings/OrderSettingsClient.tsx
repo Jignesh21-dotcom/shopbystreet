@@ -901,7 +901,9 @@ export default function OrderSettingsClient() {
                     placeholder={
                       countrySlug === 'india'
                         ? 'Example: Shipping is available across India. Rates depend on destination.'
-                        : 'Example: Shipping is available across Canada. Rates depend on destination.'
+                        : countrySlug === 'united-states'
+                          ? 'Example: Shipping is available across the United States. Rates depend on destination.'
+                          : 'Example: Shipping is available to selected areas. Rates depend on destination.'
                     }
                     className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   />

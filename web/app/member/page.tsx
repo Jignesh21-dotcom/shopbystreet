@@ -20,6 +20,18 @@ export default function MemberPage() {
   const [selectedStreet, setSelectedStreet] = useState('');
   const [selectedShop, setSelectedShop] = useState('');
 
+  const selectedCountryName =
+    countries.find((country) => country.id === selectedCountry)?.name || '';
+
+  const regionLabel =
+    selectedCountryName.toLowerCase() === 'united states'
+      ? 'State'
+      : selectedCountryName.toLowerCase() === 'india'
+        ? 'State / Union Territory'
+        : selectedCountryName.toLowerCase() === 'canada'
+          ? 'Province'
+          : 'Region';
+
   const [review, setReview] = useState('');
   const [message, setMessage] = useState('');
 
@@ -381,13 +393,13 @@ export default function MemberPage() {
 
                 {provinces.length > 0 && (
                   <div>
-                    <label className="block mb-1 font-semibold">Province</label>
+                    <label className="block mb-1 font-semibold">{regionLabel}</label>
                     <select
                       value={selectedProvince}
                       onChange={(e) => setSelectedProvince(e.target.value)}
                       className="w-full border border-gray-200 px-4 py-3 rounded-xl bg-white"
                     >
-                      <option value="">Choose a province</option>
+                      <option value="">Choose a {regionLabel.toLowerCase()}</option>
                       {provinces.map((province) => (
                         <option key={province.id} value={province.id}>
                           {province.name}

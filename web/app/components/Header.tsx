@@ -147,7 +147,7 @@ export default function Header() {
               </Link>
 
               <Link
-                href="/countries/united-states/add-business"
+                href="/countries/united-states/business-owners"
                 className="block px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-red-50 hover:text-red-700"
               >
                 🇺🇸 United States
@@ -292,7 +292,7 @@ export default function Header() {
                 🇮🇳 India
               </Link>
               <Link
-                href="/countries/united-states/add-business"
+                href="/countries/united-states/business-owners"
                 onClick={closeMobileMenu}
                 className="block rounded-lg px-3 py-2 hover:bg-red-50 hover:text-red-700"
               >

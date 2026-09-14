@@ -4,14 +4,14 @@ import ShopOwnerLandingClient from '@/app/shop-owner/ShopOwnerLandingClient';
 export const metadata: Metadata = {
   title: 'Shop Owner Portal | LocalStreetShop',
   description:
-    'Claim your local business, manage products, add photos, and reach nearby customers across Canada with LocalStreetShop.',
+    'Claim your local business, manage products, add photos, and reach nearby customers across supported LocalStreetShop communities.',
   alternates: {
     canonical: 'https://www.localstreetshop.com/shop-owner',
   },
   openGraph: {
     title: 'Shop Owner Portal | LocalStreetShop',
     description:
-      'Claim your local business, manage products, add photos, and reach nearby customers across Canada with LocalStreetShop.',
+      'Claim your local business, manage products, add photos, and reach nearby customers across supported LocalStreetShop communities.',
     url: 'https://www.localstreetshop.com/shop-owner',
     siteName: 'LocalStreetShop',
     type: 'website',

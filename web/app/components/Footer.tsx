@@ -87,7 +87,7 @@ export default function Footer() {
                 Business Owners — India
               </Link>
 
-              <Link href="/countries/united-states/add-business" className="block hover:text-red-700">
+              <Link href="/countries/united-states/business-owners" className="block hover:text-red-700">
                 Business Owners — United States
               </Link>
 

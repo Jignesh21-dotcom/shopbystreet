@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata = {
   title: "Thank You | LocalStreetShop",
   description:
-    "Thank you for supporting LocalStreetShop and helping build Canada's Digital Main Street.",
+    "Thank you for supporting LocalStreetShop and helping build a global digital main street.",
 };
 
 export default function SupportThankYouPage() {
@@ -25,7 +25,7 @@ export default function SupportThankYouPage() {
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
           Your support helps us continue building Canada&apos;s Digital Main
           Street — a community-first platform helping people discover and
-          support local businesses across Canada.
+          support local businesses across Canada, India, and the United States.
         </p>
 
         <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
@@ -50,7 +50,7 @@ export default function SupportThankYouPage() {
         </div>
 
         <p className="mt-10 text-sm leading-6 text-slate-500">
-          Building Canada&apos;s Digital Main Street — one street, one shop, one
+          Building a Global Digital Main Street — one street, one shop, one
           community at a time.
         </p>
       </section>

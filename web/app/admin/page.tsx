@@ -17,22 +17,6 @@ type AdminTool = {
 
 const adminTools: AdminTool[] = [
   {
-    title: 'United States Submissions',
-    description: 'Review U.S. business submissions and automatically create verified states, cities and streets during approval.',
-    href: '/admin/us-submissions',
-    icon: '🇺🇸',
-    buttonLabel: 'Review U.S. Submissions',
-    accentClass: 'bg-blue-50 border-blue-200 text-blue-900',
-  },
-  {
-    title: 'India Submissions',
-    description: 'Review India business and flexible location submissions.',
-    href: '/admin/india-submissions',
-    icon: '🇮🇳',
-    buttonLabel: 'Review India Submissions',
-    accentClass: 'bg-orange-50 border-orange-200 text-orange-900',
-  },
-  {
     title: 'Pending Shop Submissions',
     description:
       'Review businesses added by shop owners, approve valid submissions, and remove duplicates or invalid entries.',
@@ -248,7 +232,7 @@ export default function AdminDashboardPage() {
 
                   <p className="mt-4 max-w-3xl text-lg leading-8 text-blue-50">
                     Review submissions, manage platform content, and protect the
-                    quality of Canada&apos;s Digital Main Street.
+                    quality of LocalStreetShop&apos;s global digital main street.
                   </p>
                 </div>
 
@@ -349,7 +333,7 @@ export default function AdminDashboardPage() {
               </p>
 
               <p className="mt-2 text-sm text-purple-800">
-                Canada&apos;s Digital Main Street
+                LocalStreetShop Global
               </p>
             </div>
           </section>

@@ -46,14 +46,14 @@ export default function LiveCitiesClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const requestedCountry = normalizeSlug(
-    searchParams.get('country') || 'canada'
-  );
+  const countryParam = searchParams.get('country');
+  const requestedCountry = countryParam ? normalizeSlug(countryParam) : '';
 
   const supportedCountries = ['canada', 'india', 'united-states'] as const;
-  const activeCountry = supportedCountries.includes(requestedCountry as (typeof supportedCountries)[number])
-    ? requestedCountry
-    : 'canada';
+  const hasCountrySelection = supportedCountries.includes(
+    requestedCountry as (typeof supportedCountries)[number]
+  );
+  const activeCountry = hasCountrySelection ? requestedCountry : '';
 
   useEffect(() => {
     let isMounted = true;
@@ -89,6 +89,8 @@ export default function LiveCitiesClient() {
   }, []);
 
   const groupedCities = useMemo<CountryGroup[]>(() => {
+    if (!activeCountry) return [];
+
     const matchingCities = cities.filter(
       (city) => normalizeSlug(city.country_slug) === activeCountry
     );
@@ -119,11 +121,19 @@ export default function LiveCitiesClient() {
       ? 'India'
       : activeCountry === 'united-states'
         ? 'United States'
-        : 'Canada';
+        : activeCountry === 'canada'
+          ? 'Canada'
+          : '';
 
-  const title = `${countryLabel} Live Cities | LocalStreetShop`;
-  const description = `Explore live cities in ${countryLabel} where local shops are already listed on LocalStreetShop.`;
-  const url = `https://www.localstreetshop.com/live-cities?country=${activeCountry}`;
+  const title = countryLabel
+    ? `${countryLabel} Live Cities | LocalStreetShop`
+    : 'Choose Live Cities by Country | LocalStreetShop';
+  const description = countryLabel
+    ? `Explore live cities in ${countryLabel} where local shops are already listed on LocalStreetShop.`
+    : 'Choose Canada, India, or the United States to explore LocalStreetShop live cities.';
+  const url = countryLabel
+    ? `https://www.localstreetshop.com/live-cities?country=${activeCountry}`
+    : 'https://www.localstreetshop.com/live-cities';
 
   return (
     <>
@@ -131,6 +141,47 @@ export default function LiveCitiesClient() {
 
       <main className="min-h-screen bg-gray-50 px-4 py-12 text-gray-900">
         <div className="mx-auto max-w-6xl">
+          {!countryLabel ? (
+            <section className="py-8 text-center sm:py-12">
+              <p className="mb-2 text-sm font-bold uppercase tracking-widest text-blue-700">
+                LocalStreetShop Global
+              </p>
+              <h1 className="text-4xl font-extrabold md:text-5xl">
+                🏙️ Choose a Country
+              </h1>
+              <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+                Select a country to browse cities where approved LocalStreetShop businesses are already live.
+              </p>
+
+              <div className="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-3">
+                {[
+                  { slug: 'canada', name: 'Canada', icon: '🇨🇦', accent: 'hover:border-red-300 hover:bg-red-50' },
+                  { slug: 'india', name: 'India', icon: '🇮🇳', accent: 'hover:border-orange-300 hover:bg-orange-50' },
+                  { slug: 'united-states', name: 'United States', icon: '🇺🇸', accent: 'hover:border-blue-300 hover:bg-blue-50' },
+                ].map((country) => {
+                  const liveCount = cities.filter(
+                    (city) => normalizeSlug(city.country_slug) === country.slug
+                  ).length;
+
+                  return (
+                    <Link
+                      key={country.slug}
+                      href={`/live-cities?country=${country.slug}`}
+                      className={`rounded-3xl border border-gray-200 bg-white p-7 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${country.accent}`}
+                    >
+                      <div className="text-4xl">{country.icon}</div>
+                      <h2 className="mt-4 text-2xl font-extrabold text-gray-950">{country.name}</h2>
+                      <p className="mt-2 text-sm text-gray-600">
+                        {loading ? 'Loading live cities…' : `${liveCount} ${liveCount === 1 ? 'live city' : 'live cities'}`}
+                      </p>
+                      <p className="mt-5 text-sm font-bold text-blue-700">Explore live cities →</p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          ) : (
+            <>
           <button
             type="button"
             onClick={() => router.back()}
@@ -257,6 +308,8 @@ export default function LiveCitiesClient() {
                 </section>
               ))}
             </div>
+          )}
+            </>
           )}
         </div>
       </main>

@@ -109,6 +109,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/live-cities?country=united-states`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/active-shops?country=canada`,
       lastModified: now,
       changeFrequency: 'daily',
@@ -121,6 +127,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/active-shops?country=united-states`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/countries/canada`,
       lastModified: now,
       changeFrequency: 'weekly',
@@ -128,6 +140,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${baseUrl}/countries/india`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/countries/united-states`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
@@ -218,7 +236,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const cityUrl =
       country?.slug === 'india'
         ? `${baseUrl}/countries/india/${province?.slug || 'gujarat'}/${rawCity.slug}`
-        : `${baseUrl}/cities/${rawCity.slug}`;
+        : country?.slug === 'united-states'
+          ? `${baseUrl}/countries/united-states/${province?.slug || ''}/${rawCity.slug}`
+          : `${baseUrl}/cities/${rawCity.slug}`;
 
     sitemap.push({
       url: cityUrl,
@@ -248,7 +268,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const streetUrl =
       city.countrySlug === 'india'
         ? `${baseUrl}/countries/india/${city.provinceSlug || 'gujarat'}/${city.slug}/streets/${street.slug}`
-        : `${baseUrl}/cities/${city.slug}/${street.slug}`;
+        : city.countrySlug === 'united-states'
+          ? `${baseUrl}/countries/united-states/${city.provinceSlug || ''}/${city.slug}/streets/${street.slug}`
+          : `${baseUrl}/cities/${city.slug}/${street.slug}`;
 
     sitemap.push({
       url: streetUrl,
@@ -268,7 +290,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const shopUrl =
       city.countrySlug === 'india'
         ? `${baseUrl}/countries/india/${city.provinceSlug || 'gujarat'}/${city.slug}/streets/${street.slug}/${shop.slug}`
-        : `${baseUrl}/cities/${city.slug}/${street.slug}/${shop.slug}`;
+        : city.countrySlug === 'united-states'
+          ? `${baseUrl}/countries/united-states/${city.provinceSlug || ''}/${city.slug}/streets/${street.slug}/${shop.slug}`
+          : `${baseUrl}/cities/${city.slug}/${street.slug}/${shop.slug}`;
 
     sitemap.push({
       url: shopUrl,
