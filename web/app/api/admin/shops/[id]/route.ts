@@ -154,6 +154,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       );
     }
 
+    const isCanada = country.slug === 'canada';
     const isIndia = country.slug === 'india';
     const isUnitedStates = country.slug === 'united-states';
     const usesAutomaticLocation = isIndia || isUnitedStates;
@@ -266,6 +267,61 @@ export async function PATCH(request: Request, context: RouteContext) {
       }
 
       streetId = street.id;
+    } else if (isCanada) {
+      if (!cityId || !streetName) {
+        return NextResponse.json(
+          { error: 'For Canada, city and public listing street are required.' },
+          { status: 400 },
+        );
+      }
+
+      const cityResult = await admin
+        .from('cities')
+        .select('id, name, slug, province_id')
+        .eq('id', cityId)
+        .maybeSingle();
+      if (cityResult.error) return NextResponse.json({ error: cityResult.error.message }, { status: 500 });
+      if (!cityResult.data || cityResult.data.province_id !== provinceId) {
+        return NextResponse.json({ error: 'The selected Canadian city does not match the province.' }, { status: 400 });
+      }
+
+      const city = cityResult.data;
+      const streetBaseSlug = slugify(streetName);
+      if (!streetBaseSlug) return NextResponse.json({ error: 'Please enter a valid street / road name.' }, { status: 400 });
+      const standardStreetSlug = `${city.slug}-${streetBaseSlug}`;
+
+      let { data: street, error: streetLookupError } = await admin
+        .from('streets')
+        .select('id, name, slug')
+        .eq('city_id', city.id)
+        .ilike('name', streetName)
+        .limit(1)
+        .maybeSingle();
+      if (streetLookupError) return NextResponse.json({ error: streetLookupError.message }, { status: 500 });
+
+      if (!street) {
+        const slugLookup = await admin.from('streets').select('id, name, slug').eq('city_id', city.id).eq('slug', standardStreetSlug).maybeSingle();
+        if (slugLookup.error) return NextResponse.json({ error: slugLookup.error.message }, { status: 500 });
+        street = slugLookup.data;
+      }
+
+      if (!street) {
+        const created = await admin.from('streets').insert({
+          name: streetName,
+          display_name: streetName,
+          slug: standardStreetSlug,
+          city_id: city.id,
+          country: country.slug,
+          province: province.slug,
+          city: city.slug,
+        }).select('id, name, slug').single();
+        if (created.error || !created.data) {
+          return NextResponse.json({ error: `Unable to create street: ${created.error?.message || 'Unknown error.'}` }, { status: 500 });
+        }
+        street = created.data;
+        createdStreet = true;
+      }
+      streetId = street.id;
     } else {
       if (!cityId || !streetId) {
         return NextResponse.json(
@@ -310,9 +366,10 @@ export async function PATCH(request: Request, context: RouteContext) {
         province_id: provinceId,
         city_id: cityId,
         street_id: streetId,
-        ...(usesAutomaticLocation && walkStreetNumber !== null
+        ...((usesAutomaticLocation || isCanada) && walkStreetNumber !== null
           ? { street_number: walkStreetNumber }
           : {}),
+        ...(isCanada ? { submitted_street_name: null } : {}),
       })
       .eq('id', id)
       .select('id, approved')

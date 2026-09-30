@@ -17,6 +17,7 @@ type ShopRecord = {
   province_id: string | null;
   city_id: string | null;
   street_id: string | null;
+  submitted_street_name: string | null;
   approved: boolean;
 };
 
@@ -34,6 +35,7 @@ export default function ReviewShopPage() {
   const shopId = params.id;
 
   const [shop, setShop] = useState<ShopRecord | null>(null);
+  const [canadaCountryId, setCanadaCountryId] = useState('');
   const [indiaCountryId, setIndiaCountryId] = useState('');
   const [usCountryId, setUsCountryId] = useState('');
   const [provinces, setProvinces] = useState<ProvinceOption[]>([]);
@@ -59,9 +61,11 @@ export default function ReviewShopPage() {
     [provinces, provinceId],
   );
 
+  const isCanada = Boolean(canadaCountryId && selectedProvince?.country_id === canadaCountryId);
   const isIndia = Boolean(indiaCountryId && selectedProvince?.country_id === indiaCountryId);
   const isUnitedStates = Boolean(usCountryId && selectedProvince?.country_id === usCountryId);
   const usesAutomaticLocation = isIndia || isUnitedStates;
+  const usesTypedStreet = isCanada || usesAutomaticLocation;
 
   useEffect(() => {
     let active = true;
@@ -82,16 +86,17 @@ export default function ReviewShopPage() {
         return;
       }
 
-      const [shopResult, provinceResult, indiaResult, usResult] = await Promise.all([
+      const [shopResult, provinceResult, canadaResult, indiaResult, usResult] = await Promise.all([
         supabase
           .from('shops')
-          .select('id, name, slug, address, description, parking, province_id, city_id, street_id, approved')
+          .select('id, name, slug, address, description, parking, province_id, city_id, street_id, submitted_street_name, approved')
           .eq('id', shopId)
           .maybeSingle(),
         supabase
           .from('provinces')
           .select('id, name, country_id')
           .order('name'),
+        supabase.from('countries').select('id').eq('slug', 'canada').maybeSingle(),
         supabase.from('countries').select('id').eq('slug', 'india').maybeSingle(),
         supabase.from('countries').select('id').eq('slug', 'united-states').maybeSingle(),
       ]);
@@ -116,6 +121,7 @@ export default function ReviewShopPage() {
       setCityId(record.city_id || '');
       setStreetId(record.street_id || '');
       setProvinces((provinceResult.data || []) as ProvinceOption[]);
+      setCanadaCountryId(canadaResult.data?.id || '');
       setIndiaCountryId(indiaId);
       setUsCountryId(usResult.data?.id || '');
 
@@ -148,7 +154,7 @@ export default function ReviewShopPage() {
       const [cityLookup, streetLookup] = await Promise.all(lookupTasks);
       if (!active) return;
       setCityName(cityLookup?.data?.name || '');
-      setStreetName(streetLookup?.data?.name || '');
+      setStreetName(record.submitted_street_name || streetLookup?.data?.name || '');
       setLoading(false);
     };
 
@@ -185,7 +191,7 @@ export default function ReviewShopPage() {
   useEffect(() => {
     let active = true;
 
-    if (!cityId || usesAutomaticLocation) {
+    if (!cityId || usesTypedStreet) {
       setStreets([]);
       return;
     }
@@ -204,7 +210,7 @@ export default function ReviewShopPage() {
     return () => {
       active = false;
     };
-  }, [cityId, usesAutomaticLocation]);
+  }, [cityId, usesTypedStreet]);
 
   const handleProvinceChange = (nextProvinceId: string) => {
     setProvinceId(nextProvinceId);
@@ -223,6 +229,11 @@ export default function ReviewShopPage() {
 
     if (usesAutomaticLocation && (!cityName.trim() || !streetName.trim())) {
       setError(`For ${isIndia ? 'India' : 'the United States'}, enter the city and public listing street / market.`);
+      setSaving(false);
+      return;
+    }
+    if (isCanada && (!cityId || !streetName.trim())) {
+      setError('For Canada, select the city and enter the public listing street / road.');
       setSaving(false);
       return;
     }
@@ -249,9 +260,9 @@ export default function ReviewShopPage() {
         parking,
         provinceId,
         cityId: usesAutomaticLocation ? '' : cityId,
-        streetId: usesAutomaticLocation ? '' : streetId,
+        streetId: usesTypedStreet ? '' : streetId,
         cityName: usesAutomaticLocation ? cityName : '',
-        streetName: usesAutomaticLocation ? streetName : '',
+        streetName: usesTypedStreet ? streetName : '',
       }),
     });
 
@@ -346,7 +357,7 @@ export default function ReviewShopPage() {
                 </label>
               )}
 
-              {usesAutomaticLocation ? (
+              {usesTypedStreet ? (
                 <label className="text-sm font-bold text-slate-700">{isIndia ? 'Public Listing Street / Market' : 'Public Listing Street / Road'}
                   <input
                     value={streetName}
@@ -369,9 +380,9 @@ export default function ReviewShopPage() {
               )}
             </div>
 
-            {usesAutomaticLocation && (
+            {usesTypedStreet && (
               <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
-                <strong>{isIndia ? 'India' : 'United States'} automatic location mode:</strong> enter the correct city and public street. When you save, LocalStreetShop will reuse matching records or create them under the selected {isIndia ? 'State / Union Territory' : 'State'}.
+                <strong>{isCanada ? 'Canada street verification' : isIndia ? 'India' : 'United States'}:</strong> {isCanada ? 'keep the selected Canadian city and verify the typed public street. When you save, LocalStreetShop will reuse a matching street or create it under that city.' : `enter the correct city and public street. When you save, LocalStreetShop will reuse matching records or create them under the selected ${isIndia ? 'State / Union Territory' : 'State'}.`}
               </div>
             )}
 

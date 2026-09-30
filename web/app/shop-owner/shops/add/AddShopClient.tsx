@@ -43,9 +43,11 @@ export default function AddShopClient() {
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedStreet, setSelectedStreet] = useState('');
+  const [canadaStreetName, setCanadaStreetName] = useState('');
 
   const selectedCountryName = countries.find((country) => country.id === selectedCountry)?.name || '';
   const isIndia = selectedCountryName.toLowerCase() === 'india';
+  const isCanada = selectedCountryName.toLowerCase() === 'canada';
   const isUnitedStates = ['united states', 'united states of america', 'usa', 'us'].includes(selectedCountryName.toLowerCase());
 
   useEffect(() => {
@@ -198,6 +200,7 @@ export default function AddShopClient() {
     setSelectedProvince('');
     setSelectedCity('');
     setSelectedStreet('');
+    setCanadaStreetName('');
     setProvinces([]);
     setCities([]);
     setStreets([]);
@@ -226,7 +229,7 @@ export default function AddShopClient() {
       !selectedCountry ||
       !selectedProvince ||
       !selectedCity ||
-      !selectedStreet
+      (isCanada ? !canadaStreetName.trim() : !selectedStreet)
     ) {
       setError(
         'Please complete the shop name, URL slug, address, country, province, city, and street.',
@@ -272,7 +275,8 @@ export default function AddShopClient() {
           countryId: selectedCountry,
           provinceId: selectedProvince,
           cityId: selectedCity,
-          streetId: selectedStreet,
+          streetId: isCanada ? '' : selectedStreet,
+          streetName: isCanada ? canadaStreetName.trim() : '',
         }),
       });
 
@@ -635,32 +639,44 @@ export default function AddShopClient() {
                   htmlFor="shop-street"
                   className="mb-2 block text-sm font-bold text-slate-700"
                 >
-                  Suggested Listing Street
+                  Street / Road
                 </label>
 
-                <select
-                  id="shop-street"
-                  value={selectedStreet}
-                  onChange={(event) =>
-                    setSelectedStreet(event.target.value)
-                  }
-                  required
-                  disabled={loading || !selectedCity}
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100"
-                >
-                  <option value="">Select the closest street</option>
-
-                  {streets.map((street) => (
-                    <option key={street.id} value={street.id}>
-                      {street.name}
-                    </option>
-                  ))}
-                </select>
-
-                <p className="mt-2 text-xs leading-5 text-slate-500">
-                  Choose the street from the official address. Our team will
-                  verify the final city and street placement before publishing.
-                </p>
+                {isCanada ? (
+                  <>
+                    <input
+                      id="shop-street"
+                      value={canadaStreetName}
+                      onChange={(event) => setCanadaStreetName(event.target.value)}
+                      required
+                      disabled={loading || !selectedCity}
+                      placeholder="e.g. King Street West"
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100"
+                    />
+                    <p className="mt-2 text-xs leading-5 text-slate-500">
+                      Type the street or road from your official business address. It does not need to already exist on LocalStreetShop. We will verify it and reuse or create the street during admin review.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <select
+                      id="shop-street"
+                      value={selectedStreet}
+                      onChange={(event) => setSelectedStreet(event.target.value)}
+                      required
+                      disabled={loading || !selectedCity}
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100"
+                    >
+                      <option value="">Select the closest street</option>
+                      {streets.map((street) => (
+                        <option key={street.id} value={street.id}>{street.name}</option>
+                      ))}
+                    </select>
+                    <p className="mt-2 text-xs leading-5 text-slate-500">
+                      Choose the street from the official address. Our team will verify the final city and street placement before publishing.
+                    </p>
+                  </>
+                )}
               </div>
                 </>
               )}

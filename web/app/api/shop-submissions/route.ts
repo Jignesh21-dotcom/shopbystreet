@@ -13,6 +13,7 @@ type SubmitShopPayload = {
   provinceId?: unknown;
   cityId?: unknown;
   streetId?: unknown;
+  streetName?: unknown;
 };
 
 const getString = (value: unknown) =>
@@ -96,6 +97,7 @@ export async function POST(request: Request) {
     const provinceId = getString(body.provinceId);
     const cityId = getString(body.cityId);
     const streetId = getString(body.streetId);
+    const submittedStreetName = getString(body.streetName);
 
     if (
       !name ||
@@ -103,8 +105,7 @@ export async function POST(request: Request) {
       !address ||
       !countryId ||
       !provinceId ||
-      !cityId ||
-      !streetId
+      !cityId
     ) {
       return NextResponse.json(
         {
@@ -126,64 +127,47 @@ export async function POST(request: Request) {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    const [countryResult, provinceResult, cityResult, streetResult] =
-      await Promise.all([
-        admin.from('countries').select('id, name').eq('id', countryId).maybeSingle(),
-        admin
-          .from('provinces')
-          .select('id, name, country_id')
-          .eq('id', provinceId)
-          .maybeSingle(),
-        admin
-          .from('cities')
-          .select('id, name, province_id')
-          .eq('id', cityId)
-          .maybeSingle(),
-        admin
-          .from('streets')
-          .select('id, name, city_id')
-          .eq('id', streetId)
-          .maybeSingle(),
-      ]);
+    const [countryResult, provinceResult, cityResult] = await Promise.all([
+      admin.from('countries').select('id, name, slug').eq('id', countryId).maybeSingle(),
+      admin.from('provinces').select('id, name, slug, country_id').eq('id', provinceId).maybeSingle(),
+      admin.from('cities').select('id, name, slug, province_id').eq('id', cityId).maybeSingle(),
+    ]);
 
-    const locationError =
-      countryResult.error ||
-      provinceResult.error ||
-      cityResult.error ||
-      streetResult.error;
-
+    const locationError = countryResult.error || provinceResult.error || cityResult.error;
     if (locationError) {
-      return NextResponse.json(
-        { error: `Unable to verify the selected location: ${locationError.message}` },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: `Unable to verify the selected location: ${locationError.message}` }, { status: 500 });
     }
 
     const country = countryResult.data;
     const province = provinceResult.data;
     const city = cityResult.data;
-    const street = streetResult.data;
+    if (!country || !province || !city || province.country_id !== country.id || city.province_id !== province.id) {
+      return NextResponse.json({ error: 'The selected country, province, and city do not match.' }, { status: 400 });
+    }
 
-    if (
-      !country ||
-      !province ||
-      !city ||
-      !street ||
-      province.country_id !== country.id ||
-      city.province_id !== province.id ||
-      street.city_id !== city.id
-    ) {
-      return NextResponse.json(
-        { error: 'The selected country, province, city, and street do not match.' },
-        { status: 400 },
-      );
+    const isCanada = country.slug === 'canada';
+    if (isCanada && !submittedStreetName) {
+      return NextResponse.json({ error: 'Please enter the street or road from the official business address.' }, { status: 400 });
+    }
+    if (!isCanada && !streetId) {
+      return NextResponse.json({ error: 'Please select a street.' }, { status: 400 });
+    }
+
+    let street: { id: string; name: string; city_id: string } | null = null;
+    if (!isCanada) {
+      const streetResult = await admin.from('streets').select('id, name, city_id').eq('id', streetId).maybeSingle();
+      if (streetResult.error) return NextResponse.json({ error: streetResult.error.message }, { status: 500 });
+      street = streetResult.data;
+      if (!street || street.city_id !== city.id) {
+        return NextResponse.json({ error: 'The selected street does not match the selected city.' }, { status: 400 });
+      }
     }
 
     const { data: existingSubmission, error: duplicateError } = await admin
       .from('shops')
       .select('id, name, approved')
       .eq('owner_id', authData.user.id)
-      .eq('street_id', streetId)
+      .eq('city_id', cityId)
       .ilike('name', name)
       .ilike('address', address)
       .limit(1)
@@ -232,7 +216,8 @@ export async function POST(request: Request) {
       .insert({
         name,
         slug: finalSlug,
-        street_id: streetId,
+        street_id: isCanada ? null : streetId,
+        submitted_street_name: isCanada ? submittedStreetName : null,
         city_id: cityId,
         province_id: provinceId,
         address,
@@ -287,7 +272,7 @@ export async function POST(request: Request) {
             `Shop: ${name}`,
             `Owner: ${ownerEmail}`,
             `Address: ${address}`,
-            `Street: ${street.name}`,
+            `Street: ${isCanada ? submittedStreetName : street?.name || ''}`,
             `City: ${city.name}`,
             `Province: ${province.name}`,
             `Country: ${country.name}`,
@@ -299,7 +284,7 @@ export async function POST(request: Request) {
             <p><strong>Shop:</strong> ${escapeHtml(name)}</p>
             <p><strong>Owner:</strong> ${escapeHtml(ownerEmail)}</p>
             <p><strong>Address:</strong> ${escapeHtml(address)}</p>
-            <p><strong>Street:</strong> ${escapeHtml(street.name || '')}</p>
+            <p><strong>Street:</strong> ${escapeHtml(isCanada ? submittedStreetName : street?.name || '')}</p>
             <p><strong>City:</strong> ${escapeHtml(city.name || '')}</p>
             <p><strong>Province:</strong> ${escapeHtml(province.name || '')}</p>
             <p><strong>Country:</strong> ${escapeHtml(country.name || '')}</p>
