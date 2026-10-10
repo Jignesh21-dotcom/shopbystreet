@@ -1,8 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import TurnstileCaptcha from '@/app/components/TurnstileCaptcha';
 import { supabase } from '@/lib/supabaseClient';
 import SEO from '@/app/components/SEO';
 
@@ -25,6 +26,11 @@ export default function LoginPage() {
 
   const [isSignUp, setIsSignUp] = useState(false);
   const [showReset, setShowReset] = useState(false);
+
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
+  const authInFlight = useRef(false);
+  const [authLoading, setAuthLoading] = useState(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -111,99 +117,102 @@ export default function LoginPage() {
     setIsSignUp(false);
     setShowReset(false);
     resetForm();
+    setCaptchaToken('');
+    setCaptchaResetKey((value) => value + 1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (authInFlight.current) return;
     setMessage(null);
+    if (!captchaToken) {
+      setMessage('Please complete the verification before continuing.');
+      return;
+    }
 
+    authInFlight.current = true;
+    setAuthLoading(true);
     const cleanEmail = email.trim().toLowerCase();
 
-    if (showReset) {
-      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-        redirectTo: `${getAuthRedirectBase()}/update-password`,
-      });
-
-      if (error) {
-        setMessage(`❌ ${error.message}`);
-      } else {
-        setResetEmail(cleanEmail);
-        setResetSuccess(true);
-        setEmail('');
+    try {
+      if (showReset) {
+        const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+          redirectTo: `${getAuthRedirectBase()}/update-password`,
+          captchaToken,
+        });
+        if (error) {
+          setMessage(`❌ ${error.message}`);
+        } else {
+          setResetEmail(cleanEmail);
+          setResetSuccess(true);
+          setEmail('');
+        }
+        return;
       }
 
-      return;
-    }
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password,
+          options: {
+            captchaToken,
+            emailRedirectTo: `${getAuthRedirectBase()}/login?verified=true`,
+            data: {
+              username: username.trim(),
+              isShopOwner: role === 'owner',
+              shopStatus: role === 'owner' ? 'pendingPayment' : null,
+            },
+          },
+        });
+        if (error) {
+          setMessage(`❌ ${error.message}`);
+        } else {
+          setSubmittedEmail(cleanEmail);
+          setSubmittedRole(role);
+          setSignupSuccess(true);
+          resetForm();
+        }
+        return;
+      }
 
-    if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
+      const { data: signInData, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password,
-        options: {
-          emailRedirectTo: `${getAuthRedirectBase()}/login?verified=true`,
-          data: {
-            username: username.trim(),
-            isShopOwner: role === 'owner',
-            shopStatus: role === 'owner' ? 'pendingPayment' : null,
-          },
-        },
+        options: { captchaToken },
       });
-
       if (error) {
         setMessage(`❌ ${error.message}`);
-      } else {
-        setSubmittedEmail(cleanEmail);
-        setSubmittedRole(role);
-        setSignupSuccess(true);
-        resetForm();
+        return;
       }
-
-      return;
-    }
-
-    const {
-      data: signInData,
-      error,
-    } = await supabase.auth.signInWithPassword({
-      email: cleanEmail,
-      password,
-    });
-
-    if (error) {
-      setMessage(`❌ ${error.message}`);
-      return;
-    }
-
-    const signedInUser = signInData.user;
-
-    if (!signedInUser) {
-      setMessage('❌ Login succeeded, but the user session could not be loaded.');
-      return;
-    }
-
-    setMessage('✅ Logged in successfully! Redirecting...');
-
-    const { data: adminResult, error: adminError } = await supabase.rpc(
-      'is_admin',
-    );
-
-    if (!adminError && adminResult) {
-      router.push('/admin');
+      const signedInUser = signInData.user;
+      if (!signedInUser) {
+        setMessage('❌ Login succeeded, but the user session could not be loaded.');
+        return;
+      }
+      setMessage('✅ Logged in successfully! Redirecting...');
+      const { data: adminResult, error: adminError } = await supabase.rpc('is_admin');
+      if (!adminError && adminResult) {
+        router.push('/admin');
+      } else if (signedInUser.user_metadata?.isShopOwner) {
+        router.push('/shop-owner/dashboard');
+      } else {
+        router.push('/profile');
+      }
       router.refresh();
-      return;
+    } catch {
+      setMessage(showReset
+        ? 'Unable to request a password reset. Please try again.'
+        : isSignUp
+        ? 'Unable to create your account. Please try again.'
+        : 'Unable to log in. Please try again.');
+    } finally {
+      authInFlight.current = false;
+      setAuthLoading(false);
+      setCaptchaToken('');
+      setCaptchaResetKey((value) => value + 1);
     }
-
-    if (signedInUser.user_metadata?.isShopOwner) {
-      router.push('/shop-owner/dashboard');
-      router.refresh();
-      return;
-    }
-
-    router.push('/profile');
-    router.refresh();
   };
 
-  
 
   const pageTitle = showReset
     ? 'Reset Password | LocalStreetShop'
@@ -386,88 +395,93 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  {isSignUp && !showReset && (
-                    <>
-                      <div>
-                        <label className="mb-1 block text-sm font-semibold text-gray-700">
-                          Username
-                        </label>
-                        <input
-                          type="text"
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value)}
-                          className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                          required
-                        />
-                      </div>
+                <form onSubmit={handleSubmit}>
+                  <fieldset disabled={authLoading} className="space-y-5">
+                    {isSignUp && !showReset && (
+                      <>
+                        <div>
+                          <label className="mb-1 block text-sm font-semibold text-gray-700">
+                            Username
+                          </label>
+                          <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            required
+                          />
+                        </div>
 
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <button
-                          type="button"
-                          onClick={() => setRole('member')}
-                          className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
-                            role === 'member'
-                              ? 'border-blue-600 bg-blue-50 text-blue-700'
-                              : 'border-gray-200 bg-white text-gray-700'
-                          }`}
-                        >
-                          👤 Shopper
-                        </button>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <button
+                            type="button"
+                            onClick={() => setRole('member')}
+                            className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
+                              role === 'member'
+                                ? 'border-blue-600 bg-blue-50 text-blue-700'
+                                : 'border-gray-200 bg-white text-gray-700'
+                            }`}
+                          >
+                            👤 Shopper
+                          </button>
 
-                        <button
-                          type="button"
-                          onClick={() => setRole('owner')}
-                          className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
-                            role === 'owner'
-                              ? 'border-blue-600 bg-blue-50 text-blue-700'
-                              : 'border-gray-200 bg-white text-gray-700'
-                          }`}
-                        >
-                          🏪 Shop Owner
-                        </button>
-                      </div>
-                    </>
-                  )}
+                          <button
+                            type="button"
+                            onClick={() => setRole('owner')}
+                            className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
+                              role === 'owner'
+                                ? 'border-blue-600 bg-blue-50 text-blue-700'
+                                : 'border-gray-200 bg-white text-gray-700'
+                            }`}
+                          >
+                            🏪 Shop Owner
+                          </button>
+                        </div>
+                      </>
+                    )}
 
-                  <div>
-                    <label className="mb-1 block text-sm font-semibold text-gray-700">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      required
-                    />
-                  </div>
-
-                  {!showReset && (
                     <div>
                       <label className="mb-1 block text-sm font-semibold text-gray-700">
-                        Password
+                        Email
                       </label>
                       <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                       />
                     </div>
-                  )}
 
-                  <button
-                    type="submit"
-                    className="w-full rounded-full bg-blue-600 py-3 font-semibold text-white shadow transition hover:bg-blue-700"
-                  >
-                    {showReset
-                      ? 'Send Reset Link'
-                      : isSignUp
-                      ? 'Create Account'
-                      : 'Login'}
-                  </button>
+                    {!showReset && (
+                      <div>
+                        <label className="mb-1 block text-sm font-semibold text-gray-700">
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+                    )}
+
+                    <TurnstileCaptcha onTokenChange={setCaptchaToken} resetKey={captchaResetKey} />
+
+                    <button
+                      disabled={authLoading || !captchaToken}
+                      type="submit"
+                      className="w-full rounded-full bg-blue-600 py-3 font-semibold text-white shadow transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {showReset
+                        ? 'Send Reset Link'
+                        : isSignUp
+                        ? 'Create Account'
+                        : 'Login'}
+                    </button>
+                  </fieldset>
                 </form>
 
                 {message && (
@@ -485,8 +499,11 @@ export default function LoginPage() {
                 {!showReset && (
                   <div className="mt-5 text-center">
                     <button
+                      disabled={authLoading}
                       onClick={() => {
                         setShowReset(true);
+                        setCaptchaToken('');
+                        setCaptchaResetKey((value) => value + 1);
                         setMessage(null);
                       }}
                       className="text-sm font-semibold text-blue-600 hover:underline"
@@ -499,9 +516,12 @@ export default function LoginPage() {
                 <div className="mt-6 text-center">
                   {showReset ? (
                     <button
+                      disabled={authLoading}
                       className="text-sm font-semibold text-blue-600 hover:underline"
                       onClick={() => {
                         setShowReset(false);
+                        setCaptchaToken('');
+                        setCaptchaResetKey((value) => value + 1);
                         setMessage(null);
                       }}
                     >
@@ -511,9 +531,12 @@ export default function LoginPage() {
                     <p className="text-sm text-gray-600">
                       Already have an account?{' '}
                       <button
+                        disabled={authLoading}
                         className="font-semibold text-blue-600 hover:underline"
                         onClick={() => {
                           setIsSignUp(false);
+                          setCaptchaToken('');
+                          setCaptchaResetKey((value) => value + 1);
                           setMessage(null);
                         }}
                       >
@@ -524,9 +547,12 @@ export default function LoginPage() {
                     <p className="text-sm text-gray-600">
                       Don&apos;t have an account?{' '}
                       <button
+                        disabled={authLoading}
                         className="font-semibold text-blue-600 hover:underline"
                         onClick={() => {
                           setIsSignUp(true);
+                          setCaptchaToken('');
+                          setCaptchaResetKey((value) => value + 1);
                           setMessage(null);
                         }}
                       >
