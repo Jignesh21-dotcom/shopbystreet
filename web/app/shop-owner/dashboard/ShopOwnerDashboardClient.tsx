@@ -435,7 +435,10 @@ export default function ShopOwnerDashboardClient() {
         <h1 className="mb-4 text-2xl font-bold text-blue-700 sm:text-3xl">🛍️ Shop Owner Dashboard</h1>
 
         <p className="text-gray-700 mb-6">
-          Welcome, <strong>{user?.email}</strong>! This is your shop management area.
+          Welcome{user?.email && <>, <strong className="break-all">{user.email}</strong></>}!{' '}
+          {!loading && !errorMessage && shops.length === 0
+            ? 'Your account is ready. Complete your business setup below.'
+            : 'This is your shop management area.'}
         </p>
 
         {loading ? (
@@ -446,36 +449,59 @@ export default function ShopOwnerDashboardClient() {
           </div>
         ) : shops.length === 0 ? (
           <>
-            <FoundingProgramBanner />
-
-            <div className="bg-yellow-100 border border-yellow-300 p-4 rounded-lg text-yellow-800">
-              <p className="font-semibold">🚨 You have not added or claimed a shop yet.</p>
-
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Link
-                  href="/shop-owner/claim"
-                  className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full font-semibold transition"
-                >
-                  🔍 Claim Existing Shop
-                </Link>
-
-                <Link
-                  href="/shop-owner/shops/add"
-                  className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-semibold transition"
-                >
-                  ➕ Add New Shop
-                </Link>
-              </div>
-
-              <TierNotice
-                usageText="Claim a shop to unlock 100 free uploads."
-                borderClassName="border-yellow-300"
-              />
-
-              <p className="mt-3 text-sm text-gray-600">
-                If your shop is already listed, claim it. If not, add it as a new shop.
+            <section aria-labelledby="shop-setup-heading" className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-5 sm:p-7">
+              <p className="text-sm font-semibold text-blue-700">Your next step</p>
+              <h2 id="shop-setup-heading" className="mt-2 text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                Welcome! Let’s get your business listed.
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-700 sm:text-base">
+                Your account is ready. Creating an account does not publish a business listing.
+                Add or claim your shop so customers can find your business on LocalStreetShop.
               </p>
-            </div>
+              <p className="mt-3 text-sm font-semibold text-green-800">
+                Free business listing · Showcase up to 100 products during Phase 1
+              </p>
+              <ol aria-label="Business listing setup progress" className="mt-6 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
+                <li className="rounded-xl border border-green-200 bg-green-50 p-3 text-green-800">
+                  <span className="font-bold">✓ Account created</span>
+                  <span className="mt-1 block text-xs">Complete</span>
+                </li>
+                <li aria-current="step" className="rounded-xl border-2 border-blue-600 bg-white p-3 text-blue-900">
+                  <span className="font-bold">2. Add or claim shop</span>
+                  <span className="mt-1 block text-xs">Your next step</span>
+                </li>
+                <li className="rounded-xl border border-slate-200 bg-white p-3 text-slate-600">
+                  <span className="font-bold">3. Review</span>
+                  <span className="mt-1 block text-xs">We review your submission</span>
+                </li>
+                <li className="rounded-xl border border-slate-200 bg-white p-3 text-slate-600">
+                  <span className="font-bold">4. Live listing</span>
+                  <span className="mt-1 block text-xs">Customers can find your shop</span>
+                </li>
+              </ol>
+              <div className="mt-6 rounded-xl border border-blue-100 bg-white p-4 sm:p-5">
+                <h3 className="font-bold text-slate-900">Check whether your business is already listed</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Search for your shop first. If it is already on LocalStreetShop,
+                  request to claim it so you can manage its information.
+                </p>
+                <Link href="/shop-owner/claim" className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-blue-700 px-6 py-3 font-bold text-white transition hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 sm:w-auto">
+                  Find my business →
+                </Link>
+                <div className="mt-5 border-t border-slate-200 pt-4">
+                  <p className="text-sm text-slate-600">Can’t find your shop? Create a new listing.</p>
+                  <Link href="/shop-owner/shops/add" className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-blue-300 bg-white px-5 py-3 font-semibold text-blue-800 transition hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 sm:w-auto">
+                    Add a new business
+                  </Link>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-slate-600">
+                Already requested a claim?{' '}
+                <Link href="/shop-owner/claim" className="font-semibold text-blue-700 underline hover:text-blue-900">Check your claim status</Link>
+                . Your listing or ownership update becomes active after approval.
+              </p>
+            </section>
+            <FoundingProgramBanner />
           </>
         ) : (
           <>
