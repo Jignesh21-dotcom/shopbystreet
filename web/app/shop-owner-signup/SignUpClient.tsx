@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
+import TurnstileCaptcha from '@/app/components/TurnstileCaptcha';
 import { supabase } from '@/lib/supabaseClient';
 
 const getAuthRedirectBase = () => {
@@ -19,6 +20,10 @@ const getAuthRedirectBase = () => {
 };
 
 export default function SignUpClient() {
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
+  const signupInFlight = useRef(false);
+
   const [email, setEmail] = useState('');
   const [submittedEmail, setSubmittedEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,36 +35,50 @@ export default function SignUpClient() {
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (signupInFlight.current) return;
+    if (!captchaToken) {
+      setError('Please complete the verification before creating your account.');
+      return;
+    }
+    signupInFlight.current = true;
     setLoading(true);
     setError('');
 
     const cleanEmail = email.trim().toLowerCase();
 
-    const { error } = await supabase.auth.signUp({
-      email: cleanEmail,
-      password,
-      options: {
-        emailRedirectTo: `${getAuthRedirectBase()}/login?verified=true`,
-        data: {
-          username: username.trim(),
-          isShopOwner: role === 'owner',
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: cleanEmail,
+        password,
+        options: {
+          captchaToken,
+          emailRedirectTo: `${getAuthRedirectBase()}/login?verified=true`,
+          data: {
+            username: username.trim(),
+            isShopOwner: role === 'owner',
+          },
         },
-      },
-    });
+      });
 
-    if (error) {
-      setError(error.message || 'Unable to create your account. Please try again.');
+      if (error) {
+        setError(error.message || 'Unable to create your account. Please try again.');
+        return;
+      }
+
+      setSubmittedEmail(cleanEmail);
+      setSuccess(true);
+      setEmail('');
+      setPassword('');
+      setUsername('');
+      setRole('member');
+    } catch {
+      setError('Unable to create your account. Please try again.');
+    } finally {
+      signupInFlight.current = false;
       setLoading(false);
-      return;
+      setCaptchaToken('');
+      setCaptchaResetKey((value) => value + 1);
     }
-
-    setSubmittedEmail(cleanEmail);
-    setSuccess(true);
-    setEmail('');
-    setPassword('');
-    setUsername('');
-    setRole('member');
-    setLoading(false);
   };
 
   return (
@@ -123,76 +142,80 @@ export default function SignUpClient() {
               Join LocalStreetShop as a shopper or shop owner.
             </p>
 
-            <form onSubmit={handleSignUp} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                autoComplete="username"
-                className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
+            <form onSubmit={handleSignUp}>
+              <fieldset disabled={loading} className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  autoComplete="username"
+                  className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => setRole('member')}
+                    className={`rounded-2xl border p-4 text-center transition ${
+                      role === 'member'
+                        ? 'border-blue-600 bg-blue-50 text-blue-900'
+                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="block font-bold">👤 Shopper</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setRole('owner')}
+                    className={`rounded-2xl border p-4 text-center transition ${
+                      role === 'owner'
+                        ? 'border-blue-600 bg-blue-50 text-blue-900'
+                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="block font-bold">🏪 Shop Owner</span>
+                  </button>
+                </div>
+
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+
+                <TurnstileCaptcha onTokenChange={setCaptchaToken} resetKey={captchaResetKey} />
+
+                {error && (
+                  <p className="rounded-xl bg-red-50 px-4 py-3 text-center text-sm text-red-600">
+                    {error}
+                  </p>
+                )}
+
                 <button
-                  type="button"
-                  onClick={() => setRole('member')}
-                  className={`rounded-2xl border p-4 text-center transition ${
-                    role === 'member'
-                      ? 'border-blue-600 bg-blue-50 text-blue-900'
-                      : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                  }`}
+                  type="submit"
+                  disabled={loading || !captchaToken}
+                  className="w-full rounded-full bg-blue-700 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  <span className="block font-bold">👤 Shopper</span>
+                  {loading ? 'Creating Account...' : 'Create Account'}
                 </button>
-
-                <button
-                  type="button"
-                  onClick={() => setRole('owner')}
-                  className={`rounded-2xl border p-4 text-center transition ${
-                    role === 'owner'
-                      ? 'border-blue-600 bg-blue-50 text-blue-900'
-                      : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="block font-bold">🏪 Shop Owner</span>
-                </button>
-              </div>
-
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
-
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="new-password"
-                className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
-
-              {error && (
-                <p className="rounded-xl bg-red-50 px-4 py-3 text-center text-sm text-red-600">
-                  {error}
-                </p>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-full bg-blue-700 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? 'Creating Account...' : 'Create Account'}
-              </button>
+              </fieldset>
             </form>
 
             <p className="mt-6 text-center text-sm text-gray-600">
