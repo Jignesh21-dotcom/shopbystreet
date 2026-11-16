@@ -395,7 +395,7 @@ export default function IndiaStreetClient({
                             <img
                               src={safeImageUrl}
                               alt={`${shop.name} storefront`}
-                              className="h-44 w-full object-cover transition duration-300 group-hover:scale-105"
+                              className="h-44 w-full bg-slate-50 object-contain p-2 transition duration-300 group-hover:scale-[1.02]"
                               loading="lazy"
                             />
                           ) : (

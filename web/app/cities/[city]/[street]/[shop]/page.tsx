@@ -127,7 +127,7 @@ export default async function ShopPage({ params }: ShopPageProps) {
                 <img
                   src={business.image_url}
                   alt={`${business.name} storefront`}
-                  className="h-80 w-full object-cover"
+                  className="h-80 w-full bg-slate-50 object-contain p-3"
                 />
               </div>
             )}

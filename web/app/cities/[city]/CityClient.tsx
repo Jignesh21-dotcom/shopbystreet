@@ -40,7 +40,8 @@ export default function CityClient({
   const highlightText = (name: string) => {
     if (!search) return name;
 
-    const parts = name.split(new RegExp(`(${search})`, 'gi'));
+    const escapedSearch = search.replace(/[^a-zA-Z0-9 ]/g, (character) => `\\${character}`);
+    const parts = name.split(new RegExp(`(${escapedSearch})`, 'gi'));
 
     return (
       <>
@@ -151,8 +152,17 @@ export default function CityClient({
                   href={`/cities/${citySlug}/${street.slug}`}
                   className="group bg-white border border-gray-200 rounded-3xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
                 >
-                  <div className="h-32 bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
-                    <span className="text-white text-5xl">🏬</span>
+                  <div className="relative h-32 overflow-hidden bg-slate-100" aria-hidden="true">
+                    <svg viewBox="0 0 400 130" preserveAspectRatio="xMidYMid slice" className="h-full w-full">
+                      <rect width="400" height="130" fill="#eef3f8" />
+                      <path d="M0 22 L400 100 M65 0 L175 130 M250 0 L350 130 M0 112 L400 10" stroke="white" strokeWidth="19" fill="none" />
+                      <path d="M0 22 L400 100 M65 0 L175 130 M250 0 L350 130 M0 112 L400 10" stroke="#d5dfe9" strokeWidth="2" fill="none" />
+                      <path d="M10 70 L85 85 L62 130 L0 130 Z M290 0 L365 0 L380 28 L310 39 Z" fill="#bde8c2" />
+                      <path d="M0 112 L400 10" stroke="#f6d68c" strokeWidth="9" fill="none" />
+                      <circle cx="200" cy="79" r="21" fill="#60a5fa" opacity=".35" />
+                      <path d="M200 20 C170 20 164 48 174 66 L200 104 L226 66 C236 48 230 20 200 20Z" fill="#e33434" stroke="#b91c1c" strokeWidth="2" />
+                      <circle cx="200" cy="49" r="11" fill="white" />
+                    </svg>
                   </div>
 
                   <div className="p-6">
@@ -161,7 +171,7 @@ export default function CityClient({
                     </h3>
 
                     <p className="text-gray-600 mb-4">
-                      {(street.shop_count ?? 0).toLocaleString()} businesses
+                      {(street.shop_count ?? 0).toLocaleString()} {(street.shop_count ?? 0) === 1 ? "business" : "businesses"}
                     </p>
 
                     {street.featured_business && (

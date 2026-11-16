@@ -259,7 +259,7 @@ export default function IndiaStreetClient({
                           className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
                         >
                           {safeImageUrl ? (
-                            <img src={safeImageUrl} alt={`${shop.name} storefront`} className="h-44 w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />
+                            <img src={safeImageUrl} alt={`${shop.name} storefront`} className="h-44 w-full bg-slate-50 object-contain p-2 transition duration-300 group-hover:scale-[1.02]" loading="lazy" />
                           ) : (
                             <div className="flex h-44 w-full items-center justify-center bg-gradient-to-br from-orange-50 to-green-50 px-6 text-center text-sm font-semibold text-slate-500">
                               Storefront photo coming soon

@@ -140,7 +140,7 @@ export default async function IndiaShopPage({ params }: PageProps) {
             <img
               src={shop.image_url}
               alt={`${shop.name} storefront`}
-              className="h-80 w-full object-cover"
+              className="h-80 w-full bg-slate-50 object-contain p-3"
             />
           )}
 

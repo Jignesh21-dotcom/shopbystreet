@@ -84,7 +84,7 @@ export default async function IndiaShopPage({ params }: PageProps) {
         <Link href={streetHref} className="font-bold text-orange-700 hover:underline">← Back to {street.name}</Link>
 
         <section className="mt-6 overflow-hidden rounded-[2rem] border border-orange-100 bg-white shadow-xl">
-          {shop.image_url && <img src={shop.image_url} alt={`${shop.name} storefront`} className="h-80 w-full object-cover" />}
+          {shop.image_url && <img src={shop.image_url} alt={`${shop.name} storefront`} className="h-80 w-full bg-slate-50 object-contain p-3" />}
 
           <div className="bg-gradient-to-r from-orange-600 to-green-700 p-8 text-white sm:p-10">
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-100">Gujarat Local Business</p>

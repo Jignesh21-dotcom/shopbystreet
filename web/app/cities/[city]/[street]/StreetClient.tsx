@@ -321,7 +321,7 @@ export default function StreetClient({
                             <img
                               src={safeImageUrl}
                               alt={`${shop.name} storefront`}
-                              className="h-44 w-full object-cover transition duration-300 group-hover:scale-105"
+                              className="h-44 w-full bg-slate-50 object-contain p-2 transition duration-300 group-hover:scale-[1.02]"
                               loading="lazy"
                             />
                           ) : (
@@ -349,7 +349,7 @@ export default function StreetClient({
 
                             {!isKitchenerDemo && (
                               <>
-                                <p className="mt-3 text-sm leading-6 text-slate-600">
+                                <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
                                   {shop.description ||
                                     shop.address ||
                                     'Address details coming soon.'}

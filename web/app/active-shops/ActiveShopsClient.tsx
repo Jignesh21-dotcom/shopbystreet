@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import SEO from '@/app/components/SEO';
 import { supabase } from '@/lib/supabaseClient';
+import { broadCategory } from './broadCategories';
 
 type Location = {
   slug: string;
@@ -16,6 +17,7 @@ type ActiveShop = {
   name: string;
   slug: string;
   category: string | null;
+  broadCategory: string;
   address: string | null;
   imageUrl: string | null;
   street: Location;
@@ -129,6 +131,7 @@ export default function ActiveShopsClient() {
           name: row.name,
           slug: row.slug,
           category: row.category || null,
+          broadCategory: broadCategory(row.name || '', row.category),
           address: row.address || null,
           imageUrl: row.image_url || null,
           street: { slug: street.slug, name: street.name },
@@ -170,7 +173,7 @@ export default function ActiveShopsClient() {
 
   const categories = useMemo(
     () =>
-      [...new Set(shops.map((shop) => shop.category).filter(Boolean) as string[])].sort(
+      [...new Set(shops.map((shop) => shop.broadCategory).filter(Boolean) as string[])].sort(
         (a, b) => a.localeCompare(b)
       ),
     [shops]
@@ -181,7 +184,7 @@ export default function ActiveShopsClient() {
       shops.filter(
         (shop) =>
           (cityFilter === 'all' || shop.city.slug === cityFilter) &&
-          (categoryFilter === 'all' || shop.category === categoryFilter) &&
+          (categoryFilter === 'all' || shop.broadCategory === categoryFilter) &&
           (!productsOnly || shop.productCount > 0)
       ),
     [categoryFilter, cityFilter, productsOnly, shops]
@@ -356,7 +359,7 @@ export default function ActiveShopsClient() {
                       <h3 className="mt-4 text-xl font-extrabold text-slate-950 transition group-hover:text-blue-700">
                         {shop.name}
                       </h3>
-                      {shop.category && <p className="mt-1 text-sm font-medium text-slate-500">{shop.category}</p>}
+                      {<p className="mt-1 text-sm font-medium text-slate-500">{shop.broadCategory}</p>}
                       <p className="mt-3 text-sm leading-6 text-slate-600">
                         {shop.street.name}, {shop.city.name}
                       </p>

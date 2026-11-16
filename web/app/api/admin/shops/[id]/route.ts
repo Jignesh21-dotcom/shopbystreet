@@ -27,6 +27,28 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)+/g, '');
 
+// Normalize a street label without changing its database ID or existing URL.
+// If the value looks like an address, use the address's street component.
+// Never strip the leading number from a numbered street such as "123 Street".
+const normalizeStreetName = (input: string) => {
+  const firstLine = input.split(',')[0].trim().replace(/\s+/g, ' ');
+  const streetTypes = '(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl|Crescent|Cres|Way|Highway|Hwy|Parkway|Pkwy|Terrace|Trail|Circle|Close)';
+  const houseNumber = new RegExp(`^\\d{1,6}[A-Za-z]?(?:[-/]\\d{1,6})?\\s+(?=.+\\s+${streetTypes}\\b)`, 'i');
+  return firstLine.replace(houseNumber, '').trim();
+};
+
+// Common abbreviations must match existing streets within the same city.
+// Preserve directional suffixes (E/W/N/S) to avoid merging distinct streets.
+const streetKey = (name: string) => normalizeStreetName(name)
+  .toLowerCase()
+  .replace(/\bave\b/g, 'avenue').replace(/\bst\b/g, 'street')
+  .replace(/\brd\b/g, 'road').replace(/\bblvd\b/g, 'boulevard')
+  .replace(/\bdr\b/g, 'drive').replace(/\bln\b/g, 'lane')
+  .replace(/\bct\b/g, 'court').replace(/\bpl\b/g, 'place')
+  .replace(/\bcres\b/g, 'crescent').replace(/\bhwy\b/g, 'highway')
+  .replace(/\bpkwy\b/g, 'parkway')
+  .replace(/[^a-z0-9]+/g, ' ').trim();
+
 const deriveStreetNumber = (address: string, streetName: string) => {
   let source = address.replace(/\b\d{6}\b/g, ' ');
   const lowerSource = source.toLowerCase();
@@ -87,7 +109,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     let cityId = getString(body.cityId);
     let streetId = getString(body.streetId);
     const cityName = getString(body.cityName);
-    const streetName = getString(body.streetName);
+    const streetName = normalizeStreetName(getString(body.streetName));
 
     if (!id || !name || !slug || !address || !provinceId) {
       return NextResponse.json(
@@ -242,6 +264,14 @@ export async function PATCH(request: Request, context: RouteContext) {
       }
 
       if (!street) {
+        const candidates = await admin.from('streets').select('id, name, slug').eq('city_id', city.id);
+        if (candidates.error) return NextResponse.json({ error: candidates.error.message }, { status: 500 });
+        const matches = (candidates.data || []).filter((candidate) => streetKey(candidate.name) === streetKey(streetName));
+        if (matches.length > 1) return NextResponse.json({ error: 'Multiple matching streets exist. Please resolve the duplicate records before approving.' }, { status: 409 });
+        if (matches.length === 1) street = matches[0];
+      }
+
+      if (!street) {
         const created = await admin
           .from('streets')
           .insert({
@@ -303,6 +333,14 @@ export async function PATCH(request: Request, context: RouteContext) {
         const slugLookup = await admin.from('streets').select('id, name, slug').eq('city_id', city.id).eq('slug', standardStreetSlug).maybeSingle();
         if (slugLookup.error) return NextResponse.json({ error: slugLookup.error.message }, { status: 500 });
         street = slugLookup.data;
+      }
+
+      if (!street) {
+        const candidates = await admin.from('streets').select('id, name, slug').eq('city_id', city.id);
+        if (candidates.error) return NextResponse.json({ error: candidates.error.message }, { status: 500 });
+        const matches = (candidates.data || []).filter((candidate) => streetKey(candidate.name) === streetKey(streetName));
+        if (matches.length > 1) return NextResponse.json({ error: 'Multiple matching streets exist. Please resolve the duplicate records before approving.' }, { status: 409 });
+        if (matches.length === 1) street = matches[0];
       }
 
       if (!street) {
